@@ -32,6 +32,7 @@ class Executor(Base):
         self._ml_engine = None
         self._pipeline = None
         self._mlcomp_jar = None
+        self._use_color = True
 
         if args:
             self._json_pipeline = getattr(args, "pipeline", None)
@@ -48,6 +49,10 @@ class Executor(Base):
 
     def mlcomp_jar(self, mlcomp_jar):
         self._mlcomp_jar = mlcomp_jar
+        return self
+
+    def use_color(self, use_color):
+        self._use_color = use_color
         return self
 
     @staticmethod
@@ -100,7 +105,7 @@ class Executor(Base):
             self._init_ml_engine(pipeline)
 
             comps_desc_list = components_desc.ComponentsDesc(self._ml_engine).load()
-            self._logger.info("comp_desc: {}".format(comps_desc_list))
+            self._logger.debug("comp_desc: {}".format(comps_desc_list))
             dag = Dag(pipeline, comps_desc_list, self._ml_engine)
 
             # Flush stdout so the logs looks a bit in order
@@ -114,7 +119,7 @@ class Executor(Base):
 
         finally:
             sys.stdout.flush()
-            self._logger.info("Done running (in finally block)")
+            self._logger.info("Done running pipeline (in finally block)")
             self._cleanup_on_exist()
             print("End of go")
 
