@@ -1,10 +1,12 @@
 from setuptools import setup, find_packages
 
+from parallelm.mlcomp import version, project_name
+
 setup(
-    name="mlcomp",
+    name=project_name,
     namespace_packages=['parallelm'],
-    version="1.0",
-    description="MLOps PySpark engine to execute machine learning pipelines",
+    version=version,
+    description="An engine for running component based ML pipelines",
     license="ParallelM",
     zip_safe=False,
     include_package_data=True,
@@ -15,5 +17,13 @@ setup(
         'setuptools.installation': [
             'eggsecutable = parallelm.main:main'
         ]
-    }
+    },
+    scripts=["bin/mlpiper",
+             "bin/mcenter_components_setup.py",
+             "bin/deployment-runner.sh",
+             "bin/create-egg.sh"],
+    install_requires=[
+        'termcolor',
+        'flask'
+    ],
 )

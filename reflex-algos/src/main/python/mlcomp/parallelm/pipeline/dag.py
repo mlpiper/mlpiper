@@ -1,5 +1,7 @@
 import inspect
 import importlib
+import time
+from termcolor import colored
 
 from parallelm.common.base import Base
 from parallelm.common.mlcomp_exception import MLCompException
@@ -28,6 +30,7 @@ class Dag(Base):
         self._uploaded_comp_classes = dict()
         self._parent_data_objs_placeholder = dict()
         self._sorted_execution_graph_list = self._sorted_execution_graph()
+        self._report_color = "green"
 
     @property
     def is_stand_alone(self):
@@ -59,8 +62,26 @@ class Dag(Base):
         dag_node.component_runner.configure(input_args)
         dag_node.component_runner.run(None)
 
+    def _print_colored(self, msg):
+        print(colored(msg, self._report_color))
+
+    def _component_run_header(self, dag_node):
+        self._print_colored(" ")
+        self._print_colored(" ")
+        self._print_colored("-" * 60)
+        self._print_colored("Component: {}".format(dag_node.comp_name()))
+        self._print_colored("Language:  {}".format(dag_node.comp_language()))
+        self._print_colored("-" * 60)
+
+    def _component_run_footer(self, dag_node, data_objs, runtime_in_sec):
+        self._print_colored("-" * 60)
+        self._print_colored("Runtime:    {:.1f} sec".format(runtime_in_sec))
+        self._print_colored("NR outputs: {}".format(len(data_objs)))
+        self._print_colored(" ")
+
     def run_connected_pipeline(self, system_conf, engine_info):
         # Components configuration phase
+        print("Running pipeline")
         self._logger.debug("Running connected pipeline")
         for dag_node in self._sorted_execution_graph_list:
             input_args = dag_node.input_arguments(system_conf)
@@ -71,11 +92,17 @@ class Dag(Base):
             parent_data_objs = self.parent_data_objs(dag_node)
 
             self._logger.debug("Calling dag node '{}', with args: {}".format(dag_node.comp_name(), parent_data_objs))
-            data_objs = dag_node.component_runner.run(parent_data_objs)
 
+            self._component_run_header(dag_node)
+            start = time.time()
+            data_objs = dag_node.component_runner.run(parent_data_objs)
+            runtime_in_sec = time.time() - start
             if data_objs and type(data_objs) is not list:
                 raise MLCompException("Invalid returned data type from component! It should be a list! "
                                       "name: " + dag_node.comp_name())
+
+            self._component_run_footer(dag_node, data_objs, runtime_in_sec)
+
             self._logger.info("Output of dag node '{}' is: {}".format(dag_node.comp_name(), data_objs))
             self.update_parent_data_objs(dag_node, data_objs)
 

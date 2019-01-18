@@ -41,3 +41,11 @@ test: egg comp_eggs
 
 local: test
 	cp  dist/*.egg  ../../../../target/
+
+
+install: wheel
+	env PYTHONPATH=./ bin/install_locally.py
+
+clean:
+	\rm -rf dist
+	\rm -rf build
