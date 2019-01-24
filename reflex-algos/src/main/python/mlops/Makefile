@@ -27,6 +27,9 @@ egg:
 	python2 setup.py bdist_egg
 	python3 setup.py bdist_egg
 
+wheel:
+	python2 setup.py bdist_wheel
+	python3 setup.py bdist_wheel
 
 test: egg
 	env PYTHONPATH=./:tests/:${SPARK_HOME}/python python2 -m py.test tests/
@@ -77,3 +80,9 @@ test_non_pm: egg
 				  --jars ../../../../target/ReflexAlgos-jar-with-dependencies.jar \
 				  examples/pi_calc.py
 
+install: wheel
+	env PYTHONPATH=./ bin/install_locally.py
+
+clean:
+	\rm -rf dist
+	\rm -rf build

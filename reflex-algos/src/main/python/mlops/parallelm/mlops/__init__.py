@@ -4,6 +4,11 @@ from .constants import Constants
 version = Constants.MLOPS_CURRENT_VERSION
 __version__ = Constants.MLOPS_CURRENT_VERSION
 
+# TODO: switch to following
+#project_name = Constants.OFFICIAL_NAME
+
+# For now until name change
+project_name = "parallelm"
 
 from .versions import Versions
 from .mlops import MLOps
