@@ -1,0 +1,20 @@
+syntax = "proto2";
+
+package InfoType;
+
+option java_package = "com.parallelmachines.reflex.common";
+option java_outer_classname = "InfoTypeJava";
+
+/**
+  * Enum values for type field in AccumulatorInfo.
+  * "General"
+  * "Health" - these stats will be taken by ECO and forwarded to Inference side
+  * "HealthCompare" - overlap score info is taken by ECO and compared against threshold
+  * "Kpi" - indicates application's level KPI data
+  */
+enum InfoType {
+    General = 0;
+    Health = 1;
+    HealthCompare = 2;
+    KPI = 3;
+}

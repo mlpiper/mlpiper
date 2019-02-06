@@ -1,0 +1,26 @@
+type: object
+properties:
+  ionMetrics:
+    type: object
+    properties:
+      QoQ:
+        $ref: './MCenterRestApi.yaml#/definitions/IntervalChart'
+      MoM:
+        $ref: './MCenterRestApi.yaml#/definitions/IntervalChart'
+      WoW:
+        $ref: './MCenterRestApi.yaml#/definitions/IntervalChart'
+    modelGenerationMetrics:
+      QoQ:
+        $ref: './MCenterRestApi.yaml#/definitions/IntervalChart'
+      MoM:
+        $ref: './MCenterRestApi.yaml#/definitions/IntervalChart'
+      WoW:
+        $ref: './MCenterRestApi.yaml#/definitions/IntervalChart'
+    modelDeploymentMetrics:
+      QoQ:
+        $ref: './MCenterRestApi.yaml#/definitions/IntervalChart'
+      MoM:
+        $ref: './MCenterRestApi.yaml#/definitions/IntervalChart'
+      WoW:
+        $ref: './MCenterRestApi.yaml#/definitions/IntervalChart'
+

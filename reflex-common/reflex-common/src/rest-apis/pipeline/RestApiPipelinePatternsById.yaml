@@ -1,0 +1,54 @@
+parameters:
+- $ref: './MCenterRestApi.yaml#/parameters/pipelinePatternId'
+get:
+  tags:
+  - "pipeline patterns"
+  summary: "Get specific pipeline pattern"
+  produces:
+  - "application/json"
+  responses:
+    200:
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/PipelinePattern'
+    404:
+      description: "Not found"
+    500:
+      description: "Internal Server error"
+
+put:
+  tags:
+  - "pipeline patterns"
+  summary: "Update an existing pipeline pattern"
+  consumes:
+  - "application/json"
+  produces:
+  - "application/json"
+  parameters:
+  - in: "body"
+    name: "body"
+    description: "Pipeline pattern detail configuration"
+    required: true
+    schema:
+      $ref: './MCenterRestApi.yaml#/definitions/PipelinePattern'
+  responses:
+    200:
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/PipelinePattern'
+    404:
+      description: "Not found"
+    500:
+      description: "Internal Server error"
+
+delete:
+  tags:
+  - "pipeline patterns"
+  summary: "Delete an existing pipeline pattern"
+  responses:
+    200:
+      description: "OK"
+    404:
+      description: "Not found"
+    500:
+      description: "Internal Server error"

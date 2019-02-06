@@ -1,0 +1,8 @@
+parameters:
+- $ref: './MCenterRestApi.yaml#/parameters/repoId'
+get:
+  responses:
+    200:
+      description: "OK"
+    500:
+      description: "Internal Server error"

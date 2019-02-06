@@ -1,0 +1,11 @@
+get:
+  security: []
+  produces:
+  - "application/json"
+  responses:
+    200:
+      description: "OK"
+      schema:
+        type: object
+    500:
+      description: "Internal Server error"

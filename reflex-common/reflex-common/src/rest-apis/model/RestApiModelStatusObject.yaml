@@ -1,0 +1,14 @@
+type: object
+properties:
+  modelId:
+    type: string
+  approvalDetails:
+    type: array
+    items:
+      type: object
+  rejectionDetails:
+    type: array
+    items:
+      type: object
+  user:
+    type: string

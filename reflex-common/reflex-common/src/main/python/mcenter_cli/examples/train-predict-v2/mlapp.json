@@ -1,0 +1,22 @@
+{
+    "version": "2.0",
+    "name": "example-2-train-predict-v2",
+    "modelPolicy": "always_update",
+    "nodes": {
+        "trainer": {
+            "parent": [],
+            "group": "group_spark",
+            "pipeline": "./pipelines/train.json",
+            "cronSchedule":"* 0/2 * * * ?"
+        },
+        "predictor": {
+            "parent": ["trainer"],
+            "group": "group_spark",
+            "pipeline": "./pipelines/predict.json",
+            "cronSchedule":"* 0/2 * * * ?",
+            "defaultModelName": "model_test_1"
+        }
+    },
+    "components": {}
+}
+

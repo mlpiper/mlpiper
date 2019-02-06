@@ -1,0 +1,54 @@
+parameters:
+- $ref: './MCenterRestApi.yaml#/parameters/mlAppProfileId'
+get:
+  tags:
+  - "MLApp profiles"
+  summary: "Get specific MLApp profile"
+  produces:
+  - "application/json"
+  responses:
+    200:
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/MLAppProfile'
+    404:
+      description: "Not found"
+    500:
+      description: "Internal Server error"
+
+put:
+  tags:
+  - "MLApp profiles"
+  summary: "Update an existing MLApp profile"
+  consumes:
+  - "application/json"
+  produces:
+  - "application/json"
+  parameters:
+  - in: "body"
+    name: "body"
+    description: "MLApp profile detail configuration"
+    required: true
+    schema:
+      $ref: './MCenterRestApi.yaml#/definitions/MLAppProfile'
+  responses:
+    200:
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/MLAppProfile'
+    404:
+      description: "Not found"
+    500:
+      description: "Internal Server error"
+
+delete:
+  tags:
+  - "MLApp profiles"
+  summary: "Delete an existing MLApp profile"
+  responses:
+    200:
+      description: "OK"
+    404:
+      description: "Not found"
+    500:
+      description: "Internal Server error"

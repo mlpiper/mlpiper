@@ -1,0 +1,43 @@
+type: object
+properties:
+  modelSize:
+    type: integer
+  approvedForIons:
+    type: array
+    items:
+      type: string
+  rejectedForIons:
+    type: array
+    items:
+      type: string
+  host:
+    type: string
+  createdTimestamp:
+      type: integer
+  format:
+    type: string
+  deletedTimestamp:
+    type: integer
+  clearedTimestamp:
+    type: integer
+  state:
+    type: string
+  stateDescription:
+    type: string
+  reviewedBy:
+    type: string
+  modelId:
+    type: string
+  id:
+    type: string
+    readOnly: true
+  name:
+    type: string
+  created:
+    type: integer
+    format: int64
+    minimum: 0
+    readOnly: true
+  createdBy:
+    type: string
+    readOnly: true

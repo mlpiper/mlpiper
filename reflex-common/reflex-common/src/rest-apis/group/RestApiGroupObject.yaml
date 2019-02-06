@@ -1,0 +1,25 @@
+type: object
+properties:
+  agents:
+    type: array
+    items:
+      type: string
+  createdBy:
+    type: string
+    readOnly: true
+  id:
+    type: string
+    readOnly: true
+  created:
+    type: integer
+    format: int64
+    minimum: 0
+    readOnly: true
+  workflows:
+    type: array
+    items: {}  # FIXME: use proper type
+  agentSet:
+    type: array
+    items: {}  # FIXME: use proper type
+  name:
+    type: string

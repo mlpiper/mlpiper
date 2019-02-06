@@ -1,0 +1,24 @@
+type: object
+properties:
+  id:
+    type: string
+  title:
+    type: string
+  dbName:
+    type: string
+  query:
+    type: string
+  configurable:
+    type: boolean
+  mlStat:
+    type: object
+    properties:
+      name:
+        type: string
+      id:
+        type: string
+      category:
+        type: string
+      graphType:
+        type: string
+

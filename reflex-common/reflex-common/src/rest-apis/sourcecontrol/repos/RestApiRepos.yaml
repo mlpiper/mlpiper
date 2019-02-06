@@ -1,0 +1,38 @@
+get:
+  tags:
+  - "repository"
+  summary: "Get list of all registered repositories"
+  produces:
+  - "application/json"
+  responses:
+    200:
+      description: "OK"
+      schema:
+        type: array
+        items:
+          $ref: './MCenterRestApi.yaml#/definitions/Repo'
+    500:
+      description: "Internal Server error"
+
+post:
+  tags:
+  - "repository"
+  summary: "Register a repository"
+  consumes:
+  - "application/json"
+  produces:
+  - "application/json"
+  parameters:
+  - in: "body"
+    name: "body"
+    description: "Repository details"
+    required: true
+    schema:
+      $ref: './MCenterRestApi.yaml#/definitions/Repo'
+  responses:
+    200:
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/Repo'
+    500:
+      description: "Internal Server error"

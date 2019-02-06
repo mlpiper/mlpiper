@@ -1,0 +1,355 @@
+swagger: "2.0"
+
+info:
+  description: "MLOPs API document"
+  version: "1.0.0"
+  title: "MLOps API documentation"
+
+host: "bran-c13:3456"
+basePath: "/v2"
+
+tags:
+- name: "agents"
+  description: "Agent management"
+- name: "events"
+  description: "Events management"
+- name: "groups"
+  description: "Group management"
+- name: "MLApp patterns"
+  description: "ION management"
+- name: "MLApp profiles"
+  description: "MLApp profile management"
+- name: "models"
+  description: "Models management"
+- name: "pipeline patterns"
+  description: "Pipeline patterns management"
+- name: "pipeline profiles"
+  description: "Pipeline profiles management"
+- name: "reports"
+  description: "View management"
+- name: "repository"
+  description: "Repository management"
+- name: "roles"
+  description: "Role management"
+- name: "timeline captures"
+  description: "Timeline capture management"
+- name: "users"
+  description: "User management"
+
+schemes:
+- "http"
+- "https"
+
+securityDefinitions:
+  token:
+    type: apiKey
+    description: Cookie-based authentication twisted for swagger 2.0
+    name: Cookie  # Use token name in OpenAPI 3.0
+    in: header    # Use cookie type in OpenAPI 3.0
+
+security:
+  - token: []
+
+paths:
+
+  # Agents & Groups
+
+  /agents:
+    $ref: './agent/RestApiAgents.yaml'
+  /agents/{agentId}:
+    $ref: './agent/RestApiAgentsById.yaml'
+  /onboarding/groups:
+    $ref: './group/RestApiGroups.yaml'
+  /onboarding/groups/{groupId}:
+    $ref: './group/RestApiGroupsById.yaml'
+
+
+  # Patterns & Profiles
+
+  /onboarding/pipelinePatterns:
+    $ref: './pipeline/RestApiPipelinePatterns.yaml'
+  /onboarding/pipelinePatterns/{pipelinePatternId}:
+    $ref: './pipeline/RestApiPipelinePatternsById.yaml'
+  /onboarding/pipelineProfiles:
+    $ref: './profile/RestApiPipelineProfiles.yaml'
+  /onboarding/pipelineProfiles/{pipelineProfileId}:
+    $ref: './profile/RestApiPipelineProfilesById.yaml'
+  /onboarding/mlAppPatterns:
+    $ref: './workflow/RestApiMLAppPatterns.yaml'
+  /onboarding/mlAppPatterns/{mlAppPatternId}:
+    $ref: './workflow/RestApiMLAppPatternsById.yaml'
+  /onboarding/mlAppProfiles:
+    $ref: './profile/RestApiMLAppProfiles.yaml'
+  /onboarding/mlAppProfiles/{mlAppProfileId}:
+    $ref: './profile/RestApiMLAppProfilesById.yaml'
+
+
+  # Users actions
+
+  /users:
+    $ref: './usermgmt/RestApiUsers.yaml'
+  /users/{userId}:
+    $ref: './usermgmt/RestApiUsersById.yaml'
+  /me:
+    $ref: './usermgmt/RestApiUserMe.yaml'
+  /auth/login:
+    $ref: './usermgmt/RestApiAuthLogin.yaml'
+  /auth/validate:
+    $ref: './usermgmt/RestApiAuthValidate.yaml'
+
+
+  # Roles
+
+  /roles:
+    $ref: './roles/RestApiRoles.yaml'
+  /roles/{roleId}:
+    $ref: './roles/RestApiRolesById.yaml'
+
+  # Models
+
+  /models:
+    $ref: './model/RestApiModels.yaml'
+  /models/{modelId}:
+    $ref: './model/RestApiModelsById.yaml'
+  /models/{modelId}/download:
+    $ref: './model/RestApiModelDownload.yaml'
+  /models/{modelId}/dataCharacteristic:
+    $ref: './model/RestApiModelHealth.yaml'
+  /models/{modelId}/source:
+    $ref: './model/RestApiModelSource.yaml'
+  /models/{modelId}/status:
+    $ref: './model/RestApiModelStatus.yaml'
+  /models/{modelId}/usage:
+    $ref: './model/RestApiModelUsage.yaml'
+  /models/{modelId}/review:
+    $ref: './model/RestApiModelReview.yaml'
+
+  # Timeline captures
+
+  /timelineCaptures:
+    $ref: './snapshot/RestApiTimelineCapture.yaml'
+  /timelineCaptures/{timelineCaptureId}:
+    $ref: './snapshot/RestApiTimelineCaptureById.yaml'
+  /timelineCaptures/{timelineCaptureId}/prepare:
+    $ref: './snapshot/RestApiTimelineCapturePrepare.yaml'
+  /timelineCaptures/{timelineCaptureId}/prepareStatus:
+    $ref: './snapshot/RestApiTimelineCaptureStatus.yaml'
+  /timelineCaptures/{timelineCaptureId}/download:
+    $ref: './snapshot/RestApiTimelineCaptureDownload.yaml'
+
+  # Events & Alerts
+  /events:
+    $ref: './model/RestApiEvents.yaml'
+  /alerts:
+    $ref: './model/RestApiAlerts.yaml'
+
+  # Reports
+  /reports:
+    $ref: './views/RestApiReports.yaml'
+  /dashboard:
+    $ref: './views/RestApiDashboard.yaml'
+  /healthReport:
+    $ref: './views/RestApiL2Report.yaml'
+  /dataScienceReport:
+    $ref: './views/RestApiL3Report.yaml'
+
+  /settings/globalParameters:
+    $ref: './config/RestApiGlobalConfig.yaml'
+  /settings/buildManifest:
+    $ref: './config/RestApiManifest.yaml'
+
+  /sourcecontrol/repos:
+    $ref: './sourcecontrol/repos/RestApiRepos.yaml'
+  /sourcecontrol/repos/{repoId}:
+    $ref: './sourcecontrol/repos/RestApiReposById.yaml'
+  /sourcecontrol/repos/{repoId}/refs:
+    $ref: './sourcecontrol/repos/refs/RestApiRepoRefs.yaml'
+
+  /sourcecontrol/credentials:
+    $ref: './sourcecontrol/credentials/ssh/RestApiCredentials.yaml'
+  /sourcecontrol/credentials/{name}:
+    $ref: './sourcecontrol/credentials/ssh/RestApiCredentialsByName.yaml'
+
+  /mlAppInstances:
+    $ref: './workflow/RestApiMLAppInstances.yaml'
+  /mlAppInstances/{mlAppInstanceId}:
+    $ref: './workflow/RestApiMLAppInstancesById.yaml'
+  /mlAppInstances/{mlAppInstanceId}/setModel:
+    $ref: './workflow/RestApiMLAppInstancesSetModel.yaml'
+  /mlAppInstances/{mlAppInstanceId}/moveToProduction:
+    $ref: './workflow/RestApiMLAppInstancesPromote.yaml'
+  /mlAppInstances/{mlAppInstanceId}/archive:
+    $ref: './workflow/RestApiMLAppInstancesArchive.yaml'
+  /mlAppInstances/{mlAppInstanceId}/stop:
+    $ref: './workflow/RestApiMLAppInstancesStop.yaml'
+  /mlAppInstances/{mlAppInstanceId}/thresholds:
+    $ref: './workflow/RestApiMLAppInstancesThresholds.yaml'
+  /mlAppInstances/{mlAppInstanceId}/logs:
+    $ref: './workflow/RestApiMLAppInstancesLogs.yaml'
+  /mlAppInstances/{mlAppInstanceId}/logs/prepare:
+    $ref: './workflow/RestApiMLAppInstancesLogsPrepare.yaml'
+  /mlAppInstances/{mlAppInstanceId}/logs/prepareStatus:
+    $ref: './workflow/RestApiMLAppInstancesPrepareStatus.yaml'
+  /mlAppInstances/{mlAppInstanceId}/logs/download:
+    $ref: './workflow/RestApiMLAppInstancesPrepareDownload.yaml'
+
+  /stats:
+    $ref: './stats/RestApiStats.yaml'
+  /dbQuery:
+    $ref: './RestApiDBQuery.yaml'
+
+definitions:
+  Agent:
+    $ref: './agent/RestApiAgentObject.yaml'
+  Group:
+    $ref: './group/RestApiGroupObject.yaml'
+  PipelinePattern:
+    $ref: './pipeline/RestApiPipelinePatternObject.yaml'
+  PipelineProfile:
+    $ref: './profile/RestApiPipelineProfileObject.yaml'
+  MLAppPattern:
+    $ref: './workflow/RestApiMLAppPatternObject.yaml'
+  MLAppProfile:
+    $ref: './profile/RestApiMLAppProfileObject.yaml'
+  User:
+    $ref: './usermgmt/RestApiUserObject.yaml'
+  Role:
+    $ref: './roles/RestApiRoleObject.yaml'
+  Model:
+    $ref: './model/RestApiModelObject.yaml'
+  ModelStat:
+    $ref: './model/RestApiModelStatObject.yaml'
+  ModelSource:
+    $ref: './model/RestApiModelSourceObject.yaml'
+  ModelStatus:
+    $ref: './model/RestApiModelStatusObject.yaml'
+  ModelUsage:
+    $ref: './model/RestApiModelUsageObject.yaml'
+  ModelReview:
+    $ref: './model/RestApiModelReviewObject.yaml'
+  TimelineCapture:
+    $ref: './snapshot/RestApiTimelineCaptureObject.yaml'
+  Event:
+    $ref: './model/RestApiEventObject.yaml'
+  IntervalChart:
+    type: object
+    properties:
+      legend:
+        type: string
+      graphType:
+        type: string
+      creationTimes:
+        type: array
+        items:
+          type: object
+          additionalProperties:
+            type: integer
+  Repo:
+    type: object
+    # FIXME
+  Report:
+    $ref: './views/RestApiL0ReportObject.yaml'
+  Dashboard:
+    $ref: './views/RestApiL1ReportObject.yaml'
+  DataComparisonView:
+    $ref: './views/RestApiDataComparisonViewObject.yaml'
+  HeatmapView:
+    $ref: './views/RestApiHeatmapViewObject.yaml'
+  HealthView:
+    $ref: './views/RestApiL2ReportObject.yaml'
+  DataView:
+    $ref: './views/RestApiL3ReportObject.yaml'
+  ChartView:
+    $ref: './views/RestApiCharViewObject.yaml'
+
+parameters:
+  agentId:
+    in: path
+    description: "Agent identifier"
+    required: true
+    type: string
+    name: agentId
+
+  groupId:
+    in: path
+    description: "Group identifier"
+    required: true
+    type: string
+    name: groupId
+
+  pipelinePatternId:
+    in: path
+    description: "Pipeline pattern identifier"
+    required: true
+    type: string
+    name: pipelinePatternId
+
+  pipelineProfileId:
+    in: path
+    description: "Pipeline profile identifier"
+    required: true
+    type: string
+    name: pipelineProfileId
+
+  mlAppPatternId:
+    in: path
+    description: "MLApp pattern identifier"
+    required: true
+    type: string
+    name: mlAppPatternId
+
+  mlAppProfileId:
+    in: path
+    description: "MLApp profile identifier"
+    required: true
+    type: string
+    name: mlAppProfileId
+
+  userId:
+    in: path
+    description: "User identifier"
+    required: true
+    type: string
+    name: userId
+
+  roleId:
+    in: path
+    description: "Role identifier"
+    required: true
+    type: string
+    name: roleId
+
+  modelId:
+    in: path
+    description: "Model identifier"
+    required: true
+    type: string
+    name: modelId
+
+  timelineCaptureId:
+    in: path
+    description: "Timeline capture identifier"
+    required: true
+    type: string
+    name: timelineCaptureId
+
+  mlAppInstanceId:
+    in: path
+    description: "MLApp instance identifier"
+    required: true
+    type: string
+    name: mlAppInstanceId
+
+  name:
+    in: path
+    description: "Source control credential name"
+    required: true
+    type: string
+    name: name
+
+  repoId:
+    in: path
+    description: "Source control repository identifier"
+    required: true
+    type: string
+    name: repoId

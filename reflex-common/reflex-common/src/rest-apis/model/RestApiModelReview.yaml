@@ -1,0 +1,24 @@
+parameters:
+- $ref: './MCenterRestApi.yaml#/parameters/modelId'
+post:
+  tags:
+  - "models"
+  summary: "Review a model approve/reject for current mlApp"
+  consumes:
+  - "application/json"
+  produces:
+  - "application/json"
+  parameters:
+  - name: "body"
+    in: "body"
+    description: "Model review parameters"
+    required: true
+    schema:
+      $ref: './MCenterRestApi.yaml#/definitions/ModelReview'
+  responses:
+    '200':
+      description: "OK"
+    '404':
+      description: "Not found"
+    '500':
+      description: "Internal Server error"

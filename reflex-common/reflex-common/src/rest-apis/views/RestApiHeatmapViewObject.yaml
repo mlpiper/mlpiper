@@ -1,0 +1,14 @@
+type: object
+properties:
+  attributes:
+    type: array
+    items:
+      type: string
+  name:
+    type: string
+  type:
+    type: string
+  query:
+    type: string
+  dbName:
+    type: string

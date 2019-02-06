@@ -1,0 +1,17 @@
+parameters:
+- $ref: './MCenterRestApi.yaml#/parameters/timelineCaptureId'
+get:
+  tags:
+  - "timeline captures"
+  summary: "Download specific model"
+  produces:
+  - "application/octet-stream"
+  responses:
+    '200':
+      description: "timeline capture tar file"
+      schema:
+        type: file
+    '404':
+      description: "Not found"
+    '500':
+      description: "Internal Server error"

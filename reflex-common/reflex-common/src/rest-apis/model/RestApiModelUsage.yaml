@@ -1,0 +1,19 @@
+parameters:
+- $ref: './MCenterRestApi.yaml#/parameters/modelId'
+get:
+  tags:
+  - "models"
+  summary: "Fetch model usages time linked to pipelines"
+  produces:
+  - "application/json"
+  responses:
+    '200':
+      description: "Model usage timestamps"
+      schema:
+        type: array
+        items:
+          $ref: './MCenterRestApi.yaml#/definitions/ModelUsage'
+    '404':
+      description: "Not found"
+    '500':
+      description: "Internal Server error"

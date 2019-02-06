@@ -1,0 +1,38 @@
+get:
+  tags:
+  - "agents"
+  summary: "Get list of agents"
+  produces:
+  - "application/json"
+  responses:
+    200:
+      description: "OK"
+      schema:
+        type: array
+        items:
+          $ref: './MCenterRestApi.yaml#/definitions/Agent'
+    500:
+      description: "Internal Server error."
+
+post:
+  tags:
+  - "agents"
+  summary: "Register an agent"
+  consumes:
+  - "application/json"
+  produces:
+  - "application/json"
+  parameters:
+  - in: "body"
+    name: "body"
+    description: "Agent address object"
+    required: true
+    schema:
+      $ref: './MCenterRestApi.yaml#/definitions/Agent'
+  responses:
+    200:
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/Agent'
+    500:
+      description: "Internal Server error."

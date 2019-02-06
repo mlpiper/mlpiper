@@ -1,0 +1,57 @@
+type: object
+properties:
+  isProfile:
+    type: boolean
+  workflow:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+        pipelineMode:
+          type: string
+        pipelineType:
+          type: string
+        pipelinePatternId:
+          type: string
+        parent:
+          type: string
+        children:
+          type: string
+        parallelism:
+          type: integer
+        restServerPort:
+          type: integer
+        isVisible:
+          type: boolean
+        workflowNodeType:
+          type: string
+        cronSchedule:
+          type: string
+  modelPolicy:
+    type: string
+  globalThreshold:
+    type: integer
+    format: float
+  canaryThreshold:
+    type: integer
+    format: float
+  enableHealth:
+    type: boolean
+  runNow:
+    type: boolean
+  runIterations:
+    type: integer
+  id:
+    type: string
+    readOnly: true
+  name:
+    type: string
+  created:
+    type: integer
+    format: float
+    readOnly: true
+  createdBy:
+    type: string
+    readOnly: true

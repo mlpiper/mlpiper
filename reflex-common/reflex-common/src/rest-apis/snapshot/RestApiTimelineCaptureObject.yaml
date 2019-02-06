@@ -1,0 +1,27 @@
+type: object
+properties:
+  name:
+    type: string
+  workflowInstanceId:
+    type: string
+  start:
+    type: integer
+    format: int64
+  end:
+    type: integer
+    format: int64
+  status:
+    type: string
+  id:
+    type: string
+    readOnly: true
+  created:
+    type: integer
+    format: int64
+    minimum: 0
+    readOnly: true
+  createdBy:
+    type: string
+    readOnly: true
+  workflowInstance:
+    type: object

@@ -1,0 +1,38 @@
+get:
+  tags:
+  - "pipeline profiles"
+  summary: "Get list of all pipeline profiles"
+  produces:
+  - "application/json"
+  responses:
+    200:
+      description: "OK"
+      schema:
+        type: array
+        items:
+          $ref: './MCenterRestApi.yaml#/definitions/PipelineProfile'
+    500:
+      description: "Internal Server error."
+
+post:
+  tags:
+  - "pipeline profiles"
+  summary: "Create a new pipeline profile"
+  consumes:
+  - "application/json"
+  produces:
+  - "application/json"
+  parameters:
+  - in: "body"
+    name: "body"
+    description: "Pipeline detail description"
+    required: true
+    schema:
+      $ref: './MCenterRestApi.yaml#/definitions/PipelineProfile'
+  responses:
+    200:
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/PipelineProfile'
+    500:
+      description: "Internal Server error"

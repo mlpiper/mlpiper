@@ -1,0 +1,62 @@
+type: object
+properties:
+  ionInstance:
+    type: object
+  ionHealthInfo:
+    type: array
+    items:
+      type: object
+      properties:
+        location:
+          type: string
+        host:
+          type: string
+        pipeline:
+          type: string
+        ionNodeId:
+          type: string
+        error:
+          type: string
+  isMLHealthy:
+    type: boolean
+  isSystemHealthy:
+    type: boolean
+  mlAlerts:
+    type: integer
+    format: int64
+  dataAlerts:
+    type: integer
+    format: int64
+  totalDataProcessed:
+    type: integer
+    format: int64
+  totalSamplesProcessed:
+    type: integer
+    format: int64
+  totalPredictions:
+    type: integer
+    format: int64
+  totalModelsProduced:
+    type: integer
+    format: int64
+  totalModelsUpdated:
+    type: integer
+    format: int64
+  avgLatency:
+    type: integer
+    format: int64
+  avgInferenceTime:
+    type: integer
+    format: int64
+  avgTrainingTime:
+    type: integer
+    format: int64
+  pendingModels:
+    type: integer
+    format: int64
+  status:
+    type: boolean
+  operationMode:
+    type: string
+  enableHealth:
+    type: boolean

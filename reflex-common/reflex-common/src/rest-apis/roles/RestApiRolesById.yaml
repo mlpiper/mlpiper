@@ -1,0 +1,56 @@
+parameters:
+- $ref: './MCenterRestApi.yaml#/parameters/roleId'
+get:
+  tags:
+  - "roles"
+  summary: "List details of specific role"
+  produces:
+  - "application/json"
+  responses:
+    '200':
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/Role'
+    '404':
+      description: "Not found"
+    '500':
+      description: "Internal Server error"
+
+put:
+  tags:
+  - "roles"
+  summary: "Update role information"
+  consumes:
+  - "application/json"
+  produces:
+  - "application/json"
+  parameters:
+  - name: "body"
+    in: "body"
+    description: "Update role object"
+    required: true
+    schema:
+      $ref: './MCenterRestApi.yaml#/definitions/Role'
+  responses:
+    '200':
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/Role'
+    '404':
+      description: "Not found"
+    '500':
+      description: "Internal Server error"
+
+delete:
+  tags:
+  - "roles"
+  summary: "Deregister an role"
+  responses:
+    '200':
+      description: "OK"
+    '404':
+      description: "Not found"
+    '500':
+      description: "Internal Server error"
+
+

@@ -1,0 +1,13 @@
+type: object
+properties:
+  mode:
+    type: string
+  details:
+    type: object
+    properties:
+      description:
+        type: string
+      user:
+        type: string
+      createdTime:
+        type: integer

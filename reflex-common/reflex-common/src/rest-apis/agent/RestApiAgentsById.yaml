@@ -1,0 +1,56 @@
+parameters:
+- $ref: './MCenterRestApi.yaml#/parameters/agentId'
+get:
+  tags:
+  - "agents"
+  summary: "List details of specific agent"
+  produces:
+  - "application/json"
+  responses:
+    '200':
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/Agent'
+    '404':
+      description: "Not found"
+    '500':
+      description: "Internal Server error"
+
+put:
+  tags:
+  - "agents"
+  summary: "Update agent information"
+  consumes:
+  - "application/json"
+  produces:
+  - "application/json"
+  parameters:
+  - name: "body"
+    in: "body"
+    description: "Update agent object"
+    required: true
+    schema:
+      $ref: './MCenterRestApi.yaml#/definitions/Agent'
+  responses:
+    '200':
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/Agent'
+    '404':
+      description: "Not found"
+    '500':
+      description: "Internal Server error"
+
+delete:
+  tags:
+  - "agents"
+  summary: "Deregister an agent"
+  responses:
+    '200':
+      description: "OK"
+    '404':
+      description: "Not found"
+    '500':
+      description: "Internal Server error"
+
+

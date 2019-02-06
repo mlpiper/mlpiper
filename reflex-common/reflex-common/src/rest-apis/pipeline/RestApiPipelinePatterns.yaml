@@ -1,0 +1,38 @@
+get:
+  tags:
+  - "pipeline patterns"
+  summary: "Get list of all pipeline patterns"
+  produces:
+  - "application/json"
+  responses:
+    200:
+      description: "OK"
+      schema:
+        type: array
+        items:
+          $ref: './MCenterRestApi.yaml#/definitions/PipelinePattern'
+    500:
+      description: "Internal Server error"
+
+post:
+  tags:
+  - "pipeline patterns"
+  summary: "Create a new pipeline pattern"
+  consumes:
+  - "application/json"
+  produces:
+  - "application/json"
+  parameters:
+  - in: "body"
+    name: "body"
+    description: "Pipeline detail description"
+    required: true
+    schema:
+      $ref: './MCenterRestApi.yaml#/definitions/PipelinePattern'
+  responses:
+    200:
+      description: "OK"
+      schema:
+        $ref: './MCenterRestApi.yaml#/definitions/PipelinePattern'
+    500:
+      description: "Internal Server error"

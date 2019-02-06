@@ -1,0 +1,16 @@
+get:
+  tags:
+  - "reports"
+  summary: "Extract business report"
+  produces:
+  - "application/json"
+  responses:
+    200:
+      description: "OK"
+      schema:
+        type: array
+        items:
+          $ref: './MCenterRestApi.yaml#/definitions/Report'
+    500:
+      description: "Internal Server error"
+

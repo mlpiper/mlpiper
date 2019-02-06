@@ -1,0 +1,42 @@
+type: object
+properties:
+  ionID:
+    type: string
+  start:
+    type: integer
+    format: int64
+  end:
+    type: integer
+    format: int64
+  isMLHealthy:
+    type: boolean
+  bargraphs:
+    type: array
+    items:
+      $ref: './../MCenterRestApi.yaml#/definitions/DataComparisonView'
+  heatmaps:
+    type: array
+    items:
+      $ref: './../MCenterRestApi.yaml#/definitions/HeatmapView'
+  events:
+    type: object
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+      query:
+        type: string
+      dbName:
+        type: string
+  kpi:
+    type: object
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+      query:
+        type: string
+      dbName:
+        type: string

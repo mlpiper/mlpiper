@@ -1,0 +1,40 @@
+type: object
+properties:
+  description:
+    type: string
+  id:
+    type: string
+    readOnly: true
+  name:
+    type: string
+  created:
+    type: integer
+    format: int64
+    minimum: 0
+    readOnly: true
+  createdBy:
+    type: string
+    readOnly: true
+  permissions:
+    type: object
+    properties:
+      map:
+        type: object
+        properties:
+          "Sandbox ION Instance":
+            type: integer
+          Model:
+            type: integer
+          Pipeline:
+            type: integer
+          Profile:
+            type: integer
+          "Production ION Instance":
+            type: integer
+          Component:
+            type: integer
+          ION Pattern:
+            type: integer
+required:
+- description
+- name

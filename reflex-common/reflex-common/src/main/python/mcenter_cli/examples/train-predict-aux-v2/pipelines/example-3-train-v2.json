@@ -1,0 +1,51 @@
+{
+    "version": "2.0",
+    "name": "example-3-train-v2",
+    "engineType": "Python",
+    "pipelineType": "model_producer",
+    "pipe": {
+        "random-dataframe": {
+            "componentName": "random-dataframe",
+            "parents": [],
+            "arguments": {
+                "num_cols": 5,
+                "num_lines": 10
+            }
+        },
+        "r-train-connected": {
+            "componentName": "r-train-connected",
+            "parents": [
+                {
+                    "parent": "random-dataframe",
+                    "output": "dataframe"
+                },
+                {
+                    "parent": "string-source",
+                    "output": "string"
+                }
+            ],
+            "arguments": {
+                "num_iter": 5
+            }
+        },
+        "string-sink": {
+            "componentName": "string-sink",
+            "parents": [
+                {
+                    "parent": "r-train-connected",
+                    "output": "s3-filename"
+                }
+            ],
+            "arguments": {
+                "expected-value": "s3:from-within-r-code"
+            }
+        },
+        "string-source": {
+            "componentName": "string-source",
+            "parents": [],
+            "arguments": {
+                "value": "s3:some-value-of-s3-bucket"
+            }
+        }
+    }
+}

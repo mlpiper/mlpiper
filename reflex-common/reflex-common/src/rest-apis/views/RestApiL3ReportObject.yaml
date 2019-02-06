@@ -1,0 +1,50 @@
+type: object
+properties:
+  ionID:
+    type: string
+  start:
+    type: integer
+    format: int64
+  end:
+    type: integer
+    format: int64
+  ionNodeId:
+    type: string
+  agentId:
+    type: string
+  pipelineId:
+    type: string
+  isMLHealthy:
+    type: boolean
+  ion:
+    type: object
+    properties:
+      pattern:
+        $ref: './MCenterRestApi.yaml#/definitions/MLAppProfile'
+      status:
+        type: object
+        properties:
+          status:
+            type: string
+          name:
+            type: string
+          createdTime:
+            type: integer
+            format: int64
+          createdBy:
+            type: string
+  events:
+    type: object
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+      query:
+        type: string
+      dbName:
+        type: string
+  charts:
+    type: array
+    items:
+      $ref: './../MCenterRestApi.yaml#/definitions/ChartView'

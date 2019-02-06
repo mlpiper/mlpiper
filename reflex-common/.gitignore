@@ -1,0 +1,14 @@
+**/.idea/
+**/*.iml
+**/*.iws
+
+# Mac
+**/.DS_Store
+
+# Maven
+**/log/
+**/target/
+
+**/*.pyc
+**/__pycache__
+
