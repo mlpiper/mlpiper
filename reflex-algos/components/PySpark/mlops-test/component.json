@@ -1,0 +1,72 @@
+{
+  "engineType": "PySpark",
+  "language": "Python",
+  "name": "mlops-test",
+  "label": "mlops-test",
+  "program": "main.py",
+  "modelBehavior": "ModelProducer",
+  "useMLOps": true,
+  "inputInfo": [],
+  "outputInfo": [],
+  "group": "Algorithms",
+  "arguments": [
+    {
+      "key": "stat_name",
+      "label": "Name of stat to be retrieved",
+      "type": "str",
+      "description": "Name of stat to be retrieved",
+      "optional": false
+    },
+    {
+      "key": "ion_id",
+      "label": "Id of an ML App",
+      "type": "str",
+      "description": "Id of an ML App",
+      "optional": false
+    },
+    {
+      "key": "workflow_id",
+      "label": "Id of workflow",
+      "type": "str",
+      "description": "Id of workflow",
+      "optional": false
+    },
+    {
+      "key": "agent_id",
+      "label": "Id of an agent",
+      "type": "str",
+      "description": "Id of agent",
+      "optional": false
+    },
+    {
+      "key": "pipeline_id",
+      "label": "Id of a pipeline",
+      "type": "str",
+      "description": "Id of pipeline",
+      "optional": false
+    },
+    {
+      "key": "start",
+      "label": "Start time",
+      "type": "str",
+      "description": "Start time",
+      "optional": false
+    },
+    {
+      "key": "end",
+      "label": "End time",
+      "type": "str",
+      "description": "End time",
+      "optional": false
+    },
+    {
+      "key": "output-model",
+      "label": "Model output file",
+      "type": "str",
+      "description": "File to use for saving the trained model",
+      "optional": true,
+      "tag": "model_dir"
+    }
+  ],
+  "version": 1
+}

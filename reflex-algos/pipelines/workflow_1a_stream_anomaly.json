@@ -1,0 +1,70 @@
+{
+  "name": "Reflex Stream - KMeans Anomaly",
+  "engineType": "FlinkStreaming",
+  "systemConfig": {
+    "statsDBHost": "localhost",
+    "statsDBPort": 8086,
+    "mlObjectSocketSinkPort": 7777,
+    "mlObjectSocketSourcePort": 1,
+    "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
+    "statsMeasurementID": "1",
+    "modelFileSinkPath": "/tmp/model_sink"
+  },
+  "pipe": [
+    {
+      "name": "Turbine 1",
+      "id": 1,
+      "type": "ReflexFileConnector",
+      "parents": [],
+      "arguments": {
+        "fileName": "/data-lake/shared_datasets/KDDCup_subset_workflows/Test/Test_dataset.csv"
+      }
+    },
+    {
+      "name": "String To Labeled Vector",
+      "id": 2,
+      "type": "ReflexStringToLabeledVectorComponent",
+      "parents": [
+        {
+          "parent": 1,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "indicesRange": "0-2",
+        "attributes": 3
+      }
+    },
+    {
+      "name": "Online FE - Max Absolute Scaler",
+      "id": 3,
+      "type": "MaxAbsoluteScalerComponent",
+      "parents": [
+        {
+          "parent": 2,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "windowSize": 100,
+        "windowType": "count"
+      }
+    },
+    {
+      "name": "KmeansAnomalyComponent",
+      "id": 4,
+      "type": "KmeansAnomalyComponent",
+      "parents": [
+        {
+          "parent": 3,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "centroidCount": 5,
+        "attributes": 3,
+        "anomalyDistanceThreshold": 0.5
+      }
+    }
+  ]
+}

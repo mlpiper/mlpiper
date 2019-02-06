@@ -1,0 +1,54 @@
+{
+    "name": "Logistic Regression (Pipeline)",
+    "engineType": "PySpark",
+    "systemConfig": {
+        "statsDBHost": "localhost",
+        "statsDBPort": 8086,
+        "mlObjectSocketSinkPort": 7777,
+        "mlObjectSocketSourcePort": 1,
+        "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
+        "statsMeasurementID": "1",
+        "modelFileSinkPath": "PLACEHOLDER"
+    },
+    "pipe": [
+        {
+            "name": "Csv to DataFrame",
+            "id": 1,
+            "type": "csv2df",
+            "parents": [],
+            "arguments": {
+                "filepath": "$__pipeline_dir__$/../resources/training.csv"
+            }
+        },
+        {
+            "name": "Tokenizer (Stage)",
+            "id": 2,
+            "type": "tokenizer-stage",
+            "parents": [{"parent": 1, "output": 0}],
+            "arguments": {
+                "input-col": "text",
+                "output-col": "words"
+            }
+        },
+        {
+            "name": "Hashing TF (Stage)",
+            "id": 3,
+            "type": "hashing-tf-stage",
+            "parents": [{"parent": 2, "output": 0}],
+            "arguments": {
+                "input-col": "words",
+                "output-col": "features"
+            }
+        },
+        {
+            "name": "Logistic Regression (Stage)",
+            "id": 4,
+            "type": "logistic-regression-stage",
+            "parents": [{"parent": 3, "output": 0}],
+            "arguments": {
+                "max-iter": 100,
+                "reg-param": 0.001
+            }
+        }
+    ]
+}

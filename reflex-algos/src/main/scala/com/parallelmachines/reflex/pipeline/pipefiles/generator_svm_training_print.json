@@ -1,0 +1,81 @@
+{
+  "name": "KMeans Training Example",
+  "engineType": "FlinkStreaming",
+  "systemConfig": {
+    "statsDBHost": "localhost",
+    "statsDBPort": 8086,
+    "mlObjectSocketSinkPort": 7777,
+    "mlObjectSocketSourcePort": 10000,
+    "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
+    "statsMeasurementID": "1",
+    "modelFileSinkPath": "/tmp/tmpFile"
+  },
+  "pipe": [
+    {
+      "name": "SVM Generator",
+      "id": 1,
+      "type": "SVMDataGeneratorComponent",
+      "parents": [],
+      "arguments": {
+        "attributes": 57,
+        "samples": 600,
+        "numClusters": 2,
+        "clusterSeparation": 4.0,
+        "soft": 0.5
+      }
+    },
+    {
+      "name": "SVMTrainingComponent",
+      "id": 2,
+      "type": "SVMTrainingComponent",
+      "parents": [
+        {
+          "parent": 1,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "attributes": 57,
+        "printInterval": 10,
+        "gammaFrequency": 7.0,
+        "startGammaSample": 10.0,
+        "stepSize": 1.0,
+        "maxStepSize": 4.0,
+        "soft": 0.5
+      }
+    },
+    {
+      "name": "printer",
+      "id": 3,
+      "type": "ReflexModelSinkConnector",
+      "parents": [
+        {
+          "parent": 2,
+          "output": 0
+        }
+      ]
+    },
+    {
+      "name": "printer",
+      "id": 4,
+      "type": "ReflexStdoutConnector",
+      "parents": [
+        {
+          "parent": 2,
+          "output": 1
+        }
+      ]
+    },
+    {
+      "name": "null",
+      "id": 5,
+      "type": "ReflexNullConnector",
+      "parents": [
+        {
+          "parent": 2,
+          "output": 2
+        }
+      ]
+    }
+  ]
+}

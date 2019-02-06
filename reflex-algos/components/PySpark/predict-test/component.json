@@ -1,0 +1,38 @@
+{
+  "engineType": "PySpark",
+  "language": "Python",
+  "name": "predict-test",
+  "label": "predict-test",
+  "program": "main.py",
+  "modelBehavior": "ModelConsumer",
+  "useMLOps": true,
+  "inputInfo": [],
+  "outputInfo": [],
+  "group": "Algorithms",
+  "arguments": [
+    {
+      "key": "num-trees",
+      "label": "Number of trees",
+      "type": "int",
+      "description": "Number of trees",
+      "optional": false
+    },
+    {
+      "key": "num-classes",
+      "label": "Number of classes",
+      "type": "int",
+      "description": "Number of classes",
+      "optional": false
+    },
+    {
+      "key": "input-model",
+      "label": "Model input file",
+      "type": "str",
+      "description": "File to use for loading model",
+      "optional": false,
+      "tag": "input_model_path"
+    }
+
+  ],
+  "version": 1
+}

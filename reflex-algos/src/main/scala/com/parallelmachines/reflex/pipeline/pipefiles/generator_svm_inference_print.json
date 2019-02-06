@@ -1,0 +1,76 @@
+{
+  "name": "SVM Inference with Socket Model Update",
+  "engineType": "FlinkStreaming",
+  "systemConfig": {
+    "statsDBHost": "localhost",
+    "statsDBPort": 8086,
+    "mlObjectSocketSinkPort": 7777,
+    "mlObjectSocketSourcePort": 10000,
+    "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
+    "statsMeasurementID": "1",
+    "modelFileSinkPath": "/tmp/tmpFile"
+  },
+  "pipe": [
+    {
+      "name": "Model updater",
+      "id": 1,
+      "type": "ReflexModelSourceConnector",
+      "parents": []
+    },
+    {
+      "name": "SVM Generator",
+      "id": 2,
+      "type": "SVMDataGeneratorComponent",
+      "parents": [],
+      "arguments": {
+        "attributes": 57,
+        "samples": 600,
+        "numClusters": 2,
+        "clusterSeparation": 4.0,
+        "soft": 0.5
+      }
+    },
+    {
+      "name": "OnlineSVMComponent",
+      "id": 3,
+      "type": "OnlineSVMComponent",
+      "parents": [
+        {
+          "parent": 1,
+          "output": 0
+        },
+        {
+          "parent": 2,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "attributes": 57,
+        "printInterval": 10,
+        "enablePerformance": true
+      }
+    },
+    {
+      "name": "printer",
+      "id": 4,
+      "type": "ReflexNullConnector",
+      "parents": [
+        {
+          "parent": 3,
+          "output": 0
+        }
+      ]
+    },
+    {
+      "name": "printer",
+      "id": 5,
+      "type": "ReflexStdoutConnector",
+      "parents": [
+        {
+          "parent": 3,
+          "output": 1
+        }
+      ]
+    }
+  ]
+}

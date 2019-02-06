@@ -1,0 +1,24 @@
+{
+    "name": "stand_alone_test",
+    "engineType": "Python",
+    "systemConfig": {
+        "statsDBHost": "localhost",
+        "statsDBPort": 8086,
+        "mlObjectSocketSinkPort": 7777,
+        "mlObjectSocketSourcePort": 1,
+        "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
+        "statsMeasurementID": "1",
+        "modelFileSinkPath": "__model_out_filepath__"
+    },
+    "pipe": [
+        {
+            "name": "Hello",
+            "id": 1,
+            "type": "hello-world",
+            "parents": [],
+            "arguments": {
+                "arg1": "arg1-value"
+            }
+        }
+    ]
+}

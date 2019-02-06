@@ -1,0 +1,71 @@
+{
+  "name": "KMeans Training Example",
+  "pipe": [
+    {
+      "name": "SVM Generator",
+      "id": 1,
+      "type": "SVMDataGeneratorComponent",
+      "parents": [],
+      "arguments": {
+        "attributes": 57,
+        "samples": 600,
+        "numClusters": 2,
+        "clusterSeparation": 4.0,
+        "soft": 0.5
+      }
+    },
+    {
+      "name": "SVMTrainingComponent",
+      "id": 2,
+      "type": "SVMTrainingComponent",
+      "parents": [
+        {
+          "parent": 1,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "attributes": 57,
+        "printInterval": 10,
+        "gammaFrequency": 7.0,
+        "startGammaSample": 10.0,
+        "stepSize": 1.0,
+        "maxStepSize": 4.0,
+        "soft": 0.5
+      }
+    },
+    {
+      "name": "printer",
+      "id": 3,
+      "type": "ReflexStdoutConnector",
+      "parents": [
+        {
+          "parent": 2,
+          "output": 0
+        }
+      ]
+    },
+    {
+      "name": "printer",
+      "id": 4,
+      "type": "ReflexStdoutConnector",
+      "parents": [
+        {
+          "parent": 2,
+          "output": 1
+        }
+      ]
+    },
+    {
+      "name": "printer",
+      "id": 5,
+      "type": "ReflexStdoutConnector",
+      "parents": [
+        {
+          "parent": 2,
+          "output": 2
+        }
+      ]
+    }
+  ]
+}

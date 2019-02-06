@@ -1,0 +1,70 @@
+{
+  "name": "ReflexSamplePipeline",
+  "engineType": "FlinkBatch",
+  "systemConfig": {
+    "statsDBHost": "localhost",
+    "statsDBPort": 8086,
+    "mlObjectSocketSinkPort": 7777,
+    "mlObjectSocketSourcePort": 1,
+    "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
+    "statsMeasurementID": "1",
+    "modelFileSinkPath": "/tmp/tmpFile"
+  },
+  "pipe": [
+    {
+      "name": "Turbine 1",
+      "id": 1,
+      "type": "FlinkBatchFileConnector",
+      "parents": [],
+      "arguments": {
+        "fileName": "/Users/yakov/pmkmeans_input.csv"
+      }
+    },
+    {
+      "name": "String to vector",
+      "id": 2,
+      "type": "ReflexStringToBreezeVectorBatch",
+      "parents": [
+        {
+          "parent": 1,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "separator": ",",
+        "attributes": 3,
+        "indicesRange": "0-2"
+      }
+    },
+    {
+      "name": "OnlineKMeans",
+      "id": 3,
+      "type": "BatchKmeansTrainingComponent",
+      "parents": [
+        {
+          "parent": 2,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "iterations": 20,
+        "epsilon": 0.1,
+        "modelInit": "rand",
+        "centroidCount": 2,
+        "attributes": 3,
+        "statisticsFlag": true
+      }
+    },
+    {
+      "name": "printer",
+      "id": 4,
+      "type": "FlinkBatchStdoutConnector",
+      "parents": [
+        {
+          "parent": 3,
+          "output": 0
+        }
+      ]
+    }
+  ]
+}

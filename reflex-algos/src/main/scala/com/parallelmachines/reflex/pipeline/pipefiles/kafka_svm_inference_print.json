@@ -1,0 +1,82 @@
+{
+  "name": "KMeans Training Example",
+  "engineType": "FlinkStreaming",
+  "systemConfig": {
+    "statsDBHost": "localhost",
+    "statsDBPort": 8086,
+    "mlObjectSocketSinkPort": 7777,
+    "mlObjectSocketSourcePort": 1,
+    "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
+    "statsMeasurementID": "1",
+    "modelFileSinkPath": "/tmp/tmpFile"
+  },
+  "pipe": [
+    {
+      "name": "Kafka Source",
+      "id": 1,
+      "type": "ReflexKafkaConnector",
+      "parents": [],
+      "arguments": {
+        "port": 9092,
+        "host": "daenerys-c17",
+        "topic": "SVM"
+      }
+    },
+    {
+      "name": "String to vector",
+      "id": 2,
+      "type": "ReflexStringToLabeledVectorComponent",
+      "parents": [
+        {
+          "parent": 1,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "dataSeparator": "comma",
+        "attributes": 26,
+        "labelIndex": 0,
+        "indicesRange": "1-3,4-6,7-9,10,11,12-24",
+        "timestampIndex": 25
+      }
+    },
+    {
+      "name": "OnlineSVMComponentWithoutModelUpdate",
+      "id": 3,
+      "type": "OnlineSVMComponentWithoutModelUpdate",
+      "parents": [
+        {
+          "parent": 2,
+          "output": 0
+        }
+      ],
+      "arguments": {
+        "attributes": 24,
+        "printInterval": 10,
+        "enablePerformance": true
+      }
+    },
+    {
+      "name": "printer",
+      "id": 4,
+      "type": "ReflexStdoutConnector",
+      "parents": [
+        {
+          "parent": 3,
+          "output": 0
+        }
+      ]
+    },
+    {
+      "name": "printer",
+      "id": 5,
+      "type": "ReflexStdoutConnector",
+      "parents": [
+        {
+          "parent": 3,
+          "output": 1
+        }
+      ]
+    }
+  ]
+}
