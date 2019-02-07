@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+SCRIPT_NAME=$(basename ${BASH_SOURCE[0]})
+SCRIPT_DIR=$(realpath $(dirname ${BASH_SOURCE[0]}))
+
 MLPIPER_SKIP_DEPS_INSTALL=${MLPIPER_SKIP_DEPS_INSTALL:-0}
 
 echo
@@ -16,24 +19,7 @@ then
 else
     echo "Skipping requirements installation"
 fi
-echo
-echo
-export PYTHONPATH=$PYTHONPATH:./
-
-echo "Detecting all Python eggs in current directory"
-for egg in *.egg
-    do
-        egg_full_path=$(realpath $egg)
-        echo "Detected egg: $egg_full_path"
-        PYTHONPATH=$PYTHONPATH:$egg_full_path
-done
-
-
-echo PYTHONPATH: $PYTHONPATH
-echo "======= All Environment variables =========="
-export
-echo "============================================"
 
 echo
-echo
-./mlpiper run-deployment --deployment-dir .
+echo ==========================================================
+$SCRIPT_DIR/mlpiper run-deployment --deployment-dir $SCRIPT_DIR
