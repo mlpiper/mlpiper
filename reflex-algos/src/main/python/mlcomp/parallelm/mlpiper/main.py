@@ -21,6 +21,7 @@ run - given previous stage - run the pipeline (can call prepare stage)
 # TODO: Support java/scala pipelines
 
 
+import io
 import logging
 import argparse
 import glob
@@ -28,12 +29,13 @@ import json
 import os
 import shutil
 import subprocess
+import sys
 
 from parallelm.mlpiper.component_scanner import ComponentScanner
 from parallelm.pipeline import json_fields
 from parallelm.common.base import Base
-from parallelm.pipeline.executor import Executor
 from parallelm.pipeline.component_language import ComponentLanguage
+from parallelm.pipeline.executor import Executor
 
 
 LOG_LEVELS = {'debug': logging.DEBUG, 'info': logging.INFO, 'warn': logging.WARN, 'error': logging.ERROR}
@@ -85,17 +87,15 @@ def parse_args():
     parser_run.add_argument('--deployment-dir', default='/tmp',
                             help="Deployment directory to use for placing the pipeline artifacts")
 
-
     # Run deployment
     parser_run = subparsers.add_parser('run-deployment',
                                        help='Run mlpiper deployment. Note, this is an internal option.')
     parser_run.add_argument('--deployment-dir', default='/tmp',
                             help="Deployment directory to use for placing the pipeline artifacts")
 
-
     # Get Python/R modules dependencies for the given pipeline or component
     deps = subparsers.add_parser('deps',
-                                 help='Return a list of module dependencies for a given pipeline, depending on'
+                                 help='Return a list of module dependencies for a given pipeline, depending on '
                                       'the components programming language')
     deps.add_argument('lang', choices=[ComponentLanguage.PYTHON, ComponentLanguage.R],
                       help='The programming language')
@@ -130,6 +130,10 @@ def parse_args():
                         help='Specify whether to run test on local Spark cluster [default: embedded]')
 
     options = parser.parse_args()
+    if not options.subparser_name:
+        parser.print_help(sys.stderr)
+        return None
+
     options.logging_level = LOG_LEVELS[options.logging_level]
     return options
 
@@ -176,7 +180,7 @@ class MLPiper(Base):
         return self
 
     def deployment_dir(self, deploy_dir):
-        self._deploy_dir = deploy_dir
+        self._deploy_dir = os.path.abspath(deploy_dir)
         return self
 
     def bin_dir(self, bin_dir):
@@ -196,7 +200,9 @@ class MLPiper(Base):
         return self
 
     def pipeline(self, pipeline):
-        if os.path.exists(pipeline):
+        if isinstance(pipeline, io.TextIOWrapper) or isinstance(pipeline, file):
+            self._pipeline_dict = json.load(pipeline)
+        elif os.path.exists(pipeline):
             self._logger.debug("Detected pipeline as a file")
 
             with open(pipeline, 'r') as f:
@@ -347,13 +353,25 @@ class MLPiper(Base):
         p.wait()
         print("Done running pipeline - result: {}".format(p.returncode))
 
-    def run_deployment(self, deployment_dir):
-        self._logger.info("Running prepared deployment, {}".format(deployment_dir))
-        os.chdir(deployment_dir)
-        if not os.path.exists(MLPiper.DEPLOYMENT_ENTRY_POINT):
+    def run_deployment(self):
+        self._logger.info("Running prepared deployment, {}".format(self._deploy_dir))
+
+        deploy_runner_path = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_ENTRY_POINT)
+        if not os.path.exists(deploy_runner_path):
             raise Exception("File: {} is missing from deployment".format(MLPiper.DEPLOYMENT_ENTRY_POINT_SRC))
 
-        pipeline_file = os.path.join(deployment_dir, MLPiper.DEPLOYMENT_PIPELINE)
+        sys.path.insert(0, self._deploy_dir)
+        for egg in glob.glob("{}/*.egg".format(self._deploy_dir)):
+            sys.path.insert(0, egg)
+
+        from importlib import reload
+        import pkg_resources
+        reload(pkg_resources)
+
+        print(100 * 'a')
+        print(sys.path)
+
+        pipeline_file = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_PIPELINE)
         pipeline_runner = Executor().pipeline_file(open(pipeline_file)).use_color(self._use_color)
         pipeline_runner.go()
 
@@ -362,7 +380,8 @@ def deploy(options, bin_dir):
     components = ComponentScanner.scan_dir(options.comp_root)
 
     ml_piper = MLPiper(options).comp_repo(components).deployment_dir(options.deployment_dir) \
-        .bin_dir(bin_dir).pipeline(options.pipeline).skip_clean(options.skip_clean).use_color(not options.no_color)\
+        .bin_dir(bin_dir).pipeline(options.pipeline if options.pipeline else options.file) \
+        .skip_clean(options.skip_clean).use_color(not options.no_color) \
         .skip_mlpiper_deps_install(options.skip_mlpiper_deps)
     ml_piper.deploy()
     return ml_piper
@@ -370,6 +389,11 @@ def deploy(options, bin_dir):
 
 def main(bin_dir=None):
     options = parse_args()
+    if not options:
+        return
+
+    print(options)
+
     logging.basicConfig(level=options.logging_level)
 
     if options.subparser_name in ("deploy"):
@@ -379,8 +403,8 @@ def main(bin_dir=None):
         ml_piper = deploy(options, bin_dir)
         ml_piper.run()
     elif options.subparser_name in ("run-deployment"):
-        ml_piper = MLPiper(options)
-        ml_piper.run_deployment(options.deployment_dir)
+        ml_piper = MLPiper(options).deployment_dir(options.deployment_dir).skip_mlpiper_deps_install(True)
+        ml_piper.run_deployment()
 
     else:
         raise Exception("subcommand: {} is not supported".format(options.subparser_name))
