@@ -1,13 +1,13 @@
 package com.parallelmachines.reflex.web
 
-import com.parallelmachines.mlops.{MLOpsEnvConstants, MLOpsEnvVariables}
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent.EventType
 import com.parallelmachines.reflex.common.enums.ModelFormat
 import com.parallelmachines.reflex.common.events.{EventDescription, ModelAccepted}
-import com.parallelmachines.reflex.common.mlobject.MLObjectType.MLObjectType
-import com.parallelmachines.reflex.common.mlobject.Model
 import org.json4s.DefaultFormats
 import org.json4s.jackson.JsonMethods.parse
+import org.mlpiper.mlobject.MLObjectType.MLObjectType
+import org.mlpiper.mlobject.Model
+import org.mlpiper.mlops.{MLOpsEnvConstants, MLOpsEnvVariables}
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
@@ -48,7 +48,7 @@ object RestApis {
     * Build URI path,
     * in form '/path_component1/path_component2'
     *
-    * @paramc pathComponents comma separated path components
+    * @param pathComponents comma separated path components
     * @return scheme
     */
   def buildURIPath(pathComponents: String*): String = {
@@ -70,7 +70,7 @@ object RestApis {
     val cl = new RestClient(scheme, MLOpsEnvVariables.agentRestHost.get, Some(MLOpsEnvVariables.agentRestPort.get.toInt))
     val uri = buildURIPath(RestApiName.mlopsPrefix.toString, RestApiName.uuid.toString)
     ret = cl.getRequestAsString(uri, params)
-    implicit val format = DefaultFormats
+    implicit val format: DefaultFormats.type = DefaultFormats
     ret = parse(ret).extract[Map[String, String]].get("id").get
     ret
   }
@@ -78,7 +78,7 @@ object RestApis {
   /**
     * Post model to MCenter
     *
-    * @param Model The Model
+    * @param model The Model
     * @return
     */
   def publishModel(model: Model): Unit = {
@@ -96,14 +96,14 @@ object RestApis {
       "workflowInstanceId" -> MLOpsEnvVariables.workflowInstanceId.getOrElse(""),
       "pipelineInstanceId" -> MLOpsEnvVariables.pipelineInstanceId.getOrElse("")
     )
-    val uri = buildURIPath(RestApiName.models.toString, params.get("pipelineInstanceId").get)
+    val uri = buildURIPath(RestApiName.models.toString, params("pipelineInstanceId"))
     RestApis.postBinaryContent(MLOpsEnvVariables.agentRestHost.get, MLOpsEnvVariables.agentRestPort.get.toInt, uri, model.getData.get, params.toMap)
   }
 
   /**
     * Post ModelAccepted to MCenter
     *
-    * @param Model The Model
+    * @param model The Model
     * @return
     */
   def postModelAccepted(model: Model): Unit = {
@@ -115,7 +115,7 @@ object RestApis {
     val ed = new EventDescription(new ModelAccepted(model.getId))
 
     val cl = new RestClient(scheme, MLOpsEnvVariables.agentRestHost.get, Some(MLOpsEnvVariables.agentRestPort.get.toInt))
-    val uri = buildURIPath(RestApiName.events.toString, params.get("pipelineInstanceId").get)
+    val uri = buildURIPath(RestApiName.events.toString, params("pipelineInstanceId"))
     cl.postString(uri, params, ed.toJson)
   }
 
@@ -139,8 +139,8 @@ object RestApis {
     *
     * @param mlAppId            MLApp id
     * @param pipelineInstanceId pipeline instance id
-    * @return Option[Map[String, Any]] metadata a map object
-    **/
+    * @return metadata a map object
+    */
   private def getLastApprovedModelMetadata(mlAppId: String, pipelineInstanceId: String): Option[Map[String, Any]] = {
     var ret: Option[Map[String, Any]] = None
     val params = Map[String, String]("ionId" -> mlAppId,
@@ -150,7 +150,7 @@ object RestApis {
     val uri = buildURIPath(RestApiName.mlopsPrefix.toString, RestApiName.models.toString)
     val response = cl.getRequestAsString(uri, params)
 
-    implicit val format = DefaultFormats
+    implicit val format: DefaultFormats.type = DefaultFormats
     try {
       val lst = parse(response).extract[List[Map[String, Any]]]
       if (lst.nonEmpty) {
@@ -167,7 +167,7 @@ object RestApis {
     * Download model data by id
     *
     * @param modelId model id
-    * @return Option[Array[Byte]] model data
+    * @return model data
     */
   private def downloadModelById(modelId: String): Option[Array[Byte]] = {
     val params = Map[String, String]()
@@ -191,10 +191,10 @@ object RestApis {
     val metadataMap: Option[Map[String, Any]] = this.getLastApprovedModelMetadata(mlAppId, pipelineInstanceId)
     if (metadataMap.isDefined) {
       val metadata = metadataMap.get
-      val m = Model(metadata.get("name").get.asInstanceOf[String],
-        ModelFormat.fromString(metadata.get("format").get.asInstanceOf[String]),
-        metadata.get("stateDescription").get.asInstanceOf[String],
-        Some(metadata.get("modelId").get.asInstanceOf[String]))
+      val m = Model(metadata("name").asInstanceOf[String],
+        ModelFormat.fromString(metadata("format").asInstanceOf[String]),
+        metadata("stateDescription").asInstanceOf[String],
+        Some(metadata("modelId").asInstanceOf[String]))
       val modelData = downloadModelById(m.getId)
       m.setData(modelData.get)
       retModel = Some(m)
@@ -205,7 +205,7 @@ object RestApis {
   /**
     * Fetch health stats for given model
     *
-    * @param Model model to fetch stats for
+    * @param model model to fetch stats for
     * @return String json string for health stats
     */
   def getModelHealthStats(model: Model): List[String] = {
@@ -219,7 +219,7 @@ object RestApis {
     val uri = buildURIPath(RestApiName.mlopsPrefix.toString, RestApiName.modelStats.toString)
     val response = cl.getRequestAsString(uri, params)
 
-    implicit val format = DefaultFormats
+    implicit val format: DefaultFormats.type = DefaultFormats
     try {
       val listOfMap = parse(response).extract[List[Map[String, String]]]
       if (listOfMap.nonEmpty) {

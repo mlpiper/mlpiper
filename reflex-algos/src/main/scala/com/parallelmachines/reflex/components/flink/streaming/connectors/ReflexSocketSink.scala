@@ -1,7 +1,7 @@
 package com.parallelmachines.reflex.components.flink.streaming.connectors
 
 import com.parallelmachines.reflex.components.ComponentAttribute
-import org.apache.flink.streaming.scala.examples.functions.sink.SocketSinkFunction
+import org.apache.flink.streaming.scala.examples.flink.utils.functions.sink.SocketSinkFunction
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
 import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}

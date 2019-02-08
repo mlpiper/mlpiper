@@ -1,9 +1,9 @@
 package com.parallelmachines.reflex.test.common
 
-import org.apache.flink.streaming.scala.examples.clustering.stat.{HistogramComparatorTypes, HistogramComparators}
 import org.junit.runner.RunWith
-import org.scalatest.{FlatSpec, Matchers}
+import org.mlpiper.stat.histogram.{HistogramComparatorTypes, HistogramComparators}
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.{FlatSpec, Matchers}
 
 @RunWith(classOf[JUnitRunner])
 class HistogramComparatorTest extends FlatSpec with Matchers {

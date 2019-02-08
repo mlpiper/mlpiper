@@ -1,14 +1,12 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
-import org.apache.flink.streaming.scala.examples.common.parameters.common.{IntParameter, DoubleParameter}
-import org.apache.flink.streaming.scala.examples.common.parameters.tools.{ArgumentParameterChecker, ArgumentParameterTool}
+import org.mlpiper.parameters.common.{ArgumentParameterChecker, ArgumentParameterTool, DoubleParameter, IntParameter}
 import org.junit.Test
 import org.scalatest.Matchers
 
-import scala.collection.mutable
-import scala.util.{Failure, Try}
+import scala.util.Try
 
-class ArgumentParameterTest extends Matchers{
+class ArgumentParameterTest extends Matchers {
 
   trait PositiveIntParameterNoDefault extends IntParameter {
     override val key: String
@@ -55,18 +53,21 @@ class ArgumentParameterTest extends Matchers{
     val required = true
     val description = "Input vector number of attributes"
   }
+
   object Test01P02NotReq extends PositiveIntParameterNoDefault {
     val key = "param02"
     val label = key
     val required = false
     val description = "Input vector number of attributes"
   }
+
   object Test01P03NotReq extends NonNegativeParameterDefault {
     val key = "param03"
     val label = key
     val required = false
     val description = "Input vector number of attributes"
   }
+
   object Test01P04NotReq extends NonNegativeParameterDefault {
     val key = "param01"
     val label = key

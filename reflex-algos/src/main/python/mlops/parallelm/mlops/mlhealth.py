@@ -3,17 +3,14 @@ mlhealth library - provides the base routines to fetch data from the DB and conv
 python structures
 """
 
-import os
-import sys
-import pandas as pd
 import json
+import os
+import pandas as pd
 from kazoo.client import KazooClient
-
-from parallelm.mlops.mlops_mode import MLOpsMode
-from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.constants import Constants
+from parallelm.mlops.mlops_exception import MLOpsException
+from parallelm.mlops.mlops_mode import MLOpsMode
 from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
-from parallelm.mlops.mlops_rest_interfaces import MlOpsRestHelper
 
 
 class MLHealth(object):
@@ -94,7 +91,7 @@ class MLHealth(object):
                         self._eco_port = eco_host_port[1]
                     else:
                         raise MLOpsException("Internal Error: Invalid zookeeper active server "
-                                               "entry")
+                                             "entry")
                 else:
                     raise MLOpsException("Unable to connect to the active MLOps server")
                 zk.stop()
@@ -160,7 +157,7 @@ class MLHealth(object):
                     raise MLOpsException("sc argument is not pyspark context")
 
                 # initialize jvm to mlops
-                self._jvm_mlops = sc._jvm.com.parallelmachines.mlops.MLOps
+                self._jvm_mlops = sc._jvm.org.mlpiper.mlops.MLOps
                 ping_val = 5
                 ping_ret = self._jvm_mlops.ping(ping_val)
                 if ping_ret != 5:
