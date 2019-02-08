@@ -1,11 +1,10 @@
+import os
+from enum import Enum
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.models.mlobject import MLObject
 from parallelm.mlops.models.mlobject import MLObjectType
 from parallelm.mlops.stats.stats_helper import StatsHelper
 from parallelm.mlops.stats_category import StatCategory
-
-import os
-from enum import Enum
 
 
 class ModelFormat(str, Enum):
@@ -37,7 +36,8 @@ class ModelMetadata(object):
             raise MLOpsException("model_format object must be an instance of ModelFormat class! provided: "
                                  "{}, type: {}".format(model_format, type(model_format)))
         if model_format == ModelFormat.UNKNOWN:
-            raise MLOpsException("model_format can not be {}. Did you forget to set a format for model?".format(model_format.value))
+            raise MLOpsException(
+                "model_format can not be {}. Did you forget to set a format for model?".format(model_format.value))
         self.modelId = modelId
         self.name = name
         self.modelFormat = model_format

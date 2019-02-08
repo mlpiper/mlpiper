@@ -1,29 +1,29 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
-import org.apache.flink.streaming.scala.examples.clustering.math.{ReflexColumnEntry, ReflexNamedVector}
-import org.apache.flink.streaming.scala.examples.clustering.stat.heatmap.localgenerator.NormalizedMeanHeatMapHelper
 import com.parallelmachines.reflex.common.enums.OpType
 import org.junit.runner.RunWith
+import org.mlpiper.datastructures.{ColumnEntry, NamedVector}
+import org.mlpiper.stat.heatmap.continuous.localgenerator.NormalizedMeanHeatMapHelper
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 
 @RunWith(classOf[JUnitRunner])
 class NormalizedMeanHeatMapHelperTest extends FlatSpec with Matchers {
-  val testSeqOfNamedVectorForHeatMap: Seq[ReflexNamedVector] = Seq[ReflexNamedVector](
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 1.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 10.0, OpType.CONTINUOUS))),
+  val testSeqOfNamedVectorForHeatMap: Seq[NamedVector] = Seq[NamedVector](
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 1.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 10.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 2.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 2.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 4.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = -10.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 4.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = -10.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 5.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 50.0, OpType.CONTINUOUS)))
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 5.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 50.0, OpType.CONTINUOUS)))
   )
 
   it should "Create Right HeatMap Object From Iterators Of Named Vectors" in {
@@ -38,23 +38,23 @@ class NormalizedMeanHeatMapHelperTest extends FlatSpec with Matchers {
     })
   }
 
-  val testSeqOfVariableLengthNamedVectorForHeatMap: Seq[ReflexNamedVector] = Seq[ReflexNamedVector](
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 1.0, OpType.CONTINUOUS))),
+  val testSeqOfVariableLengthNamedVectorForHeatMap: Seq[NamedVector] = Seq[NamedVector](
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 1.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "B", columnValue = 10.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "B", columnValue = 10.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 2.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 2.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 4.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = -10.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 4.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = -10.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 5.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 50.0, OpType.CONTINUOUS)))
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 5.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 50.0, OpType.CONTINUOUS)))
   )
   it should "Create Right HeatMap Object From Iterators Of Variable Length Named Vectors " in {
     val iteratorOfNV = testSeqOfVariableLengthNamedVectorForHeatMap

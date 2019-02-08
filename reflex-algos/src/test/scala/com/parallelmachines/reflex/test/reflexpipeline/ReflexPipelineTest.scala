@@ -328,7 +328,7 @@ class ReflexPipelineTest extends FlatSpec {
     assert(pipeInfo.getComponentsByProperties(ComponentsGroups.connectors, isSource = true, Some(ConnectionGroups.DATA)).length == 2)
 
     val compsList = pipeInfo.getComponentsByProperties(ComponentsGroups.connectors, isSource = true, Some(ConnectionGroups.DATA))
-    val args = compsList(1).getArguments()
+    val args = compsList(1).getArguments
     assert(args("port") == 9092)
     assert(args("host") == "daenerys-c17")
     assert(args("topic") == "SVM")
@@ -556,47 +556,7 @@ class ReflexPipelineTest extends FlatSpec {
     assert(res != null, "json1 is not valid")
     assert(res.nodeList.length == 3, "wrong number of nodes in DAG after parsing")
   }
-
-  "Good pipeline with batch components" should "be valid" in {
-    val tmpFile = File.createTempFile("tmpFile", ".csv")
-    tmpFile.deleteOnExit()
-
-    val goodJson =
-      s"""
-      {
-        "name" : "ReflexSamplePipeline",
-        "engineType": "FlinkBatch",
-             "systemConfig" : {
-                  "statsDBHost": "localhost",
-                  "statsDBPort": 8086,
-                  "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
-                  "statsMeasurementID": "1",
-                  "modelFileSinkPath": "/tmp/tmpFile"
-             },
-        "pipe" : [
-        {
-          "name": "File input",
-          "id": 1,
-          "type": "FlinkBatchFileConnector",
-          "parents": [],
-          "arguments" : {
-            "fileName": "${tmpFile.getAbsolutePath}"
-          }
-        },
-        {
-          "name": "printer",
-          "id": 2,
-          "type": "FlinkBatchStdoutConnector",
-          "parents": [{"parent": 1, "output" : 0}]
-        }
-        ]
-      }
-      """
-    val res = DagTestUtil.parseGenerateValidate(goodJson)
-    assert(res != null, "json1 is not valid")
-    assert(res.nodeList.length == 2, "wrong number of nodes in DAG after parsing")
-  }
-
+  
   "Good Pipeline with multi input component and input index" should "be valid" in {
     val flinkStreamingInfo =
       ReflexComponentFactory

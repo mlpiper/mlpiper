@@ -2,38 +2,34 @@ package com.parallelmachines.reflex.test.reflexpipeline
 
 import java.nio.file.{Files, Path, Paths}
 
-import com.parallelmachines.reflex.components.flink.batch.FlinkBatchComponentFactory
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponentFactory
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponentFactory
 import com.parallelmachines.reflex.factory.{ReflexComponentFactory, TensorflowComponentFactory}
 import com.parallelmachines.reflex.pipeline._
-import org.slf4j.LoggerFactory
 
 /**
   * Helper object for tests to run the parsing + validate in one run
   */
 object DagTestUtil {
-  private val logger = LoggerFactory.getLogger(getClass)
 
   private val componentsDir = "components"
 
   def parseGenerateValidate(jsonStr: String): ReflexPipelineDag = {
-      new ReflexPipelineBuilder().buildPipelineFromJson(jsonStr)
+    new ReflexPipelineBuilder().buildPipelineFromJson(jsonStr)
   }
 
   def initComponentFactory(): Unit = {
     ReflexComponentFactory.init()
-    ReflexComponentFactory.registerEngineFactory(ComputeEngineType.FlinkBatch, FlinkBatchComponentFactory(true))
     ReflexComponentFactory.registerEngineFactory(ComputeEngineType.FlinkStreaming, FlinkStreamingComponentFactory(true))
     ReflexComponentFactory.registerEngineFactory(ComputeEngineType.SparkBatch, SparkBatchComponentFactory(true))
 
     val currentDirectory = new java.io.File(".").getCanonicalPath
     val tfPath = resolveBaseDirPath(currentDirectory, componentsDir, ComputeEngineType.Tensorflow.toString)
 
-    ReflexComponentFactory.registerEngineFactory(ComputeEngineType.Tensorflow, TensorflowComponentFactory(true, tfPath.toString))
+    ReflexComponentFactory.registerEngineFactory(ComputeEngineType.Tensorflow, TensorflowComponentFactory(testMode = true, tfPath.toString))
   }
 
-  def getComponentsDir(): String = {
+  def getComponentsDir: String = {
     val currentDirectory = new java.io.File(".").getCanonicalPath
     val compDirPath = resolveBaseDirPath(currentDirectory, componentsDir)
     compDirPath.toString

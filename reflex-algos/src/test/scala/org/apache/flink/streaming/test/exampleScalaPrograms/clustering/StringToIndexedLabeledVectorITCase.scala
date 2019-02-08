@@ -21,11 +21,11 @@ import java.io.{OutputStream, PrintStream}
 
 import org.apache.flink.contrib.streaming.scala.utils.DataStreamUtils
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment, _}
-import org.apache.flink.streaming.scala.examples.common.parsing.ParameterIndices
-import org.apache.flink.streaming.scala.examples.functions.conversion.{StringToIndexedLabeledVectorFlatMap}
+import org.apache.flink.streaming.scala.examples.flink.utils.functions.conversion.StringToIndexedLabeledVectorFlatMap
 import org.apache.flink.streaming.test.exampleScalaPrograms.clustering.StringToIndexedVectorTestData._
 import org.apache.flink.streaming.util.StreamingMultipleProgramsTestBase
 import org.junit.Test
+import org.mlpiper.utils.ParameterIndices
 import org.scalatest.Matchers
 
 class StringToIndexedLabeledVectorITCase extends StreamingMultipleProgramsTestBase with Matchers {

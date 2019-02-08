@@ -1,13 +1,12 @@
 package com.parallelmachines.reflex.components.spark.batch.connectors
 
 
-import com.parallelmachines.reflex.common.SparkMLPipelineModelHelper
 import com.parallelmachines.reflex.common.mlobject.SparkMLModel
-import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
 import com.parallelmachines.reflex.components.ComponentAttribute
-import com.parallelmachines.reflex.pipeline.{ComponentsGroups, ConnectionGroups}
-import com.parallelmachines.reflex.pipeline._
+import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
+import com.parallelmachines.reflex.pipeline.{ComponentsGroups, ConnectionGroups, _}
 import org.apache.spark.SparkContext
+import org.mlpiper.sparkutils.SparkMLPipelineModelHelper
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -45,9 +44,9 @@ class SparkModelFileSink extends SparkBatchComponent {
 
     val model = dsArr(0).data[SparkMLModel]()
 
-    //model.sparkMLModel.save(filePath.value)  //TODO: fix all save for docker abd hdfs like pyspark
+    //model.sparkMLModel.save(filePath.value)  //TODO: fix all save for docker and hdfs like pyspark
     val sparkMLPipelineModelHelper = new SparkMLPipelineModelHelper()
-    sparkMLPipelineModelHelper.setSharedContext(sparkContext1=env)
+    sparkMLPipelineModelHelper.setSharedContext(sparkContext1 = env)
     sparkMLPipelineModelHelper.setLocalPath(filePath.value)
     sparkMLPipelineModelHelper.setSharedPathPrefix(model.tempSharedPathStr)
     sparkMLPipelineModelHelper.saveSparkmlModel(model.sparkMLModel)

@@ -1,15 +1,10 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
-import java.io.File
-
 import breeze.linalg.{DenseMatrix, DenseVector => BreezeDenseVector}
-import org.apache.flink.streaming.scala.examples.clustering.math.{LabeledVector, ReflexColumnEntry, ReflexNamedVector, ReflexPrediction}
-import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils
-import org.apache.flink.streaming.scala.examples.common.algorithm.PredictionOutput
-import org.apache.flink.streaming.scala.examples.common.ml.InferenceConstants
 import org.apache.flink.streaming.util.StreamingMultipleProgramsTestBase
-import com.parallelmachines.reflex.common.enums.OpType
 import org.junit.Test
+import org.mlpiper.datastructures.LabeledVector
+import org.mlpiper.utils.ParsingUtils
 import org.scalatest.Matchers
 
 import scala.collection.mutable

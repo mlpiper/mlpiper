@@ -4,11 +4,10 @@ import java.io.File
 import java.nio.file.{Files, Paths}
 import java.util.NoSuchElementException
 
-import com.parallelmachines.reflex.common.FileUtil
 import com.parallelmachines.reflex.components.flink.streaming.algorithms.ModelBehaviorType
 import com.parallelmachines.reflex.pipeline.ComputeEngineType.ComputeEngineType
-import com.parallelmachines.reflex.pipeline.Language.Language
 import com.parallelmachines.reflex.pipeline.{ComputeEngineType, Language}
+import org.mlpiper.utils.FileUtil
 import org.slf4j.LoggerFactory
 
 import scala.io.Source
@@ -18,8 +17,8 @@ object ExternalDirComponentUtil {
   protected val logger = LoggerFactory.getLogger(getClass)
   val parser = ComponentJSONSignatureParser
 
-  def verifyComponentDir(compDir: String, metadataFilename: String = componentSignatureFilename):
-      ComponentMetadata = {
+  def verifyComponentDir(compDir: String, metadataFilename: String = ComponentSignatureFilename):
+  ComponentMetadata = {
     logger.info(s"Verifying and loading dir: '$compDir', metadata filename: '$metadataFilename'")
 
     val compDirFile = new File(compDir)
@@ -53,9 +52,10 @@ object ExternalDirComponentUtil {
 
   /**
     * Verify that model behavior is correct and the right tag arguments are provided
+    *
     * @param compMeta
     */
-  def validateModelBehavior(compMeta: ComponentMetadata) : Unit = {
+  def validateModelBehavior(compMeta: ComponentMetadata): Unit = {
     if (compMeta.isUserStandalone && compMeta.modelBehavior.isEmpty) {
       val modelBehaviorStrings = ModelBehaviorType.values.toList.sorted.mkString(",")
       val msg = s"A stand alone component must have modelBehavior attribute defined: $modelBehaviorStrings"
@@ -88,7 +88,7 @@ object ExternalDirComponentUtil {
         if (!checkInputModelPath(compMeta)) {
           val tag_name = ComponentArgumentsTags.InputModelPath.toString
           val msg = s"Component ${compMeta.name} does not have a input model path argument tagged. " +
-          s"Fix the component.json file by adding 'tag': $tag_name to the input model argument definition."
+            s"Fix the component.json file by adding 'tag': $tag_name to the input model argument definition."
           logger.error(msg)
           throw new Exception(msg)
         }
@@ -97,12 +97,12 @@ object ExternalDirComponentUtil {
   }
 
 
-  def validateCompDirExistance(compDirFile : File): Unit = {
-      if (!compDirFile.exists() || !compDirFile.isDirectory) {
-        val msg = s"External directory [${compDirFile.toString}] does not exists or is not a directory."
-        logger.error(msg)
-        throw new Exception(msg)
-      }
+  def validateCompDirExistance(compDirFile: File): Unit = {
+    if (!compDirFile.exists() || !compDirFile.isDirectory) {
+      val msg = s"External directory [${compDirFile.toString}] does not exists or is not a directory."
+      logger.error(msg)
+      throw new Exception(msg)
+    }
   }
 
   def getCompDescFile(compDirFile: File, metadataFilename: String): File = {
@@ -123,7 +123,7 @@ object ExternalDirComponentUtil {
     }
   }
 
-  def validateCompDirName(compDirFile: File, compMeta: ComponentMetadata) : Unit =  {
+  def validateCompDirName(compDirFile: File, compMeta: ComponentMetadata): Unit = {
     if (compDirFile.getName != compMeta.name) {
       val msg = s"The component's directory name should match the 'name' field in 'component.json' " +
         s"['${compDirFile.getName}' != '${compMeta.name}']"
@@ -137,7 +137,7 @@ object ExternalDirComponentUtil {
     val engineType: ComputeEngineType = ComputeEngineType.withName(compMeta.engineType)
     engineType match {
 
-      case  ComputeEngineType.Python =>
+      case ComputeEngineType.Python =>
         val language = validateLanguage(compMeta, Language.Python)
 
         language match {
@@ -159,28 +159,28 @@ object ExternalDirComponentUtil {
   }
 
   def validateLanguage(compMeta: ComponentMetadata, defaultLang: Language.Language): Language.Language = {
-      if (!compMeta.language.isEmpty) {
+    if (!compMeta.language.isEmpty) {
 
-        try {
-          Language.withName(compMeta.language.get)
-        } catch {
-          case _: Throwable =>
-            val msg = "Invalid programming language in component metadata description (json file):" +
-              s" ${compMeta.language.get}"
-            logger.error(msg)
-            throw new Exception(msg)
-        }
-      } else{
-        defaultLang
+      try {
+        Language.withName(compMeta.language.get)
+      } catch {
+        case _: Throwable =>
+          val msg = "Invalid programming language in component metadata description (json file):" +
+            s" ${compMeta.language.get}"
+          logger.error(msg)
+          throw new Exception(msg)
       }
+    } else {
+      defaultLang
+    }
   }
 
   def validateComponentClass(compMeta: ComponentMetadata): Unit = {
-       if (compMeta.componentClass.isEmpty) {
-        val msg = s"Missing mandatory 'componentClass' field in component metadata description (json file)!"
-        logger.error(msg)
-        throw new Exception(msg)
-      }
+    if (compMeta.componentClass.isEmpty) {
+      val msg = s"Missing mandatory 'componentClass' field in component metadata description (json file)!"
+      logger.error(msg)
+      throw new Exception(msg)
+    }
   }
 
   def validateComponentClassInMainSourceCode(compDirFile: File, compMeta: ComponentMetadata): Unit = {

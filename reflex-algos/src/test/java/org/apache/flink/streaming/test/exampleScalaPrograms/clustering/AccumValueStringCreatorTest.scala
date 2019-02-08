@@ -1,10 +1,10 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
 import breeze.linalg.{DenseMatrix, DenseVector => BreezeDenseVector}
-import com.parallelmachines.mlops.JSONData
-import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils
+import org.mlpiper.mlops.JSONData
 import org.apache.flink.streaming.scala.examples.common.stats.AccumValueStringCreator
 import org.junit.runner.RunWith
+import org.mlpiper.utils.ParsingUtils
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 

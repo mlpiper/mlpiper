@@ -1,9 +1,7 @@
 package com.parallelmachines.reflex.pipeline
 
 import breeze.linalg.DenseVector
-import com.parallelmachines.reflex.common.{GenericConstants, SparkMLFeatureDetails}
-import org.apache.flink.streaming.scala.examples.clustering.math.ReflexNamedVector
-import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils
+import com.parallelmachines.reflex.common.SparkMLFeatureDetails
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.rdd.RDD
@@ -12,6 +10,8 @@ import org.apache.spark.sql.types._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import com.parallelmachines.reflex.common.enums.OpType
+import org.mlpiper.datastructures.NamedVector
+import org.mlpiper.utils.{GenericConstants, ParsingUtils}
 
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 
@@ -153,7 +153,7 @@ object DataFrameUtils {
     */
   def toRDDOfNamedVectorUsingSparkML(df: DataFrame,
                                      sparkMLModel: Option[PipelineModel],
-                                     columnMap: Option[Map[String, OpType]]): RDD[ReflexNamedVector] = {
+                                     columnMap: Option[Map[String, OpType]]): RDD[NamedVector] = {
 
     // Before converting, it is important to check if sparkml model was available
     // if not available, then figure out which ones are categorical and continuous
@@ -203,7 +203,7 @@ object DataFrameUtils {
   /**
     * Method converts RDD[NamedVector] to DataFrame
     */
-  def fromRDDOfNamedVector(rddOfNamedVector: RDD[ReflexNamedVector],
+  def fromRDDOfNamedVector(rddOfNamedVector: RDD[NamedVector],
                            sc: SparkContext): DataFrame = {
     val sparkSession = SparkSession.builder()
       .config(sc.getConf)

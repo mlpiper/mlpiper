@@ -8,20 +8,23 @@ package com.parallelmachines.reflex.components.spark.batch.algorithms
 import java.io.{ByteArrayInputStream, File}
 import java.nio.file.Files
 
-import com.parallelmachines.reflex.common.mlobject.Model
-import com.parallelmachines.reflex.common.{ExtractArchives, _}
+import com.parallelmachines.reflex.common.ExtractArchives
 import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
-import com.parallelmachines.reflex.components.spark.batch.connectors.{EventSocketSource, ModelTypeString, ReflexNullConnector, RestDataSource}
+import com.parallelmachines.reflex.components.spark.batch.connectors.{ModelTypeString, ReflexNullConnector, RestDataSource}
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
 import com.parallelmachines.reflex.components.{ComponentAttribute, EnablePerformanceComponentAttribute, EnableValidationComponentAttribute, LabelColComponentAttribute}
 import com.parallelmachines.reflex.pipeline._
 import org.apache.commons.io.FileUtils
-import org.apache.flink.streaming.scala.examples.clustering.stat.heatmap.HeatMap
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{Row, SparkSession}
+import org.mlpiper.mlobject.Model
+import org.mlpiper.sparkutils.SparkMLPipelineModelHelper
+import org.mlpiper.stat.algos.SparkMLPredictionStatsForSpark
+import org.mlpiper.stat.healthlib.{CategoricalHealthForSpark, ContinuousHistogramForSpark, HealthLibSpark, HealthType}
+import org.mlpiper.stat.heatmap.continuous.HeatMap
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -137,7 +140,7 @@ class ReflexSparkMLInferenceComponent extends SparkBatchComponent with ModelBeha
 
     healthLib.addComponent(continuousHealthStat)
 
-    val categoricalHealthStat = new CategoricalHistogramForSpark(HealthType.CategoricalHistogramHealth.toString)
+    val categoricalHealthStat = new CategoricalHealthForSpark(HealthType.CategoricalHistogramHealth.toString)
     categoricalHealthStat.setModelId(model.getId)
 
     healthLib.addComponent(categoricalHealthStat)
@@ -146,7 +149,7 @@ class ReflexSparkMLInferenceComponent extends SparkBatchComponent with ModelBeha
 
     val rddOfNamedVec = DataFrameUtils.toRDDOfNamedVectorUsingSparkML(df = transformedDataframe, sparkMLModel = Option(sparkMLModel), columnMap = None)
 
-    val heatMapValues = HeatMap.createHeatMap(rddOfNamedVec = rddOfNamedVec, env = env)
+    val _ = HeatMap.createHeatMap(rddOfNamedVec = rddOfNamedVec, env = env)
 
     val predictionDF = sparkMLModel.transform(transformedDataframe)
     pipelineInfo.setTransformedDataframe(predictionDF)

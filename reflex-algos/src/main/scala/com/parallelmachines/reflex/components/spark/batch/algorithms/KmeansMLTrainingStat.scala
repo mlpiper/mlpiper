@@ -1,13 +1,12 @@
 package com.parallelmachines.reflex.components.spark.batch.algorithms
 
 import com.parallelmachines.reflex.common.InfoType.InfoType
-import org.apache.flink.streaming.scala.examples.clustering.stat.algos.kmeans.CentroidToDistanceMatrixStatForSpark
 import org.apache.flink.streaming.scala.examples.common.stats._
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.ml.clustering.KMeansModel
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
+import org.mlpiper.stat.algos.kmeans.CentroidToDistanceMatrixStatForSpark
 import org.slf4j.LoggerFactory
 
 /**

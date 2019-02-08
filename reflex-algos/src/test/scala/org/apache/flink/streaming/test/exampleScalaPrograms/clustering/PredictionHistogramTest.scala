@@ -3,11 +3,11 @@ package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 import breeze.linalg.DenseVector
 import org.apache.flink.contrib.streaming.scala.utils.DataStreamUtils
 import org.apache.flink.streaming.api.scala.{StreamExecutionEnvironment, _}
-import org.apache.flink.streaming.scala.examples.clustering.stat.continuous.{Histogram => ContinuousHistogram, _}
 import org.apache.flink.streaming.scala.examples.common.stats.AccumulatorInfoJsonHeaders
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Json
 import org.junit.runner.RunWith
+import org.mlpiper.stat.histogram.continuous.{Histogram, PredictionHistogram}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -21,17 +21,17 @@ class PredictionHistogramTest extends FlatSpec with Matchers {
   it should "Generate Correct IDedFeaturedHistogram" in {
     val labelID = "0"
 
-    val hist1 = new ContinuousHistogram(histVector = new DenseVector[Double](Array(10.0, 6.0, 4.0)), binEdgesVector = new DenseVector[Double](Array(1.0, 3.0, 5.0, 7.0)))
-    val hist2 = new ContinuousHistogram(histVector = new DenseVector[Double](Array(15.0, 93.0)), binEdgesVector = new DenseVector[Double](Array(4.0, 7.0, 10.0)))
-    val hist3 = new ContinuousHistogram(histVector = new DenseVector[Double](Array(15.0, 6.0, 24.0)), binEdgesVector = new DenseVector[Double](Array(2.0, 5.0, 8.0, 11.0)))
-    val hist4 = new ContinuousHistogram(histVector = new DenseVector[Double](Array(62.0, 31.0)), binEdgesVector = new DenseVector[Double](Array(6.0, 7.0, 8.0)))
+    val hist1 = new Histogram(histVector = new DenseVector[Double](Array(10.0, 6.0, 4.0)), binEdgesVector = new DenseVector[Double](Array(1.0, 3.0, 5.0, 7.0)))
+    val hist2 = new Histogram(histVector = new DenseVector[Double](Array(15.0, 93.0)), binEdgesVector = new DenseVector[Double](Array(4.0, 7.0, 10.0)))
+    val hist3 = new Histogram(histVector = new DenseVector[Double](Array(15.0, 6.0, 24.0)), binEdgesVector = new DenseVector[Double](Array(2.0, 5.0, 8.0, 11.0)))
+    val hist4 = new Histogram(histVector = new DenseVector[Double](Array(62.0, 31.0)), binEdgesVector = new DenseVector[Double](Array(6.0, 7.0, 8.0)))
 
-    val map1OfFeatureIDAndHist = mutable.Map[String, ContinuousHistogram](labelID -> hist1)
-    val map2OfFeatureIDAndHist = mutable.Map[String, ContinuousHistogram](labelID -> hist2)
-    val map3OfFeatureIDAndHist = mutable.Map[String, ContinuousHistogram](labelID -> hist3)
-    val map4OfFeatureIDAndHist = mutable.Map[String, ContinuousHistogram](labelID -> hist4)
+    val map1OfFeatureIDAndHist = mutable.Map[String, Histogram](labelID -> hist1)
+    val map2OfFeatureIDAndHist = mutable.Map[String, Histogram](labelID -> hist2)
+    val map3OfFeatureIDAndHist = mutable.Map[String, Histogram](labelID -> hist3)
+    val map4OfFeatureIDAndHist = mutable.Map[String, Histogram](labelID -> hist4)
 
-    val mapsSeq: Seq[mutable.Map[String, ContinuousHistogram]] = Seq[mutable.Map[String, ContinuousHistogram]](
+    val mapsSeq: Seq[mutable.Map[String, Histogram]] = Seq[mutable.Map[String, Histogram]](
       map1OfFeatureIDAndHist,
       map2OfFeatureIDAndHist,
       map3OfFeatureIDAndHist,
@@ -65,8 +65,8 @@ class PredictionHistogramTest extends FlatSpec with Matchers {
   it should "Test JSON Conversion" in {
     val labelID = "0"
 
-    val hist1 = new ContinuousHistogram(histVector = new DenseVector[Double](Array(10.0, 6.0, 4.0)), binEdgesVector = new DenseVector[Double](Array(1.0, 3.0, 5.0, 7.0)))
-    val map1OfFeatureIDAndHist = mutable.Map[String, ContinuousHistogram](labelID -> hist1)
+    val hist1 = new Histogram(histVector = new DenseVector[Double](Array(10.0, 6.0, 4.0)), binEdgesVector = new DenseVector[Double](Array(1.0, 3.0, 5.0, 7.0)))
+    val map1OfFeatureIDAndHist = mutable.Map[String, Histogram](labelID -> hist1)
 
     val idedFeatureHist = PredictionHistogram(ID = 1L, map1OfFeatureIDAndHist)
 
@@ -112,8 +112,8 @@ class PredictionHistogramTest extends FlatSpec with Matchers {
 
     val labelID = "0"
 
-    val hist1 = new ContinuousHistogram(histVector = new DenseVector[Double](Array(10.0, 6.0, 4.0)), binEdgesVector = new DenseVector[Double](Array(1.0, 3.0, 5.0, 7.0)))
-    val map1OfFeatureIDAndHist = mutable.Map[String, ContinuousHistogram](labelID -> hist1)
+    val hist1 = new Histogram(histVector = new DenseVector[Double](Array(10.0, 6.0, 4.0)), binEdgesVector = new DenseVector[Double](Array(1.0, 3.0, 5.0, 7.0)))
+    val map1OfFeatureIDAndHist = mutable.Map[String, Histogram](labelID -> hist1)
 
     val expectedIDedFeatureHist = PredictionHistogram(ID = 1L, map1OfFeatureIDAndHist)
 

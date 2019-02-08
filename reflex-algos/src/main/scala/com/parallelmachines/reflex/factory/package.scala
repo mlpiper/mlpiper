@@ -1,6 +1,6 @@
 package com.parallelmachines.reflex
 
 package object factory {
-  val componentSignatureFilename = "component.json"
-  val componentReferenceFilename = "__component_reference__.json"
+  val ComponentSignatureFilename = "component.json"
+  val ComponentReferenceFilename = "__component_reference__.json"
 }

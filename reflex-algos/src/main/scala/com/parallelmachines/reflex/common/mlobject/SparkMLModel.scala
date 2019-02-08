@@ -2,6 +2,7 @@ package com.parallelmachines.reflex.common.mlobject
 
 import com.parallelmachines.reflex.common.enums.ModelFormat
 import org.apache.spark.ml.PipelineModel
+import org.mlpiper.mlobject.Model
 
 /**
   * Class for handling SparkML model objects
