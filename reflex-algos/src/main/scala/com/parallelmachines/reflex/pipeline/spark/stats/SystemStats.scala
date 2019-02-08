@@ -9,9 +9,9 @@ package com.parallelmachines.reflex.pipeline.spark.stats
   * to keep it simple, this is done upon read operation.
   */
 
-import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization.write
+import org.mlpiper.utils.ParsingUtils
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer

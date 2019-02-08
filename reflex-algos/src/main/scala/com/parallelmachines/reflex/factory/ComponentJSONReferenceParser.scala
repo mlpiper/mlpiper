@@ -6,9 +6,8 @@ import java.nio.file.Paths
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization.write
+import org.mlpiper.utils.FileUtil
 import org.slf4j.LoggerFactory
-
-import com.parallelmachines.reflex.common.FileUtil
 
 /**
   * Represents a reference structure, which points to the component's metadata (signature/description) file.

@@ -19,7 +19,7 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
 import breeze.linalg.{DenseVector => BreezeDenseVector}
-import org.apache.flink.streaming.scala.examples.clustering.math.LabeledVector
+import org.mlpiper.datastructures.LabeledVector
 
 import scala.collection.mutable.ListBuffer
 

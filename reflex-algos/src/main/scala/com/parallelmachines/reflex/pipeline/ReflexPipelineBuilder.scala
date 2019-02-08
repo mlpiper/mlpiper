@@ -1,14 +1,13 @@
 package com.parallelmachines.reflex.pipeline
 
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent
-import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.factory.ReflexComponentFactory
-import org.apache.flink.streaming.scala.examples.common.algorithm.Prediction
+import org.mlpiper.datastructures.Prediction
 import org.slf4j.LoggerFactory
 
-import scala.language.existentials
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
+import scala.language.existentials
 import scala.reflect.runtime.universe._
 
 case class Parent(var parent: Int, var output: Int, var input: Option[Int], eventType: Option[String], eventLabel: Option[String], var connectionTypeTag: Option[TypeTag[_]] = None) {
@@ -28,7 +27,7 @@ case class Component(name: String,
   /**
     * Getter for arguments map
     */
-  def getArguments(): Map[String, Any] = {
+  def getArguments: Map[String, Any] = {
     if (arguments.isDefined) arguments.get else Map[String, Any]()
   }
 
@@ -252,7 +251,7 @@ class ReflexPipelineBuilder {
       return
     }
 
-    if (!List[ComputeEngineType.Value](ComputeEngineType.FlinkStreaming, ComputeEngineType.FlinkBatch, ComputeEngineType.SparkBatch).contains(pipeInfo.engineType)) {
+    if (!List[ComputeEngineType.Value](ComputeEngineType.FlinkStreaming, ComputeEngineType.SparkBatch).contains(pipeInfo.engineType)) {
       throw new Exception(s"Engine ${pipeInfo.engineType} is not supported by singleton components")
     }
 

@@ -1,17 +1,14 @@
 package com.parallelmachines.reflex.test.reflexpipeline
 
 import breeze.linalg.DenseVector
-import com.parallelmachines.reflex.common.{GenericConstants, GenericNamedMatrixUtils}
+import com.parallelmachines.reflex.common.enums.OpType
 import com.parallelmachines.reflex.pipeline.DataFrameUtils
-import org.apache.flink.contrib.streaming.scala.utils.DataStreamUtils
-import org.apache.flink.streaming.api.scala.{StreamExecutionEnvironment, _}
-import org.apache.flink.streaming.scala.examples.clustering.math.{DenseVectorToNamedVectorFlatMap, ReflexColumnEntry, ReflexNamedVector}
-import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils
 import org.apache.flink.streaming.test.exampleScalaPrograms.clustering.ComparatorUtils
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 import org.apache.spark.sql.{Row, SparkSession}
-import com.parallelmachines.reflex.common.enums.OpType
 import org.junit.runner.RunWith
+import org.mlpiper.datastructures.{ColumnEntry, NamedVector}
+import org.mlpiper.utils.{GenericConstants, GenericNamedMatrixUtils, ParsingUtils}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -21,19 +18,19 @@ class GenericNamedMatrixUtilsTest extends FlatSpec with Matchers {
 
   "Iterator[NamedVector] to ReflexNamedMatrix; Filter empty vectors" should "be valid" in {
     val expectedFilteredMatrxString = "prediction : DenseVector(9.3434, 1.233)"
-    val vecList = List(ReflexNamedVector(Array(), None, None),
-      ReflexNamedVector(Array(
-        ReflexColumnEntry(
+    val vecList = List(NamedVector(Array(), None, None),
+      NamedVector(Array(
+        ColumnEntry(
           "prediction", //JPMMLModelHandling.PredictionRowSchemaFieldName,
           9.3434, OpType.CONTINUOUS)),
         None, None),
-      ReflexNamedVector(Array(
-        ReflexColumnEntry(
+      NamedVector(Array(
+        ColumnEntry(
           "prediction", //JPMMLModelHandling.PredictionRowSchemaFieldName,
           1.233, OpType.CONTINUOUS)),
         None, None),
-      ReflexNamedVector(Array(), None, None),
-      ReflexNamedVector(Array(), None, None))
+      NamedVector(Array(), None, None),
+      NamedVector(Array(), None, None))
 
     val namedMatrix = GenericNamedMatrixUtils.iteratorOfNamedVectorToNamedMatrix(vecList.toIterator)
     namedMatrix.toString should be(expectedFilteredMatrxString)
@@ -81,11 +78,11 @@ class GenericNamedMatrixUtilsTest extends FlatSpec with Matchers {
 
     val collectedResults = GenericNamedMatrixUtils.createReflexNamedMatrix(df = testDF, sparkMLModel = None).collect()
 
-    val reflexColumnEntryForCol1_1 = ReflexColumnEntry(columnName = structField1.name, columnValue = DenseVector(1.1, 2.1), OpType.CONTINUOUS)
-    val reflexColumnEntryForCol2_1 = ReflexColumnEntry(columnName = structField2.name, columnValue = DenseVector(1.2, 2.2), OpType.CONTINUOUS)
+    val reflexColumnEntryForCol1_1 = ColumnEntry(columnName = structField1.name, columnValue = DenseVector(1.1, 2.1), OpType.CONTINUOUS)
+    val reflexColumnEntryForCol2_1 = ColumnEntry(columnName = structField2.name, columnValue = DenseVector(1.2, 2.2), OpType.CONTINUOUS)
 
-    val reflexColumnEntryForCol1_2 = ReflexColumnEntry(columnName = structField1.name, columnValue = DenseVector(3.1, 4.1), OpType.CONTINUOUS)
-    val reflexColumnEntryForCol2_2 = ReflexColumnEntry(columnName = structField2.name, columnValue = DenseVector(3.2, 4.2), OpType.CONTINUOUS)
+    val reflexColumnEntryForCol1_2 = ColumnEntry(columnName = structField1.name, columnValue = DenseVector(3.1, 4.1), OpType.CONTINUOUS)
+    val reflexColumnEntryForCol2_2 = ColumnEntry(columnName = structField2.name, columnValue = DenseVector(3.2, 4.2), OpType.CONTINUOUS)
 
     collectedResults.foreach(eachResult => {
       val firstFieldEntry = eachResult
@@ -112,64 +109,20 @@ class GenericNamedMatrixUtilsTest extends FlatSpec with Matchers {
     })
   }
 
-  "DataStream[NamedVector] to DataStream[NamedMatrix]" should "be valid" in {
-    val env = StreamExecutionEnvironment.getExecutionEnvironment
-    env.setParallelism(1)
-
-    val countWindowSize = 2
-    val data = Seq(DenseVector(1.1, 1.2), DenseVector(2.1, 2.2), DenseVector(3.1, 3.2), DenseVector(4.1, 4.2))
-
-    val testDataSteam = env.fromCollection(data)
-
-    val resultingStream = GenericNamedMatrixUtils.createReflexNamedMatrix(dataStreamOfNamedVector = testDataSteam.flatMap(new DenseVectorToNamedVectorFlatMap), windowingSize = countWindowSize)
-
-    val collectedResults = DataStreamUtils(resultingStream).collect().toSeq
-
-    val reflexColumnEntryForCol1_1 = ReflexColumnEntry(columnName = "c0", columnValue = DenseVector(1.1, 2.1), OpType.CONTINUOUS)
-    val reflexColumnEntryForCol2_1 = ReflexColumnEntry(columnName = "c1", columnValue = DenseVector(1.2, 2.2), OpType.CONTINUOUS)
-
-    val reflexColumnEntryForCol1_2 = ReflexColumnEntry(columnName = "c0", columnValue = DenseVector(3.1, 4.1), OpType.CONTINUOUS)
-    val reflexColumnEntryForCol2_2 = ReflexColumnEntry(columnName = "c1", columnValue = DenseVector(3.2, 4.2), OpType.CONTINUOUS)
-
-    collectedResults.foreach(eachResult => {
-      val firstFieldEntry = eachResult
-        .getColumnEntryFromColumnName("c0")
-        .get
-        .columnValue.asInstanceOf[DenseVector[Double]]
-
-      val field1Exists =
-        ComparatorUtils.compareBreezeOutputVector(a = firstFieldEntry, b = reflexColumnEntryForCol1_1.columnValue.asInstanceOf[DenseVector[Double]]) ||
-          ComparatorUtils.compareBreezeOutputVector(a = firstFieldEntry, b = reflexColumnEntryForCol1_2.columnValue.asInstanceOf[DenseVector[Double]])
-
-
-      val secondFieldEntry = eachResult
-        .getColumnEntryFromColumnName("c1")
-        .get
-        .columnValue.asInstanceOf[DenseVector[Double]]
-
-      val field2Exists =
-        ComparatorUtils.compareBreezeOutputVector(a = secondFieldEntry, b = reflexColumnEntryForCol2_1.columnValue.asInstanceOf[DenseVector[Double]]) ||
-          ComparatorUtils.compareBreezeOutputVector(a = secondFieldEntry, b = reflexColumnEntryForCol2_2.columnValue.asInstanceOf[DenseVector[Double]])
-
-      field1Exists should be(true)
-      field2Exists should be(true)
-    })
-  }
-
   "RDD[NamedVector] to RDD[NamedMatrix]" should "be valid" in {
     val spark: SparkSession = SparkSession.builder.master("local").getOrCreate
     val data = Seq(DenseVector(1.1, 1.2), DenseVector(2.1, 2.2), DenseVector(3.1, 3.2), DenseVector(4.1, 4.2))
 
-    val testRDD = spark.sparkContext.parallelize(data, 2).map(ParsingUtils.denseVectorToReflexNamedVector(_).get)
+    val testRDD = spark.sparkContext.parallelize(data, 2).map(ParsingUtils.denseVectorToNamedVector(_).get)
 
     val collectedResults = GenericNamedMatrixUtils
       .createReflexNamedMatrix(rddOfNamedVector = testRDD).collect()
 
-    val reflexColumnEntryForCol1_1 = ReflexColumnEntry(columnName = "c0", columnValue = DenseVector(1.1, 2.1), OpType.CONTINUOUS)
-    val reflexColumnEntryForCol2_1 = ReflexColumnEntry(columnName = "c1", columnValue = DenseVector(1.2, 2.2), OpType.CONTINUOUS)
+    val reflexColumnEntryForCol1_1 = ColumnEntry(columnName = "c0", columnValue = DenseVector(1.1, 2.1), OpType.CONTINUOUS)
+    val reflexColumnEntryForCol2_1 = ColumnEntry(columnName = "c1", columnValue = DenseVector(1.2, 2.2), OpType.CONTINUOUS)
 
-    val reflexColumnEntryForCol1_2 = ReflexColumnEntry(columnName = "c0", columnValue = DenseVector(3.1, 4.1), OpType.CONTINUOUS)
-    val reflexColumnEntryForCol2_2 = ReflexColumnEntry(columnName = "c1", columnValue = DenseVector(3.2, 4.2), OpType.CONTINUOUS)
+    val reflexColumnEntryForCol1_2 = ColumnEntry(columnName = "c0", columnValue = DenseVector(3.1, 4.1), OpType.CONTINUOUS)
+    val reflexColumnEntryForCol2_2 = ColumnEntry(columnName = "c1", columnValue = DenseVector(3.2, 4.2), OpType.CONTINUOUS)
 
     collectedResults.foreach(eachResult => {
       val firstFieldEntry = eachResult

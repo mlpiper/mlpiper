@@ -1,20 +1,18 @@
 package com.parallelmachines.reflex.factory
 
+import java.io.File
 import java.nio.file.Paths
 
-import com.parallelmachines.reflex.components.flink.batch.FlinkBatchComponentFactory
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponentFactory
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponentFactory
 import com.parallelmachines.reflex.pipeline.DagGen._
 import com.parallelmachines.reflex.pipeline._
-import org.slf4j.LoggerFactory
-import java.io.File
-
 import org.apache.commons.io.FileUtils
+import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
-import scala.util.parsing.json.{JSON, JSONArray, JSONFormat, JSONObject}
 import scala.reflect.runtime.universe._
+import scala.util.parsing.json.{JSON, JSONArray, JSONFormat, JSONObject}
 
 
 object ReflexComponentFactory {
@@ -26,6 +24,7 @@ object ReflexComponentFactory {
 
   /**
     * This method is for java code to be able to set this variable - object variables are private from java
+    *
     * @param dir
     */
   def setExternalComponentsDir(dir: String): Unit = {
@@ -38,6 +37,7 @@ object ReflexComponentFactory {
       throw new Exception(s"External components directory [$externalComponentsDir] does not exist or not a directory")
     }
   }
+
   def init(): Unit = {
     this.synchronized {
       if (!initDone) {
@@ -54,11 +54,11 @@ object ReflexComponentFactory {
     }
   }
 
-  def isEngineRegistered(engineType: ComputeEngineType.Value) : Boolean = {
+  def isEngineRegistered(engineType: ComputeEngineType.Value): Boolean = {
     return engines.contains(engineType)
   }
 
-  def registerEngineFactory(engineType: ComputeEngineType.Value, engineFactory: EngineComponentFactory): Unit= {
+  def registerEngineFactory(engineType: ComputeEngineType.Value, engineFactory: EngineComponentFactory): Unit = {
     this.synchronized {
       if (!engines.contains(engineType)) {
         engines(engineType) = engineFactory
@@ -85,8 +85,6 @@ object ReflexComponentFactory {
     checkExternalComponensDir()
 
     engineType match {
-      case ComputeEngineType.FlinkBatch =>
-        registerEngineFactory(ComputeEngineType.FlinkBatch, FlinkBatchComponentFactory(testMode))
       case ComputeEngineType.FlinkStreaming =>
         registerEngineFactory(ComputeEngineType.FlinkStreaming, FlinkStreamingComponentFactory(testMode))
       case ComputeEngineType.SparkBatch =>
@@ -125,7 +123,6 @@ object ReflexComponentFactory {
     // TODO: this is a fix for an issue where registerAllEngines is called multiple times.
     unRegisterEngines()
     val testMode = false
-    registerEngineFactory(ComputeEngineType.FlinkBatch, FlinkBatchComponentFactory(testMode))
     registerEngineFactory(ComputeEngineType.FlinkStreaming, FlinkStreamingComponentFactory(testMode))
     registerEngineFactory(ComputeEngineType.SparkBatch, SparkBatchComponentFactory(testMode))
 

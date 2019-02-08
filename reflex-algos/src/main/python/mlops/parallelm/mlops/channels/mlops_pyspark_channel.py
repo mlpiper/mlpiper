@@ -1,19 +1,17 @@
 import json
 import os
-import socket
-
 import pyspark
 import pyspark.mllib.common as ml
+import socket
 from google.protobuf.internal import encoder
-from pyspark.ml.pipeline import PipelineModel
-from pyspark.sql import DataFrame
-
 from parallelm.mlops.channels.mlops_channel import MLOpsChannel
 from parallelm.mlops.constants import Constants
 from parallelm.mlops.data_to_json import DataToJson
 from parallelm.mlops.mlops_env_constants import MLOpsEnvConstants
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.stats_category import StatCategory, StatGraphType
+from pyspark.ml.pipeline import PipelineModel
+from pyspark.sql import DataFrame
 
 
 def str2bool(v):
@@ -31,7 +29,7 @@ class MLOpsPySparkChannel(MLOpsChannel):
             if not isinstance(sc, pyspark.context.SparkContext):
                 raise MLOpsException("sc argument is not pyspark context")
 
-            self._jvm_mlops = sc._jvm.com.parallelmachines.mlops.MLOps
+            self._jvm_mlops = sc._jvm.org.mlpiper.mlops.MLOps
             ping_val = 5
             ping_ret = self._jvm_mlops.ping(ping_val)
             if ping_ret != 5:
@@ -42,7 +40,7 @@ class MLOpsPySparkChannel(MLOpsChannel):
             self._logger = self._log4j_logger.LogManager.getLogger(__name__)
 
         except Exception as e:
-            err = "Unable to access com.parallelmachines.mlops.MLOps object via jvm context"
+            err = "Unable to access org.mlpiper.mlops.MLOps object via jvm context"
             print(e)
             raise MLOpsException(err)
 
