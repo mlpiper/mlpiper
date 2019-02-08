@@ -6,11 +6,10 @@ import org.apache.spark.ml.PipelineModel
 import org.apache.spark.ml.classification.{DecisionTreeClassificationModel, GBTClassificationModel, RandomForestClassificationModel}
 import org.apache.spark.ml.regression.{DecisionTreeRegressionModel, GBTRegressionModel, RandomForestRegressionModel}
 import org.apache.spark.sql.DataFrame
+import org.mlpiper.utils.ParsingUtils
 import org.slf4j.LoggerFactory
-import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils
-import org.apache.spark.ml.tree.{InternalNode, Node}
 
-import scala.collection.{immutable, mutable}
+import scala.collection.mutable
 
 
 /**
@@ -26,7 +25,6 @@ object FeatureImportance {
                              ): Unit = {
 
     val pipelineStage = pipelineModel.stages(pipelineModel.stages.length - 1)
-    val pipelineStageName = pipelineStage.getClass().getName()
     var featureImportanceVector = Array[Double]()
     var featuresColName = ""
     pipelineStage match {
@@ -60,7 +58,7 @@ object FeatureImportance {
     val struct_fieldIndex = df.schema.fieldIndex(featuresColName)
     val struct_field = df.schema.fields(struct_fieldIndex)
     val attrStruct = struct_field.metadata.getMetadata("ml_attr").getMetadata("attrs")
-    var featureImportanceNames = new Array[String](featureImportanceVector.length)
+    val featureImportanceNames = new Array[String](featureImportanceVector.length)
 
     logger.debug("Attribute structure of algorithm feature vector" + attrStruct)
     var total_names = 0
@@ -129,7 +127,7 @@ object FeatureImportanceStat extends Serializable {
   /** FeatureImportance Wrapper holds map of feature name and importance value . */
   case class FeatureImportanceWrapper(featureImportance: mutable.LinkedHashMap[String, Double]) extends GraphFormatOrdered {
     override def toString: String = {
-      val mapOfFeatureImportanceStat = Map[String, Any]("features" -> this.toGraphJsonable())
+      val mapOfFeatureImportanceStat = Map[String, Any]("features" -> this.toGraphJsonable)
       ParsingUtils.iterableToJSON(mapOfFeatureImportanceStat)
     }
 

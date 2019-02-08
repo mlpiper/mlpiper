@@ -1,8 +1,8 @@
 package com.parallelmachines.reflex.components.spark.batch.connectors
 
-import com.parallelmachines.mlops.MLOpsEnvVariables
+import org.mlpiper.mlops.MLOpsEnvVariables
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent
-import com.parallelmachines.reflex.common.mlobject.Model
+import org.mlpiper.mlobject.Model
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
 import com.parallelmachines.reflex.pipeline.{ComponentsGroups, _}
 import com.parallelmachines.reflex.web.RestApis

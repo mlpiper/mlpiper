@@ -6,8 +6,8 @@ import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComp
 import com.parallelmachines.reflex.components.flink.streaming.connectors.{ReflexNullConnector, ReflexNullSourceConnector}
 import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment, _}
-import org.apache.flink.streaming.scala.examples.common.algorithm.PredictionOutput
-import org.apache.flink.streaming.scala.examples.common.performance.PerformanceMetricsHash
+import org.apache.flink.streaming.scala.examples.flink.utils.functions.performance.PerformanceMetricsHash
+import org.mlpiper.datastructures.PredictionOutput
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -21,7 +21,7 @@ import scala.reflect.runtime.universe._
   *
   * Having two sources in MiniCluster Tests will fail to stop a job. Reason unknown.
   *
-  * */
+  **/
 class TestAlgoComponentWithoutModelBehavior extends FlinkStreamingComponent {
   override val isSource = false
   override val group: String = ComponentsGroups.algorithms

@@ -1,6 +1,6 @@
 package org.apache.flink.streaming.scala.examples.common.stats
 
-import com.parallelmachines.reflex.common.HealthType
+import org.mlpiper.stat.healthlib.HealthType
 
 object StatNames {
 

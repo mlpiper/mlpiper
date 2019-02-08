@@ -1,15 +1,15 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
 import breeze.linalg.{DenseVector, sum}
-import com.parallelmachines.reflex.common.{ContinuousHistogramForSpark, MinMaxRangeForHistogramType}
+import com.parallelmachines.reflex.common.enums.OpType
 import org.apache.flink.api.scala.ExecutionEnvironment
 import org.apache.flink.streaming.api.scala._
-import org.apache.flink.streaming.scala.examples.clustering.math.{ReflexColumnEntry, ReflexColumnVectorEntry, ReflexNamedMatrix, ReflexNamedVector}
-import org.apache.flink.streaming.scala.examples.clustering.stat.HistogramComparatorTypes
-import org.apache.flink.streaming.scala.examples.clustering.stat.continuous._
 import org.apache.spark.sql.SparkSession
-import com.parallelmachines.reflex.common.enums.OpType
 import org.junit.runner.RunWith
+import org.mlpiper.datastructures.{ColumnEntry, ColumnVectorEntry, NamedMatrix, NamedVector}
+import org.mlpiper.stat.healthlib.{ContinuousHistogramForSpark, MinMaxRangeForHistogramType}
+import org.mlpiper.stat.histogram.HistogramComparatorTypes
+import org.mlpiper.stat.histogram.continuous._
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -66,13 +66,13 @@ class ContinuousHistogramAPITest extends FlatSpec with Matchers {
     * Testing Featured Histogram to MinMax Ranges
     */
   it should "Generate Correct MinMax Ranges From Featured Histogram" in {
-    val reflexColumnEntryForCol0 = ReflexColumnVectorEntry(columnName = "c0", columnValue = DenseVector(1.0, 10.0, 11.0))
-    val reflexColumnEntryForCol1 = ReflexColumnVectorEntry(columnName = "c1", columnValue = DenseVector(1.0, 21.0, -50.0))
-    val reflexColumnEntryForCol2 = ReflexColumnVectorEntry(columnName = "c2", columnValue = DenseVector(2.0, 4.9, -3.0))
-    val reflexColumnEntryForCol3 = ReflexColumnVectorEntry(columnName = "c3", columnValue = DenseVector(3.0, 5.0, 2.0))
-    val reflexColumnEntryForCol4 = ReflexColumnVectorEntry(columnName = "c4", columnValue = DenseVector(2.0, 2.0, 2.0))
+    val reflexColumnEntryForCol0 = ColumnVectorEntry(columnName = "c0", columnValue = DenseVector(1.0, 10.0, 11.0))
+    val reflexColumnEntryForCol1 = ColumnVectorEntry(columnName = "c1", columnValue = DenseVector(1.0, 21.0, -50.0))
+    val reflexColumnEntryForCol2 = ColumnVectorEntry(columnName = "c2", columnValue = DenseVector(2.0, 4.9, -3.0))
+    val reflexColumnEntryForCol3 = ColumnVectorEntry(columnName = "c3", columnValue = DenseVector(3.0, 5.0, 2.0))
+    val reflexColumnEntryForCol4 = ColumnVectorEntry(columnName = "c4", columnValue = DenseVector(2.0, 2.0, 2.0))
 
-    val denseMatrixRep: ReflexNamedMatrix = ReflexNamedMatrix(arrayOfVector = Array(reflexColumnEntryForCol0, reflexColumnEntryForCol1, reflexColumnEntryForCol2, reflexColumnEntryForCol3, reflexColumnEntryForCol4))
+    val denseMatrixRep: NamedMatrix = NamedMatrix(arrayOfVector = Array(reflexColumnEntryForCol0, reflexColumnEntryForCol1, reflexColumnEntryForCol2, reflexColumnEntryForCol3, reflexColumnEntryForCol4))
 
     val featuredHistogram = NamedMatrixToFeaturedHistogram(denseMatrixRep, None, None, None)
 
@@ -383,21 +383,21 @@ class ContinuousHistogramAPITest extends FlatSpec with Matchers {
   }
 
   // NamedVectors
-  val testDataStreamOfNamedVectorForHeatMap: Seq[ReflexNamedVector] = Seq[ReflexNamedVector](
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 1.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 10.0, OpType.CONTINUOUS))),
+  val testDataStreamOfNamedVectorForHeatMap: Seq[NamedVector] = Seq[NamedVector](
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 1.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 10.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 2.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 2.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 4.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = -10.0, OpType.CONTINUOUS))),
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 4.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = -10.0, OpType.CONTINUOUS))),
 
-    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 5.0, OpType.CONTINUOUS),
-      ReflexColumnEntry(columnName = "B", columnValue = 50.0, OpType.CONTINUOUS)))
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 5.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 50.0, OpType.CONTINUOUS)))
   )
 
   it should "Generate Correct Range From Spark RDD Of Named Vectors" in {

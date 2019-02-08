@@ -1,30 +1,26 @@
 package com.parallelmachines.reflex.pipeline
 
-import org.apache.flink.streaming.api.scala._
-import org.apache.flink.api.scala.ExecutionEnvironment
-
-import scala.util.parsing.json._
-import java.nio.file.{Files, Paths}
-import java.nio.charset.StandardCharsets
 import java.io.File
+import java.nio.charset.StandardCharsets
+import java.nio.file.{Files, Paths}
 
-import com.parallelmachines.mlops.MLOpsEnvVariables
-import com.parallelmachines.reflex.common.FileUtil
 import com.parallelmachines.reflex.common.constants.ReflexAlgosConstants
 import com.parallelmachines.reflex.common.util.StringOps
-import com.parallelmachines.reflex.pipeline.spark.stats.SystemStatsListener
-import com.parallelmachines.reflex.components.flink.batch.FlinkBatchComponentFactory
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponentFactory
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponentFactory
 import com.parallelmachines.reflex.factory.{ReflexComponentFactory, SparkPythonComponentFactory, TensorflowComponentFactory}
-
-import scala.reflect.runtime.universe._
+import com.parallelmachines.reflex.pipeline.spark.stats.SystemStatsListener
 import org.apache.flink.api.common.JobExecutionResult
+import org.apache.flink.streaming.api.scala._
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
+import org.mlpiper.mlops.MLOpsEnvVariables
+import org.mlpiper.utils.FileUtil
 import org.slf4j.LoggerFactory
 
+import scala.reflect.runtime.universe._
 import scala.util.control.NonFatal
+import scala.util.parsing.json._
 
 /**
   * Main ReflexAlgos object - parsing command line arguments and running/validating dag or producing
@@ -66,6 +62,7 @@ object DagGen {
     * @param indentLevel Current indentation level
     * @return Formatted String
     */
+  @deprecated
   private def formatJSON(json: Any, indentLevel: Int = 2): String = json match {
     case o: JSONObject =>
       o.obj.map { case (k, v) =>
@@ -81,7 +78,7 @@ object DagGen {
       JSONFormat defaultFormatter json
   }
 
-
+  @deprecated
   private def systemConfigJSONStr: String = {
     val fieldList = typeOf[ReflexSystemConfig].members.filter(!_.isMethod).map(_.name).map(x => "\"" + x.toString.trim + "\"")
     "[" + fieldList.mkString(",") + "]"
@@ -232,6 +229,7 @@ object DagGen {
 
       sparkSession
         .config(key = "mapreduce.input.fileinputformat.input.dir.recursive", value = true)
+
         /**
           * Register SparkListener here.
           * When Spark context is initiated, it also starts application.
@@ -267,7 +265,7 @@ object DagGen {
 
       var errMsg = ""
       try {
-        reflexPipe.materialize(new EnvironmentWrapper(env))
+        reflexPipe.materialize(EnvironmentWrapper(env))
       } catch {
         case NonFatal(e) =>
           errMsg = e.toString // Using 'e.toString' ensures that 'errMsg' will never be null, even if the exception
@@ -295,7 +293,7 @@ object DagGen {
     }
   }
 
-  def listJVMThreads: Unit = {
+  def listJVMThreads(): Unit = {
     val threads = Thread.getAllStackTraces.keySet
     logger.info("List of threads:")
     import scala.collection.JavaConversions._
@@ -321,7 +319,6 @@ object DagGen {
     logger.info("ExternalComponentRepo: " + externalComponentsDir)
 
     ReflexComponentFactory.init()
-    ReflexComponentFactory.registerEngineFactory(ComputeEngineType.FlinkBatch, FlinkBatchComponentFactory(config.testMode))
     ReflexComponentFactory.registerEngineFactory(ComputeEngineType.FlinkStreaming, FlinkStreamingComponentFactory(config.testMode))
     ReflexComponentFactory.registerEngineFactory(ComputeEngineType.SparkBatch, SparkBatchComponentFactory(config.testMode))
 
@@ -367,20 +364,14 @@ object DagGen {
           if (config.parallelism.isDefined) {
             env.setParallelism(config.parallelism.get)
           }
-          reflexPipe.materialize(new EnvironmentWrapper(env))
+          reflexPipe.materialize(EnvironmentWrapper(env))
 
           // Don't call execute, if it is TestMode and collectionData is not empty
           if (!(config.testMode && !CollectedData.isEmpty)) {
             jobExecutionResult = Some(env.execute(reflexPipe.pipeInfo.name))
           }
-        case ComputeEngineType.FlinkBatch =>
-          val env = ExecutionEnvironment.getExecutionEnvironment
-          if (config.parallelism.isDefined) {
-            env.setParallelism(config.parallelism.get)
-          }
-          reflexPipe.materialize(new EnvironmentWrapper(env))
-          jobExecutionResult = Some(env.execute(reflexPipe.pipeInfo.name))
         case ComputeEngineType.SparkBatch =>
+
           /** This init is not really required, but helps to detect if rest host/port env vars were provided. */
           MLOpsEnvVariables.init
           executeSparkBatchPipeline(reflexPipe, config)
@@ -399,7 +390,7 @@ object DagGen {
       logger.info("DagGen - is done - end of main")
 
       ReflexComponentFactory.cleanup()
-      listJVMThreads
+      listJVMThreads()
 
       if (config.callExitAtEnd) {
         // TODO: find why some spark pipelines does not exit the JVM

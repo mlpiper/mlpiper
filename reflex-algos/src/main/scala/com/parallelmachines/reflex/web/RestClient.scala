@@ -1,6 +1,6 @@
 package com.parallelmachines.reflex.web
 
-import com.parallelmachines.mlops.MLOpsEnvVariables
+import org.mlpiper.mlops.MLOpsEnvVariables
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.utils.URIBuilder
