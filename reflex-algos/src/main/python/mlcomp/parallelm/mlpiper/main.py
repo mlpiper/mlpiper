@@ -151,8 +151,7 @@ class MLPiper(Base):
     DIST_DIR = "mlpiper_dist"
     COMPONENTS_SETUP_PY = "mcenter_components_setup.py"
 
-    DEPLOYMENT_ENTRY_POINT_SRC = "deployment-runner.sh"
-    DEPLOYMENT_ENTRY_POINT = "run.sh"
+    DEPLOYMENT_DEPS_INATALLER = "deployment-deps-installer.sh"
     MLPIPER_SCRIPT = "mlpiper"
     DEPLOYMENT_PIPELINE = "pipeline.json"
 
@@ -330,8 +329,8 @@ class MLPiper(Base):
         with open(pipeline_file, 'w') as f:
             json.dump(self._pipeline_dict, f, indent=4)
 
-        src_entry_point = os.path.join(self._bin_dir, MLPiper.DEPLOYMENT_ENTRY_POINT_SRC)
-        dst_entry_point = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_ENTRY_POINT)
+        src_entry_point = os.path.join(self._bin_dir, MLPiper.DEPLOYMENT_DEPS_INATALLER)
+        dst_entry_point = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_DEPS_INATALLER)
         shutil.copy2(src_entry_point, dst_entry_point)
 
         src_mlpiper = os.path.join(self._bin_dir, MLPiper.MLPIPER_SCRIPT)
@@ -342,23 +341,21 @@ class MLPiper(Base):
         shutil.rmtree(self._dist_dir)
 
     def run(self):
-        self._logger.info("Running prepared deployment")
-        os.chdir(self._deploy_dir)
-        print("---> Running pipeline <---")
+        if not self._skip_mlpiper_deps:
+            self._logger.info("Executing deployment dependencies installer ... {}"
+                              .format(MLPiper.DEPLOYMENT_DEPS_INATALLER))
+            os.chdir(self._deploy_dir)
+            cmd = ["./" + MLPiper.DEPLOYMENT_DEPS_INATALLER]
+            try:
+                subprocess.check_call(cmd)
+            except CalledProcessError as ex:
+                print(str(ex))
+                return
 
-        cmd = ["./" + MLPiper.DEPLOYMENT_ENTRY_POINT]
-        env = os.environ
-        env["MLPIPER_SKIP_DEPS_INSTALL"] = str(int(self._skip_mlpiper_deps))
-        p = subprocess.Popen(cmd, env=env)
-        p.wait()
-        print("Done running pipeline - result: {}".format(p.returncode))
+        self.run_deployment()
 
     def run_deployment(self):
         self._logger.info("Running prepared deployment, {}".format(self._deploy_dir))
-
-        deploy_runner_path = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_ENTRY_POINT)
-        if not os.path.exists(deploy_runner_path):
-            raise Exception("File: {} is missing from deployment".format(MLPiper.DEPLOYMENT_ENTRY_POINT_SRC))
 
         sys.path.insert(0, self._deploy_dir)
         for egg in glob.glob("{}/*.egg".format(self._deploy_dir)):
@@ -368,10 +365,10 @@ class MLPiper(Base):
         import pkg_resources
         reload(pkg_resources)
 
-        print(100 * 'a')
-        print(sys.path)
-
         pipeline_file = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_PIPELINE)
+        if not os.path.exists(pipeline_file):
+            raise Exception("Pipeline file not exists! path: {}".format(pipeline_file))
+
         pipeline_runner = Executor().pipeline_file(open(pipeline_file)).use_color(self._use_color)
         pipeline_runner.go()
 
