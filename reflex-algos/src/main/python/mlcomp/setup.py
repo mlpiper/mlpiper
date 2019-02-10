@@ -20,7 +20,7 @@ setup(
     },
     scripts=["bin/mlpiper",
              "bin/mcenter_components_setup.py",
-             "bin/deployment-runner.sh",
+             "bin/deployment-deps-installer.sh",
              "bin/create-egg.sh"],
     install_requires=[
         'termcolor',
