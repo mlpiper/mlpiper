@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-REFLEX_COMMON_DIR=`git rev-parse --show-toplevel`
+REFLEX_COMMON_DIR=`git rev-parse --show-toplevel`/reflex-common
+
 echo "REFLEX_COMMON_DIR : $REFLEX_COMMON_DIR"
 
 if [ ! -d ${HOME}/.m2 ]; then

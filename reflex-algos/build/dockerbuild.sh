@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-Reflex_Algo_DIR=`git rev-parse --show-toplevel`
+Reflex_Algo_DIR=`git rev-parse --show-toplevel`/reflex-algos
 
 if [ ! -d ${HOME}/.m2 ]; then
     mkdir ${HOME}/.m2
