@@ -24,18 +24,19 @@ pyspark_comps_egg:
 comp_eggs: python_comps_egg pyspark_comps_egg
 
 mlops_egg:
-	cd ../mlops ; make egg
+	cd ../mlops ; make egg; cd -
 
-MLCOMP_EGG := $(shell realpath dist/mlcomp-1.0-py2.7.egg)
-MLOPS_EGG := $(shell realpath ../mlops/dist/parallelm-1.0.1-py2.7.egg)
-COMP_EGG := "/tmp/python_mcenter_components-0.1-py2.7.egg"
-SPARK_JARS := "../../../../target/ReflexAlgos-jar-with-dependencies.jar"
+MLCOMP_EGG_PY2 = $(shell realpath $(shell ls dist/*-py2.*.egg))
+MLOPS_EGG_PY2 = $(shell realpath $(shell ls ../mlops/dist/*-py2.*.egg))
+MLOPS_EGG_PY3 = $(shell realpath $(shell ls ../mlops/dist/*-py3.*.egg))
+COMP_EGG_PY2 = "/tmp/python_mcenter_components-0.1-py2.7.egg"
+SPARK_JARS = "../../../../target/ReflexAlgos-jar-with-dependencies.jar"
 
-test: egg comp_eggs
+test: egg mlops_egg comp_eggs
 
 	# Running the tests with the python egg
-	env PYTHONPATH=$(MLCOMP_EGG):$(MLOPS_EGG):$(COMP_EGG):tests SPARK_JARS=$(SPARK_JARS) python2 -m py.test tests/
-	env PYTHONPATH=$(MLCOMP_EGG):$(MLOPS_EGG):$(COMP_EGG):tests SPARK_JARS=$(SPARK_JARS) python3 -m pytest tests/
+	env PYTHONPATH=$(MLCOMP_EGG_PY2):$(MLOPS_EGG_PY2):$(COMP_EGG_PY2):tests SPARK_JARS=$(SPARK_JARS) python2 -m py.test tests/
+	env PYTHONPATH=$(MLCOMP_EGG_PY2):$(MLOPS_EGG_PY3):$(COMP_EGG_PY2):tests SPARK_JARS=$(SPARK_JARS) python3 -m pytest tests/
 
 	# TODO: add running tests for pyspark components
 
