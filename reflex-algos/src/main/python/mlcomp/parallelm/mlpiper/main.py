@@ -47,47 +47,10 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run MLPiper pipelines or components")
     subparsers = parser.add_subparsers(dest='subparser_name', help="Commands")
 
-    # Run pipeline/component
-    parser_prepare = subparsers.add_parser('deploy',
-                                       help='Deploy a pipeline to run')
-    action = parser_prepare.add_mutually_exclusive_group(required=True)
-    action.add_argument('-p', '--pipeline',
-                        help='A json string, which represents a pipeline.')
-    action.add_argument('-f', '--file', type=argparse.FileType('r'),
-                        help='A json file path, whose content is a pipeline. Or component JSON')
-
-    parser_prepare.add_argument('--deployment-dir', default='/tmp',
-                                help="Deployment directory to use for placing the pipeline artifacts")
-
-    # Prepare and Run pipeline/component
-    parser_run = subparsers.add_parser('run',
-                                        help='Prepare and run pipeline/component')
-    action = parser_run.add_mutually_exclusive_group(required=True)
-    action.add_argument('-p', '--pipeline',
-                        help='A json string, which represents a pipeline.')
-    action.add_argument('-f', '--file', type=argparse.FileType('r'),
-                        help='A json file path, whose content is a pipeline. Or component JSON')
-
-    parser_run.add_argument('--deployment-dir', default='/tmp',
-                            help="Deployment directory to use for placing the pipeline artifacts")
-
-    # Run deployment
-    parser_run = subparsers.add_parser('run-deployment',
-                                       help='Run mlpiper deployment. Note, this is an internal option.')
-    parser_run.add_argument('--deployment-dir', default='/tmp',
-                            help="Deployment directory to use for placing the pipeline artifacts")
-
-    # Get Python/R modules dependencies for the given pipeline or component
-    deps = subparsers.add_parser('deps',
-                                 help='Return a list of module dependencies for a given pipeline, depending on '
-                                      'the components programming language')
-    deps.add_argument('lang', choices=[ComponentLanguage.PYTHON, ComponentLanguage.R],
-                      help='The programming language')
-    group = deps.add_mutually_exclusive_group(required=True)
-    group.add_argument('-p', '--pipeline',
-                       help='A json string, which represents a pipeline.')
-    group.add_argument('-f', '--file', type=argparse.FileType('r'),
-                       help='A json file path, whose content is a pipeline. Or component JSON')
+    _add_deploy_sub_parser(subparsers, 'deploy', 'Deploy a pipeline to run')
+    _add_deploy_sub_parser(subparsers, 'run', 'Prepare and run pipeline/component')
+    _add_run_deployment_sub_parser(subparsers)
+    _add_deps_sub_parser(subparsers)
 
     # General arguments
     parser.add_argument('--conf', required=False, default=None,
@@ -120,6 +83,45 @@ def parse_args():
 
     options.logging_level = LOG_LEVELS[options.logging_level]
     return options
+
+
+def _add_deploy_sub_parser(subparsers, sub_parser_name, sub_parser_help):
+    parser_prepare = subparsers.add_parser(sub_parser_name,
+                                           help=sub_parser_help)
+    action = parser_prepare.add_mutually_exclusive_group(required=True)
+    action.add_argument('-p', '--pipeline',
+                        help='A json string, which represents a pipeline.')
+    action.add_argument('-f', '--file', type=argparse.FileType('r'),
+                        help='A json file path, whose content is a pipeline. Or component JSON')
+
+    parser_prepare.add_argument('--input-model',
+                                help='Input model file path')
+    parser_prepare.add_argument('--output-model',
+                                help='Output model file path')
+
+    parser_prepare.add_argument('--deployment-dir', default='/tmp',
+                                help="Deployment directory to use for placing the pipeline artifacts")
+
+
+def _add_run_deployment_sub_parser(subparsers):
+    parser_run = subparsers.add_parser('run-deployment',
+                                       help='Run mlpiper deployment. Note, this is an internal option.')
+    parser_run.add_argument('--deployment-dir', default='/tmp',
+                            help="Deployment directory to use for placing the pipeline artifacts")
+
+
+def _add_deps_sub_parser(subparsers):
+    # Get Python/R modules dependencies for the given pipeline or component
+    deps = subparsers.add_parser('deps',
+                                 help='Return a list of module dependencies for a given pipeline, depending on '
+                                      'the components programming language')
+    deps.add_argument('lang', choices=[ComponentLanguage.PYTHON, ComponentLanguage.R],
+                      help='The programming language')
+    group = deps.add_mutually_exclusive_group(required=True)
+    group.add_argument('-p', '--pipeline',
+                       help='A json string, which represents a pipeline.')
+    group.add_argument('-f', '--file', type=argparse.FileType('r'),
+                       help='A json file path, whose content is a pipeline. Or component JSON')
 
 
 def main(bin_dir=None):
