@@ -21,7 +21,7 @@
   "group": "Algorithms",
   "arguments": [
     {
-      "key": "exit-value",
+      "key": "exit_value",
       "label": "exit-value",
       "type": "int",
       "description": "Exit value to use",
@@ -35,14 +35,7 @@
       "optional": true
     },
     {
-      "key": "model-content",
-      "label": "arg1",
-      "type": "str",
-      "description": "Model content to use when creating model",
-      "optional": true
-    },
-    {
-      "key": "input-model",
+      "key": "input_model",
       "label": "Model input file",
       "type": "str",
       "description": "File to use for loading the model",

@@ -10,6 +10,7 @@ import sys
 from parallelm.mlpiper.component_scanner import ComponentScanner
 from parallelm.pipeline import json_fields
 from parallelm.common.base import Base
+from parallelm.pipeline import java_mapping
 from parallelm.pipeline.executor import Executor
 
 
@@ -38,6 +39,9 @@ class MLPiper(Base):
 
         self._skip_clean = False
         self._skip_mlpiper_deps = False
+
+        self._input_model_filepath = None
+        self._output_model_filepath = None
 
     def _print_info(self):
         self._logger.info("dist_dir: {}".format(self._dist_dir))
@@ -83,6 +87,15 @@ class MLPiper(Base):
 
         return self
 
+    def input_model(self, model_filepath):
+        if not os.path.exists(model_filepath):
+            raise Exception("Input model file path not exists! " + model_filepath)
+
+        self._input_model_filepath =  model_filepath
+
+    def output_model(self, model_filepath):
+        self._output_model_filepath = model_filepath
+
     def deploy(self):
         self._logger.info("Preparing pipeline for run")
         self._print_info()
@@ -127,6 +140,14 @@ class MLPiper(Base):
             self._logger.debug("Adding {} to pipeline".format(json_fields.PIPELINE_SYSTEM_CONFIG_FIELD))
             system_config = {}
             self._pipeline_dict[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD] = system_config
+
+        if self._input_model_filepath:
+            self._pipeline_dict[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD][java_mapping.MODEL_FILE_SOURCE_PATH_KEY]  = \
+                self._input_model_filepath
+
+        if self._output_model_filepath:
+            self._pipeline_dict[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD][java_mapping.MODEL_FILE_SINK_PATH_KEY]  = \
+                self._output_model_filepath
 
     def _copy_components(self, dest_dir):
         self._logger.debug("Copying pipeline components to staging area")

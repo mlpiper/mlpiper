@@ -23,7 +23,7 @@
   "group": "Algorithms",
   "arguments": [
     {
-      "key": "exit-value",
+      "key": "exit_value",
       "label": "exit-value",
       "type": "int",
       "description": "Exit value to use",
@@ -37,14 +37,14 @@
       "optional": true
     },
     {
-      "key": "model-content",
+      "key": "model_content",
       "label": "arg1",
       "type": "str",
       "description": "Model content to use when creating model",
       "optional": true
     },
     {
-      "key": "output-model",
+      "key": "output_model",
       "label": "Model output file",
       "type": "str",
       "description": "File to use for saving the trained model",

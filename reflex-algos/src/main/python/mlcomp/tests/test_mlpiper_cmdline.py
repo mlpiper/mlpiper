@@ -2,13 +2,13 @@ import glob
 import json
 import os
 import pprint
-from tempfile import mktemp, mkdtemp
+from tempfile import mkstemp, mkdtemp
 import shutil
 import subprocess
 import sys
 
 
-pipeline = {
+simple_pipeline = {
     "name": "Simple MCenter runner test",
     "engineType": "Python",
     "systemConfig": {
@@ -42,6 +42,44 @@ pipeline = {
     ]
 }
 
+model_src_sink_pipeline = {
+    "name": "Sink/Src MCenter runner test",
+    "engineType": "Python",
+    "systemConfig": {
+        "statsDBHost": "localhost",
+        "statsDBPort": 8086,
+        "mlObjectSocketSinkPort": 7777,
+        "mlObjectSocketSourcePort": 1,
+        "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
+        "statsMeasurementID": "1",
+        "modelFileSinkPath": "__PLACEHOLDER__",
+        "modelFileSourcePath": "__PLACEHOLDER__"
+    },
+    "pipe": [
+        {
+            "name": "Test source model",
+            "id": 1,
+            "type": "test-predict-src",
+            "parents": [],
+            "arguments": {
+                "exit_value": 0,
+                "iter": 0
+            }
+        },
+        {
+            "name": "Test sink model",
+            "id": 2,
+            "type": "test-train-sink",
+            "parents": [],
+            "arguments": {
+                "exit_value": 0,
+                "iter": 0,
+                "model_content": "Model 1"
+            }
+        }
+    ]
+}
+
 
 class TestMLPiper:
     pipeline_tmp_file = None
@@ -50,21 +88,21 @@ class TestMLPiper:
 
     @classmethod
     def setup_class(cls):
-        TestMLPiper.pipeline_tmp_file = mktemp(prefix='test_mlpiper_pipeline_', dir='/tmp')
+        _, TestMLPiper.pipeline_tmp_file = mkstemp(prefix='test_mlpiper_pipeline_', dir='/tmp')
         print("pipeline_tmp_file:", TestMLPiper.pipeline_tmp_file)
         with open(TestMLPiper.pipeline_tmp_file, 'w') as f:
-            json.dump(pipeline, f)
+            json.dump(simple_pipeline, f)
 
         mlcomp_root_path = os.path.join(os.path.dirname(__file__), "..")
-        os.chdir(mlcomp_root_path)
-        subprocess.check_call("make egg", shell=True)
+        # os.chdir(mlcomp_root_path)
+        # subprocess.check_call("make egg", shell=True)
 
         mlcomp_eggs = glob.glob(os.path.join(mlcomp_root_path, "dist", "*.egg"))
         TestMLPiper.egg_paths.extend(mlcomp_eggs)
 
         mlops_root_path = os.path.join(os.path.dirname(__file__), "../../mlops")
-        os.chdir(mlops_root_path)
-        subprocess.check_call("make egg", shell=True)
+        # os.chdir(mlops_root_path)
+        # subprocess.check_call("make egg", shell=True)
 
         mlops_eggs = glob.glob(os.path.join(mlops_root_path, "dist", "*2.*.egg" if sys.version_info[0] < 3 else "*3.*.egg"))
         TestMLPiper.egg_paths.extend(mlops_eggs)
@@ -75,7 +113,7 @@ class TestMLPiper:
     @classmethod
     def teardown_class(cls):
         if TestMLPiper.pipeline_tmp_file:
-            # os.remove(TestMLPiper.pipeline_tmp_file)
+            os.remove(TestMLPiper.pipeline_tmp_file)
             TestMLPiper.pipeline_tmp_file = None
 
     def setup_method(self, method):
@@ -96,14 +134,11 @@ class TestMLPiper:
     def _exec_shell_cmd(self, cmd, err_msg):
         os.environ["PYTHONPATH"] = ":".join(TestMLPiper.egg_paths)
 
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(os.environ)
-
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=os.environ)
         (stdout, stderr) = p.communicate()
 
+        print("stdout: {}".format(stdout))
         if p.returncode != 0:
-            print("stdout: {}".format(stdout))
             print("stderr: {}".format(stderr))
             assert p.returncode == 0, err_msg
 
@@ -131,3 +166,34 @@ class TestMLPiper:
     def test_run_deployment(self):
         self._exec_deploy_or_run_cmdline("deploy")
         self._exec_run_deployment_cmdline()
+
+    def test_deploy_and_run_with_models(self):
+        self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
+        os.rmdir(self._deployment_dir)
+
+        comp_dir = os.path.join(os.path.dirname(__file__), "../../../../../components/Python")
+
+        fd, input_model = mkstemp(prefix='test_mlpiper_pipeline_input_model_', dir='/tmp')
+        os.write(fd, json.dumps("Model ZZZ!").encode())
+        os.close(fd)
+
+        _, output_model = mkstemp(prefix='test_mlpiper_pipeline_output_model_', dir='/tmp')
+        if os.path.exists(output_model):
+            os.remove(output_model)
+
+        model_src_sink_pipeline['systemConfig']['modelFileSourcePath'] = input_model
+        model_src_sink_pipeline['systemConfig']['modelFileSinkPath'] = output_model
+
+        fd, pipeline_file = mkstemp(prefix='test_mlpiper_pipeline_', dir='/tmp')
+        os.write(fd, json.dumps(model_src_sink_pipeline).encode())
+        os.close(fd)
+
+        cmd = "{} -r {} run -f {} --input-model '{}' --output-model '{}' --deployment-dir {}" \
+            .format(TestMLPiper.mlpiper_script, comp_dir, pipeline_file, input_model, output_model,
+                    self._deployment_dir)
+        try:
+            self._exec_shell_cmd(cmd, "Failed in running pipeline with input/output models!")
+        finally:
+            os.remove(pipeline_file)
+            os.remove(output_model)
+            os.remove(input_model)

@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import argparse
+import os
 import sys
 import time
 
@@ -19,11 +20,11 @@ class MCenterComponentAdapter(ConnectableComponent):
 
     def _materialize(self, parent_data_objs, user_data):
         model_content = self._params.get("model_content", DEFAULT_MODEL_CONTENT)
-        model_output = self._params.get("model_output")
+        output_model = self._params.get("output_model")
         iter_num = self._params.get("iter")
         exit_value = self._params.get("exit_value")
 
-        do_train(model_content, model_output, iter_num, exit_value)
+        do_train(model_content, output_model, iter_num, exit_value)
         return ["just-a-string-to-connect"]
 
 
@@ -38,12 +39,11 @@ def do_train(model_content, output_model, iter_num, exit_value):
         with open(output_model, "w") as file:
             file.write(model_content)
 
-    if exit_value >= 0:
-        print("About to exit with value: {}".format(exit_value))
-        sys.exit(exit_value)
-    else:
+    if exit_value != 0:
         print("About to raise exception: {}".format(exit_value))
-        raise Exception("Exiting main using exception")
+        raise Exception("Exiting component with error code: {}".format(exit_value))
+    else:
+        print("Normal component's execution ({})".format(os.path.basename(__file__)))
 
 
 def parse_args():
