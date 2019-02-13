@@ -5,6 +5,7 @@ import pickle
 import sys
 import pprint
 import os
+import warnings
 
 from parallelm.components.restful.flask_route import FlaskRoute
 from parallelm.components.restful_component import RESTfulComponent
@@ -20,32 +21,44 @@ class SklearnRESTfulServing(RESTfulComponent):
         self._params = {}
         self._verbose = self._logger.isEnabledFor(logging.DEBUG)
 
+        self.info_json = {
+            "sample_keyword": SklearnRESTfulServing.JSON_KEY_NAME,
+            "python": "{}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]),
+            "numpy": np.version.version,
+            "sklearn": sklearn.__version__,
+        }
+
     def load_model_callback(self, model_path, stream, version):
         self._logger.info(sys.version_info)
 
         self._logger.info("Model is loading, wid: {}, path: {}".format(self.get_wid(), model_path))
         self._logger.info("params: {}".format(pprint.pformat(self._params)))
         model = None
-        try:
-            with open(model_path, "rb") as f:
-                self._model_loading_error = None
-                model = pickle.load(f) if sys.version_info[0] < 3 \
-                    else pickle.load(f, encoding='latin1')
 
-                if self._verbose:
-                    self._logger.debug("Un-pickled model: {}".format(self._model))
-                self._logger.debug("Model loaded successfully!")
+        with warnings.catch_warnings(record=True) as warns:
+            try:
+                with open(model_path, "rb") as f:
+                    self._model_loading_error = None
+                    model = pickle.load(f) if sys.version_info[0] < 3 \
+                        else pickle.load(f, encoding='latin1')
 
-        except Exception as e:
-            self._logger.error("Error loading model: {}".format(e))
+                    if self._verbose:
+                        self._logger.debug("Un-pickled model: {}".format(self._model))
+                    self._logger.debug("Model loaded successfully!")
 
-            # Not sure we want to throw exception only to move to a non model mode
-            if self._params.get("ignore-incompatible-model", True):
-                self._logger.info("New model could not be loaded, due to error: {}".format(e))
-                if self._model is None:
-                    self._model_loading_error = str(e)
-            else:
-                raise Exception("Error loading model: {}".format(e))
+            except Exception as e:
+                warn_str = ""
+                if len(warns) > 0:
+                    warn_str = "{}".format(warns[-1].message)
+                self._logger.error("Model loading warning: {}; Model loading error: {}".format(warn_str, e))
+
+                # Not sure we want to throw exception only to move to a non model mode
+                if self._params.get("ignore-incompatible-model", True):
+                    self._logger.info("New model could not be loaded, due to error: {}".format(e))
+                    if self._model is None:
+                        self._model_loading_error = "Model loading warning: {}; Model loading error: {}".format(warn_str, str(e))
+                    else:
+                        raise Exception("Model loading warning: {}; Model loading error: {}".format(warn_str, e))
 
         # This line should be reached only if
         #  a) model loaded successfully
@@ -58,12 +71,9 @@ class SklearnRESTfulServing(RESTfulComponent):
         result_json = {
             "message": "got empty predict",
             "model_loaded": model_loaded,
-            "sample_keyword": SklearnRESTfulServing.JSON_KEY_NAME,
-            "python": "{}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]),
-            "numpy": np.version.version,
-            "sklearn": sklearn.__version__,
             "model_class": str(type(self._model))
         }
+        result_json.update(self.info_json)
 
         if model_loaded is False and self._model_loading_error:
             result_json["model_load_error"] = self._model_loading_error
@@ -84,6 +94,7 @@ class SklearnRESTfulServing(RESTfulComponent):
                 return_json = {"error": "Failed loading model: {}".format(self._model_loading_error)}
             else:
                 return_json = {"error": "Model not loaded yet - please set a model"}
+            return_json.update(self.info_json)
             return 404, return_json
 
         elif SklearnRESTfulServing.JSON_KEY_NAME not in form_params:
@@ -91,6 +102,7 @@ class SklearnRESTfulServing(RESTfulComponent):
                 .format(SklearnRESTfulServing.JSON_KEY_NAME, form_params)
             self._logger.error(msg)
             error_json = {"error": msg}
+            error_json.update(self.info_json)
             return 404, error_json
         else:
             try:
@@ -104,6 +116,7 @@ class SklearnRESTfulServing(RESTfulComponent):
                 return 200, {"prediction": prediction[0]}
             except Exception as e:
                 error_json = {"error": "Error performing prediction: {}".format(e)}
+                error_json.update(self.info_json)
                 return 404, error_json
 
 
