@@ -44,7 +44,7 @@ LOG_LEVELS = {'debug': logging.DEBUG, 'info': logging.INFO, 'warn': logging.WARN
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="Run MLPiper pipelines or components")
+    parser = argparse.ArgumentParser(description="Run MCenter pipelines and components")
     subparsers = parser.add_subparsers(dest='subparser_name', help="Commands")
 
     _add_deploy_sub_parser(subparsers, 'deploy', 'Deploy a pipeline to run')
@@ -57,9 +57,6 @@ def parse_args():
                         help="Configuration file for MLPiper runner")
 
     parser.add_argument('--logging-level', required=False, choices=list(LOG_LEVELS.keys()), default="info")
-
-    parser.add_argument('-r', '--comp-root', default=None,
-                        help='MLPiper components root dir. Recursively detecting components')
 
     parser.add_argument('--skip-clean', action="store_true", default=False,
                         help="Do not cleanup deployment after run - useful for debugging pipelines/components")
@@ -93,6 +90,9 @@ def _add_deploy_sub_parser(subparsers, sub_parser_name, sub_parser_help):
                         help='A json string, which represents a pipeline.')
     action.add_argument('-f', '--file', type=argparse.FileType('r'),
                         help='A json file path, whose content is a pipeline. Or component JSON')
+
+    parser_prepare.add_argument('-r', '--comp-root', default=None,
+                                help='MLPiper components root dir. Recursively detecting components')
 
     parser_prepare.add_argument('--input-model',
                                 help='Input model file path')
