@@ -4,22 +4,27 @@ bdist:
 	python setup.py bdist
 
 egg:
-	./bin/create-egg.sh
+	python2 setup.py -q bdist_egg
+	python3 setup.py -q bdist_egg
 
 wheel:
-	python2 setup.py bdist_wheel
-	python3 setup.py bdist_wheel
+	python2 setup.py sdist bdist_wheel
+	python3 setup.py sdist bdist_wheel
 
 # Creating 2 eggs one for python components, second for pyspark components
 python_comps_egg:
 	rm -rf /tmp/all-python-comp
 	./bin/create-all-python-comp-dir.sh /tmp/all-python-comp
 	./bin/create-components-egg.sh --components-dir /tmp/all-python-comp --dst-dir /tmp/
-	cd /tmp/; for file in mcenter_components-*; do mv -v $$file python_$${file}; done; cd -
+	#cd /tmp/; for file in mcenter_components-*; do mv -v $$file python_$${file}; done; cd -
+	rename 's/-py\d.\d//s' /tmp/mcenter_components-0.1-py*.egg
+	mv /tmp/mcenter_components-0.1.egg /tmp/python_mcenter_components-0.1.egg
 
 pyspark_comps_egg:
 	./bin/create-components-egg.sh --components-dir ../../../../components/PySpark/ --dst-dir /tmp/
-	cd /tmp/; for file in mcenter_components-*; do mv -v $$file pyspark_$${file}; done; cd -
+	#cd /tmp/; for file in mcenter_components-*; do mv -v $$file pyspark_$${file}; done; cd -
+	rename 's/-py\d.\d//s' /tmp/mcenter_components-0.1-py*.egg
+	mv /tmp/mcenter_components-0.1.egg /tmp/pyspark_mcenter_components-0.1.egg
 
 comp_eggs: python_comps_egg pyspark_comps_egg
 

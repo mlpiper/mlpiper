@@ -1,29 +1,52 @@
 from setuptools import setup, find_packages
+import os
+import sys
 
-from parallelm.mlcomp import version, project_name
+from parallelm.mlcomp import project_name, version
+
+# The directory containing this file
+ROOT = os.path.dirname(os.path.abspath(__file__))
+
+# The text of the README file
+README = open(ROOT + "/README.md").read()
+
+install_requires = ['ml-ops', 'termcolor', 'flask', 'psutil', 'py4j']
+if sys.version_info[0] < 3:
+    install_requires.append('enum')
 
 setup(
     name=project_name,
     namespace_packages=['parallelm'],
     version=version,
     description="An engine for running component based ML pipelines",
-    license="ParallelM",
+    long_description=README,
+    long_description_content_type="text/markdown",
+    url="https://github.com/mlpiper/mlpiper/tree/master/reflex-algos/src/main/python/mlcomp",
+    author="ParallelM",
+    author_email="info@parallelm.com",
+    license="Apache License 2.0",
+    classifiers=[
+        "Programming Language :: Python :: 2",
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: MacOS",
+        "Operating System :: POSIX",
+        "Operating System :: Unix",
+    ],
     zip_safe=False,
     include_package_data=True,
     package_data={'': ['*.json', '*.jar', '*.egg']},
     packages=find_packages('.'),
-    data_files=[('.', ['__main__.py', 'setup.py'])],
-    entry_points={
-        'setuptools.installation': [
-            'eggsecutable = parallelm.main:main'
-        ]
-    },
+    # data_files=[('.', ['__main__.py', 'setup.py'])],
     scripts=["bin/mlpiper",
              "bin/mcenter_components_setup.py",
              "bin/deployment-deps-installer.sh",
              "bin/create-egg.sh"],
-    install_requires=[
-        'termcolor',
-        'flask'
-    ],
+    install_requires=install_requires,
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
+    entry_points={
+        'setuptools.installation': [
+            'eggsecutable = parallelm.mlpiper.main:main'
+        ]
+    }
 )

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import io
 import logging
 import glob
@@ -251,9 +253,12 @@ class MLPiper(Base):
         for egg in glob.glob("{}/*.egg".format(self._deploy_dir)):
             sys.path.insert(0, egg)
 
-        from importlib import reload
         import pkg_resources
-        reload(pkg_resources)
+        if sys.version_info[0] < 3:
+            reload(pkg_resources)
+        else:
+            import importlib
+            importlib.reload(pkg_resources)
 
         pipeline_file = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_PIPELINE)
         if not os.path.exists(pipeline_file):
