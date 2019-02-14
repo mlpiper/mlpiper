@@ -85,7 +85,7 @@ class MlOpsRestStandAlone(MlOpsRestHelper):
 
         return model_id
 
-    def get_groups(self):
+    def get_ees(self):
         raise NotImplementedError
 
     def get_agents(self):

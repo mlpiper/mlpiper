@@ -71,17 +71,17 @@ class MLAppNode(object):
                  id=None,
                  pipeline_pattern_id=None,
                  pipeline_agent_set=None,
-                 group_id=None):
+                 ee_id=None):
         self.name = name
         self.id = id
         self.pipeline_pattern_id = pipeline_pattern_id
-        self.group_id = group_id
+        self.ee_id = ee_id
         self.pipeline_agent_set = pipeline_agent_set
 
     def __str__(self):
-        s = "{} Node - name: {} id: {} pipelinePatternId: {} groupId: {} agentSet {}".format(
+        s = "{} Node - name: {} id: {} pipelinePatternId: {} eeId: {} agentSet {}".format(
             Constants.ION_LITERAL, self.name, self.id, self.pipeline_pattern_id,
-            self.group_id, self.pipeline_agent_set)
+            self.ee_id, self.pipeline_agent_set)
         return s
 
 
@@ -96,16 +96,17 @@ class Pipeline(object):
         return s
 
 
-class Group(object):
+class EE(object):
     def __init__(self):
         self.name = None
         self.id = None
+        self.agent_id = None
         self.agents = []
         self.agent_by_id = {}
         self.agent_by_hostname = {}
 
     def __str__(self):
-        s = "Group - name: {} id: {}\n".format(self.name, self.id)
+        s = "EE - name: {} id: {}\n".format(self.name, self.id)
         for agent in self.agents:
             s += "\t{}\n".format(agent)
         return s

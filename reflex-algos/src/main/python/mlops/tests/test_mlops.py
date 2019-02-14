@@ -9,7 +9,7 @@ import pytest
 import requests_mock
 
 from ion_test_helper import set_mlops_env, ION1, test_models_info, test_health_info
-from ion_test_helper import test_workflow_instances, test_group_info, test_agents_info
+from ion_test_helper import test_workflow_instances, test_ee_info, test_agents_info
 from parallelm.mlops import Versions
 from parallelm.mlops import mlops as pm
 from parallelm.mlops.constants import Constants
@@ -84,7 +84,7 @@ def test_mlops_structure_api():
     rest_helper.set_prefix(Constants.URL_MLOPS_PREFIX)
     with requests_mock.mock() as m:
         m.get(rest_helper.url_get_workflow_instance(ion_instance_id), json=test_workflow_instances)
-        m.get(rest_helper.url_get_groups(), json=test_group_info)
+        m.get(rest_helper.url_get_ees(), json=test_ee_info)
         m.get(rest_helper.url_get_agents(), json=test_agents_info)
         m.get(rest_helper.url_get_model_list(), json=test_models_info)
         m.get(rest_helper.url_get_health_thresholds(ion_instance_id), json=test_health_info)
@@ -97,7 +97,6 @@ def test_mlops_structure_api():
 
         curr_node = pm.get_current_node()
         assert curr_node.id == ion_node_id
-        assert curr_node.group_id == ION1.GROUP_ID_0
 
         nodes = pm.get_nodes()
         assert len(nodes) == 2
