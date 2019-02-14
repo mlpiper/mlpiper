@@ -30,7 +30,7 @@ class TestPythonEngine:
         dirname = os.path.dirname(__file__)
 
         # Need to move this code to a helper module which will info about the structure of the code
-        reflex_common = os.path.join(dirname, "../../../../../../mlpiper/reflex-common")
+        reflex_common = os.path.join(dirname, "../../../../../../reflex-common")
         mlcomp_jar = os.path.join(reflex_common, "mlcomp", "target", "mlcomp.jar")
         if not os.path.exists(mlcomp_jar):
             raise Exception("File: {} does not exists".format(mlcomp_jar))
