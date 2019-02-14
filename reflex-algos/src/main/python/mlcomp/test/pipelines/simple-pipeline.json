@@ -1,15 +1,6 @@
 {
     "name": "Simple MCenter runner test",
     "engineType": "Python",
-    "systemConfig": {
-        "statsDBHost": "localhost",
-        "statsDBPort": 8086,
-        "mlObjectSocketSinkPort": 7777,
-        "mlObjectSocketSourcePort": 1,
-        "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
-        "statsMeasurementID": "1",
-        "modelFileSinkPath": "PLACEHOLDER"
-    },
     "pipe": [
         {
             "name": "Source String",

@@ -11,15 +11,6 @@ import sys
 simple_pipeline = {
     "name": "Simple MCenter runner test",
     "engineType": "Python",
-    "systemConfig": {
-        "statsDBHost": "localhost",
-        "statsDBPort": 8086,
-        "mlObjectSocketSinkPort": 7777,
-        "mlObjectSocketSourcePort": 1,
-        "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
-        "statsMeasurementID": "1",
-        "modelFileSinkPath": "PLACEHOLDER"
-    },
     "pipe": [
         {
             "name": "Source String",
@@ -46,12 +37,6 @@ model_src_sink_pipeline = {
     "name": "Sink/Src MCenter runner test",
     "engineType": "Python",
     "systemConfig": {
-        "statsDBHost": "localhost",
-        "statsDBPort": 8086,
-        "mlObjectSocketSinkPort": 7777,
-        "mlObjectSocketSourcePort": 1,
-        "workflowInstanceId": "8117aced55d7427e8cb3d9b82e4e26ac",
-        "statsMeasurementID": "1",
         "modelFileSinkPath": "__PLACEHOLDER__",
         "modelFileSourcePath": "__PLACEHOLDER__"
     },
