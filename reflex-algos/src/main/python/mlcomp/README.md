@@ -1,34 +1,39 @@
 # README
 
-The `mlcomp` module is designed to process and run complex PySpark pipelines, which contain
-multiple PySpark components. These components can be uploaded by the user.
+The `mlcomp` module is designed to process and execute 'MCenter' complex pipelines,
+which consists of one or more component chained together such that output of a
+previous component becomes the input to the next component. Each pipeline has a
+particular purpose, such as to train a model or generate inferences.
 
-## How to build and upload a component
+A single pipeline may include component from different languages, such as Python,
+R and Java.
+
+## How to construct a component
 
 #### Steps
 
-- Create a folder, whose name corresponds to the component's name (.e.g pi_calc)
+- Create a folder, whose name corresponds to the component's name (.e.g source_string)
 
-- Create a `component.json` file (json format) inside this folder and make sure to fill in all the following
-  fields:
+- Create a `component.json` file (json format) inside this folder and make sure to
+  fill in all the following fields:
 
         {
-            "engineType": "PySpark",
+            "engineType": "Python",
             "language": "Python",
             "userStandalone": false,
-            "name": "<Component name (.e.g pi_calc)>",
+            "name": "<Component name (.e.g string_source)>",
             "label": "<A lable that is displayed in the UI>",
             "version": "<Component's version (e.g. 1.0.0)>",
-            "group": "<One of the valid groups (.e.g "Algorithms")>,
-            "program": "<The Python component main script (.e.g pi_calc.py)>",
-            "componentClass": "<The component class name (.e.g PiCalc)>",
+            "group": "<One of the valid groups (.e.g "Connectors")>,
+            "program": "<The Python component main script (.e.g string_source.py)>",
+            "componentClass": "<The component class name (.e.g StringSource)
             "useMLStats": <true|false - whether the components uses mlstats>,
             "inputInfo": [
                 {
                  "description": "<Description>",
                  "label": "<Lable name>",
                  "defaultComponent": "",
-                 "type": "<A type used to verify matching connected legs (e.g 'org.apache.spark.rdd.RDD[int]')>,
+                 "type": "<A type used to verify matching connected legs>,
                  "group": "<data|model|prediction|statistics|other>"
                 },
                 {...}
@@ -47,83 +52,109 @@ multiple PySpark components. These components can be uploaded by the user.
             ]
         }
 
-- Create the main component script, which contains the component's class name. This class
-  should inherit from a 'Component' base class, which is taken from `parallelm.components.component`.
-  The class must implement the `materialize` function, with this prototype:
-  `def materialize(self, sc, parents_rdds)`. Here is a complete self contained example:
+- Create the main component script, which contains the component's class name.
+  This class should inherit from a 'Component' base class, which is taken from
+  `parallelm.components.component`. The class must implement the `materialize`
+  function, with this prototype: `def _materialize(self, parent_data_objs, user_data)`.
+  Here is a complete self contained example:
 
-        import numpy as np
-        from parallelm.components.component import Component
+        from parallelm.components import ConnectableComponent
+        from parallelm.mlops import mlops
 
 
-        class NumGen(Component):
-            num_samples = 0
+        class StringSource(ConnectableComponent):
+            def __init__(self, engine):
+                super(self.__class__, self).__init__(engine)
 
-            def __init__(self):
-                super(self.__class__, self).__init__()
+            def _materialize(self, parent_data_objs, user_data):
+                self._logger.info("Inside string source component")
+                str_value = self._params.get('value', "default-string-value")
 
-            def materialize(self, sc, parents_rdds):
-                num_samples = self._params['num_samples']
-                self._logger.info("Num samples: {}".format(num_samples))
+                mlops.set_stat("Specific stat title", 1.0)
+                mlops.set_stat("Specific stat title", 2.0)
 
-                rdd = sc.parallelize([0] * num_samples).map(NumGen._rand_num)
-                return [rdd]
+                return [str_value]
 
-            @staticmethod
-            def _rand_num(x):
-                return (np.random.random(), np.random.random())
 
   Notes:
-    - `num_samples` is an argument to the given component and thus can be read from `self._params`.
-    - A component can use `self._logger` object to print logs. It is defined in the base `Component` class.
-    - In this case the component uses the `numpy` module.
-    - A static function can be used in the `map` api of an `RDD` (.e.g `NumGen._rand_num`).
+    - A component can use `self._logger` object to print logs.
+    - A component may access to pipeline parameters via `self._params` dictionary.
+    - The `_materialize` function should return a list of objects or None otherwise.
+      This returned value will be used as an input for the next component
+      in the pipeline chain.
 
-- Place the components main program (*.py) inside that folder along with any other
-  desired files.
-
-- Pack the folder, using the `tar` tool. The extension should be `.tar`:
-
-        > tar cf pi_calc.tar ./pi_calc
-
-- Use the MLOps center UI to upload the component.
+- Place the components main program (*.py) inside a folder along with its json
+  description file and any other desired files.
 
 
-**Note:** Complete example components can be found under `./test/comp-to-upload/parallelm/uploaded_components/`
+## How to construct a pipeline
+
+#### Steps
+
+- Open any text editor and copy the following template:
+
+        {
+            "name": "Simple MCenter runner test",
+            "engineType": "Python",
+            "pipe": [
+                {
+                    "name": "Source String",
+                    "id": 1,
+                    "type": "string-source",
+                    "parents": [],
+                    "arguments": {
+                        "value": "Hello World: testing string source and sink"
+                    }
+                },
+                {
+                    "name": "Sink String",
+                    "id": 2,
+                    "type": "string-sink",
+                    "parents": [{"parent": 1, "output": 0}],
+                    "arguments": {
+                        "expected-value": "Hello World: testing string source and sink"
+                    }
+                }
+            ]
+        }
+
+  Notes:
+    - It is assumed that you've already constructed two components whose names
+      are: `string-source` and `string-sink`
+    - The output of `string-source` component (the value returned from
+      `_materialize` function) is supposed to become the input of `string-sink`
+      component (an input to the `_materialize` function)
+ 
+- Save it with any desired name
 
 
-## Tools
+## How to test
 
-Handy tools are located under `./bin` folder. These tools are used by the build system
-as well as the testing tools.
+Once the `ml-comp` python package is installed, a command line `mlpiper` is installed
+and can be used to execute the pipeline above and the components described in it.
 
+There three main commnads that can be used as follows:
 
-### create-egg.sh
+  - **deploy** - deploys a pipeline along with provided components into a given
+                 folder. Once deployed, it can also be executed directly from 
+                 the given folder.
 
-Builds and generates new `egg` distribution. The result is placed under `./dist` folder.
+  - **run** - deploys and executes the pipeline at once.
 
-
-### cleanup.sh
-
-Cleanups all generated products created by the `create-egg.sh`
-
-
-## Testing
-
-The whole module can be tested by running the `./test/run-test.sh` tool. This tool
-can be run in either local or external (default) modes.
-
-* Local mode (`--run-locally`) - Run Spark locally with as many worker threads as logical cores on your machine.
-  The local mode means that the Spark is embedded withing the driver itself and does not
-  require an external standalone Spark cluster.
-* External mode (**default**) - Submit the application to a standalone cluster that run on the same
-  machine. It is required to run the spark cluster on the `localhost` interface (It can be
-  achieved by setting an env variable as follows: `SPARK_MASTER_HOST=localhost`).
-  <b>Note: You may also run `<reflex-root>/tools/local-dev/start-externals.sh`, which runs
-  the Spark cluster as necessary.
+  - **run-deployment** - executes an already deployed pipeline.
 
 
-### Example Components
+#### Examples:
 
-Example components are located under: `./test/comp-to-upload/parallelm/uploaded_components`.
+  - Prepare a deployment. The resulted dirbe copied to a docker container and run
+    there
 
+        mlpiper deploy -p p1.json -r ~/dev/components -d /tmp/pp
+
+  - Deploy & Run. Usefull for development and debugging
+
+        mlpiper run -p p1.json -r ~/dev/components -d /tmp/pp
+
+  - Run a deployment. Usually non interactive called by another script
+
+        mlpiper run-deployment --deployment-dir /tmp/pp
