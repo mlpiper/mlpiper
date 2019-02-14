@@ -16,7 +16,7 @@ from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
 from parallelm.mlops import mlops
 from parallelm.mlops.constants import Constants
 from ion_test_helper import set_mlops_env, ION1, test_models_info, test_health_info
-from ion_test_helper import test_workflow_instances, test_group_info, test_agents_info
+from ion_test_helper import test_workflow_instances, test_ee_info, test_agents_info
 
 
 test_model_stats = [{
@@ -276,7 +276,7 @@ def test_feature_importance():
     rest_helper.set_prefix(Constants.URL_MLOPS_PREFIX)
     with requests_mock.mock() as m:
         m.get(rest_helper.url_get_workflow_instance(ion_instance_id), json=test_workflow_instances)
-        m.get(rest_helper.url_get_groups(), json=test_group_info)
+        m.get(rest_helper.url_get_ees(), json=test_ee_info)
         m.get(rest_helper.url_get_agents(), json=test_agents_info)
         m.get(rest_helper.url_get_model_list(), json=test_models_info)
         m.get(rest_helper.url_get_health_thresholds(ion_instance_id), json=test_health_info)

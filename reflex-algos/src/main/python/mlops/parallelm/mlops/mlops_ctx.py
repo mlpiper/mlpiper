@@ -8,7 +8,7 @@ from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.constants import Constants
 from parallelm.mlops.ion.ion_builder import IONBuilder, IONJsonConstants
 from parallelm.mlops.ion.ion import ION
-from parallelm.mlops.ion.ion import Group, Agent, Policy
+from parallelm.mlops.ion.ion import EE, Agent, Policy
 from parallelm.mlops.base_obj import BaseObj
 from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
 from parallelm.mlops.mlops_rest_interfaces import MlOpsRestHelper
@@ -42,7 +42,7 @@ class MLOpsCtx(BaseObj):
         self._mode = mode
 
         self._ion = None  # Will contain an ION class corresponding to the active ION which this mlops is part of
-        self._groups_dict = {}  # Will contain all groups defined with the agents of each group
+        self._ees_dict = {}  # Will contain all ees defined with the agent inside
         self._agents_dict = {}
         self._rest_helper = MlOpsRestFactory().get_rest_helper(self._mode, self._ci.mlops_server, self._ci.mlops_port, self._ci.token)
 
@@ -55,7 +55,7 @@ class MLOpsCtx(BaseObj):
 
             json_dict = self._detect_ion_structure()
             health_json_dict = self._fetch_health_thresholds()
-            self._detect_groups_and_agents()
+            self._detect_ees_and_agents()
             self._build_ion_obj(json_dict)
             self._build_health_obj(health_json_dict)
 
@@ -69,7 +69,7 @@ class MLOpsCtx(BaseObj):
 
             ion_json_dict = self._detect_ion_structure()
             health_json_dict = self._fetch_health_thresholds()
-            self._detect_groups_and_agents()
+            self._detect_ees_and_agents()
             self._build_ion_obj(ion_json_dict)
             self._build_health_obj(health_json_dict)
 
@@ -179,12 +179,12 @@ class MLOpsCtx(BaseObj):
         self._debug("workflow: {}".format(ion_json_dict))
         return ion_json_dict
 
-    def _detect_groups_and_agents(self):
-        groups_json_dict = self._rest_helper.get_groups()
+    def _detect_ees_and_agents(self):
+        ees_json_dict = self._rest_helper.get_ees()
         agents_json_dict = self._rest_helper.get_agents()
 
-        self._info("Groups JSON:\n{}\n\n".format(groups_json_dict))
         self._info("Agents JSON:\n{}\n\n".format(agents_json_dict))
+        self._info("EEs JSON:\n{}\n\n".format(ees_json_dict))
 
         # Generating a dict of all agents by ID
 
@@ -194,24 +194,24 @@ class MLOpsCtx(BaseObj):
             agent_obj.hostname = str(agent_json["address"])
             self._agents_dict[agent_obj.id] = agent_obj
 
-        for group_json in groups_json_dict:
-            group = Group()
-            group.name = str(group_json["name"])
-            group.id = str(group_json["id"])
+        for ee_json in ees_json_dict:
+            ee = EE()
+            ee.name = str(ee_json["name"])
+            ee.id = str(ee_json["id"])
+            ee.agent_id = str(ee_json["agentId"])
 
-            # Iterate over the agents in the group to get the agent object we created above in the agent_dict
-            for agent_id in group_json["agents"]:
-                if agent_id not in self._agents_dict:
-                    raise MLOpsException("Group {} contains Agent {} which is not in global agent list".format(
-                        group.name, agent_id))
+            # get agent object we created above in the agent_dict
+            if ee.agent_id not in self._agents_dict:
+                raise MLOpsException("EE {} contains Agent {} which is not in global agent list".format(
+                    ee.name, ee.agent_id))
 
-                agent_obj = self._agents_dict[agent_id]
-                group.agents.append(agent_obj)
-                group.agent_by_id[agent_id] = agent_obj
-                group.agent_by_hostname[agent_obj.hostname] = agent_obj
+            agent_obj = self._agents_dict[ee.agent_id]
+            ee.agents.append(agent_obj)
+            ee.agent_by_id[ee.agent_id] = agent_obj
+            ee.agent_by_hostname[agent_obj.hostname] = agent_obj
 
-            self._groups_dict[group.id] = group
-            self._logger.info("Group:\n{}".format(group))
+            self._ees_dict[ee.id] = ee
+            self._logger.info("EE:\n{}".format(ee))
 
     def _build_ion_obj(self, ion_json_dict):
         ion_builder = IONBuilder()
@@ -312,16 +312,14 @@ class MLOpsCtx(BaseObj):
                     node, Constants.ION_LITERAL))
 
             node_obj = self._ion.node_by_name[node]
+            if node_obj.ee_id not in self._ees_dict:
+                raise MLOpsException("Component {} had ee_id {} which is not part of valid ees".format(
+                    node_obj.name, node_obj.ee_id))
 
-            if node_obj.group_id not in self._groups_dict:
-                raise MLOpsException("Component {} had group_id {} which is not part of valid groups".format(
-                    node_obj.name, node_obj.group_id))
-
-            group_obj = self._groups_dict[node_obj.group_id]
-
+            ee_obj = self._ees_dict[node_obj.ee_id]
             # Note: calling deepcopy in order for the user to get a copy of agents objects and not point to internal
             # data
-            agent_list = copy.deepcopy(group_obj.agents)
+            agent_list = copy.deepcopy(ee_obj.agents)
             return agent_list
         else:
             raise MLOpsException("component argument should be component name (string)")

@@ -34,7 +34,7 @@ class ION1:
     MODEL_ID = "model-id-1"
 
     AGENT_ID_0 = "agent-id-0"
-    GROUP_ID_0 = "group-id-0"
+    EE_ID_0 = "ee-id-0"
 
     TOKEN = "token_token_token"
 
@@ -52,144 +52,134 @@ test_workflow_instances = {
         "workflow": [
             {
                 "id": ION1.NODE_0_ID,
-                "groupId": ION1.GROUP_ID_0,
                 "pipelineMode": "offline",
                 "pipelineType": "model_producer",
-                "pipelineAgentSet": [
-                    {
+                "pipelineEETuple": {
+                    "pipelineProfileId": ION1.PIPELINE_PATTERN_ID_0,
+                    "executionEnvironment": {
+                        "description": "",
                         "agentId": ION1.AGENT_ID_0,
-                        "pipelineProfileId": ION1.PIPELINE_PROFILE_ID_0,
-                        "pipeline": {
-                            "pipeline": "{\"engineType\": \"SparkBatch\", \"name\": \"training_kmeans_spark-profile-localhost\", \"pipe\": [{\"type\": \"CsvToDF\", \"id\": 0, \"name\": \"CsvToDF\", \"arguments\": {\"seperator\": \",\", \"withHeaders\": false, \"filepath\": \"\/data-lake\/jenkins-data\/GE_DEMO\/Train_dataset_A.csv\"}, \"parents\": []}, {\"type\": \"VectorAssemblerComponent\", \"parents\": [{\"output\": 0, \"input\": 0, \"parent\": 0}], \"id\": 1, \"name\": \"VectorAssemblerComponent\", \"arguments\": {\"outputCol\": \"features\"}}, {\"type\": \"ReflexKmeansML\", \"parents\": [{\"output\": 0, \"input\": 0, \"parent\": 1}], \"id\": 2, \"name\": \"ReflexKmeansML\", \"arguments\": {\"tol\": 1e-05, \"maxIter\": 400, \"k\": 3, \"featuresCol\": \"features\", \"initStep\": 2, \"seed\": 2, \"predictionCol\": \"predictions\", \"initMode\": \"k-means||\"}}]}",
-                            "isProfile": True,
-                            "version": "1",
-                            "engineType": "SparkBatch",
-                            "profileIdDependencySet": [
-                                "cb9411ce-d103-4389-bcd1-541e7e45185e"
-                            ],
-                            "isVisible": True,
-                            "defaultModel": "",
-                            "isUserDefined": False,
-                            "id": "4da92113-d85e-46e2-8609-c4b9cfe607f5",
-                            "name": "training_kmeans_spark-profile-localhost",
-                            "created": 1529945512839,
-                            "createdBy": "admin"
+                        "url": "",
+                        "configs": {
+                            "engConfig": {
+                                "type": "generic",
+                                "arguments": {
+                                    "log-level": {"value": "info"}
+                                }
+                            },
+                            "rmConfig": {
+                                "type": "os",
+                                "arguments": {
+                                    "tensorflow.ld_library_path": {"value": ""},
+                                    "tensorflow.path": {"value": ""},
+                                    "tensorflow.python": {"value": "/usr/bin/python"}
+                                }
+                            }
                         },
-                        "agent": {
-                            "address": "localhost",
-                            "groups": [
-                                ION1.GROUP_ID_0
-                            ],
-                            "state": "OFFLINE",
-                            "id": ION1.AGENT_ID_0,
-                            "name": "localhost",
-                            "created": 1529945502375,
-                            "createdBy": "admin"
-                        }
+                        "id": ION1.EE_ID_0,
+                        "name": "EE1",
+                        "created": 0,
+                        "createdBy": "admin"
+                    },
+                    "pipeline": {
+                        "pipeline": "{\"engineType\": \"SparkBatch\", \"name\": \"training_kmeans_spark-profile-localhost\", \"pipe\": [{\"type\": \"CsvToDF\", \"id\": 0, \"name\": \"CsvToDF\", \"arguments\": {\"seperator\": \",\", \"withHeaders\": false, \"filepath\": \"\/data-lake\/jenkins-data\/GE_DEMO\/Train_dataset_A.csv\"}, \"parents\": []}, {\"type\": \"VectorAssemblerComponent\", \"parents\": [{\"output\": 0, \"input\": 0, \"parent\": 0}], \"id\": 1, \"name\": \"VectorAssemblerComponent\", \"arguments\": {\"outputCol\": \"features\"}}, {\"type\": \"ReflexKmeansML\", \"parents\": [{\"output\": 0, \"input\": 0, \"parent\": 1}], \"id\": 2, \"name\": \"ReflexKmeansML\", \"arguments\": {\"tol\": 1e-05, \"maxIter\": 400, \"k\": 3, \"featuresCol\": \"features\", \"initStep\": 2, \"seed\": 2, \"predictionCol\": \"predictions\", \"initMode\": \"k-means||\"}}]}",
+                        "isProfile": True,
+                        "version": "1",
+                        "engineType": "SparkBatch",
+                        "profileIdDependencySet": [
+                            "cb9411ce-d103-4389-bcd1-541e7e45185e"
+                        ],
+                        "isVisible": True,
+                        "defaultModel": "",
+                        "isUserDefined": False,
+                        "id": "4da92113-d85e-46e2-8609-c4b9cfe607f5",
+                        "name": "training_kmeans_spark-profile-localhost",
+                        "created": 1529945512839,
+                        "createdBy": "admin"
+                    },
+                    "agent": {
+                        "address": "localhost",
+                        "eeIds": [
+                            ION1.EE_ID_0
+                        ],
+                        "state": "OFFLINE",
+                        "id": ION1.AGENT_ID_0,
+                        "name": "localhost",
+                        "created": 1529945502375,
+                        "createdBy": "admin"
                     }
-                ],
+                },
                 "pipelinePatternId": ION1.PIPELINE_PATTERN_ID_0,
                 "parent": "-1",
                 "children": "2",
                 "parallelism": 1,
                 "restServerPort": 12121,
                 "isVisible": True,
-                "group": {
-                    "agents": [
-                        ION1.AGENT_ID_0
-                    ],
-                    "workflows": [
-                        "cb9411ce-d103-4389-bcd1-541e7e45185e"
-                    ],
-                    "agentSet": [
-                        {
-                            "address": "localhost",
-                            "groups": [
-                                ION1.GROUP_ID_0
-                            ],
-                            "state": "OFFLINE",
-                            "id": ION1.AGENT_ID_0,
-                            "name": "localhost",
-                            "created": 1529945502375,
-                            "createdBy": "admin"
-                        }
-                    ],
-                    "id": ION1.GROUP_ID_0,
-                    "name": "g1",
-                    "created": 1529945505668,
-                    "createdBy": "admin"
-                },
                 "cronSchedule": "0 0\/10 * * * ?"
             },
             {
                 "id": ION1.NODE_1_ID,
-                "groupId": ION1.GROUP_ID_0,
                 "pipelineMode": "online",
                 "pipelineType": "model_consumer",
-                "pipelineAgentSet": [
-                    {
+                "pipelineEETuple": {
+                    "pipelineProfileId": ION1.PIPELINE_PATTERN_ID_1,
+                    "executionEnvironment": {
+                        "description": "",
                         "agentId": ION1.AGENT_ID_0,
-                        "pipelineProfileId": ION1.PIPELINE_PROFILE_ID_1,
-                        "pipeline": {
-                            "pipeline": "{\"engineType\": \"FlinkStreaming\", \"name\": \"inference_kmeans_flink-profile-localhost\", \"pipe\": [{\"type\": \"ReflexKafkaConnector\", \"id\": 1, \"name\": \"Turbine 1\", \"arguments\": {\"host\": \"localhost\", \"port\": 9092, \"topic\": \"KmeansAnomaly\"}, \"parents\": []}, {\"type\": \"ReflexStringToLabeledVectorComponent\", \"id\": 2, \"name\": \"String To Labeled Vector\", \"arguments\": {\"indicesRange\": \"0-9\", \"attributes\": 10}, \"parents\": [{\"output\": 0, \"parent\": 1}]}, {\"type\": \"KmeansAnomalyComponent\", \"id\": 3, \"name\": \"KmeansAnomalyComponent\", \"arguments\": {\"enableValidation\": false, \"enablePerformance\": true, \"centroidCount\": 3, \"anomalyDistanceThreshold\": 70, \"attributes\": 10}, \"parents\": [{\"output\": 0, \"parent\": 2}]}]}",
-                            "isProfile": True,
-                            "version": "1",
-                            "engineType": "FlinkStreaming",
-                            "profileIdDependencySet": [
-                                "cb9411ce-d103-4389-bcd1-541e7e45185e"
-                            ],
-                            "isVisible": True,
-                            "defaultModel": "",
-                            "isUserDefined": False,
-                            "id": "098730d5-f9f5-46f9-a8ea-f533c1f6b35a",
-                            "name": "inference_kmeans_flink-profile-localhost",
-                            "created": 1529945514409,
-                            "createdBy": "admin"
+                        "url": "",
+                        "configs": {
+                            "engConfig": {
+                                "type": "generic",
+                                "arguments": {
+                                    "log-level": {"value": "info"}
+                                }
+                            },
+                            "rmConfig": {
+                                "type": "os",
+                                "arguments": {
+                                    "tensorflow.ld_library_path": {"value": ""},
+                                    "tensorflow.path": {"value": ""},
+                                    "tensorflow.python": {"value": "/usr/bin/python"}
+                                }
+                            }
                         },
-                        "agent": {
-                            "address": "localhost",
-                            "groups": [
-                                ION1.GROUP_ID_0
-                            ],
-                            "state": "OFFLINE",
-                            "id": ION1.AGENT_ID_0,
-                            "name": "localhost",
-                            "created": 1529945501824,
-                            "createdBy": "admin"
-                        }
+                        "id": ION1.EE_ID_0,
+                        "name": "EE1",
+                        "created": 0,
+                        "createdBy": "admin"
+                    },
+                    "pipeline": {
+                        "pipeline": "{\"engineType\": \"FlinkStreaming\", \"name\": \"inference_kmeans_flink-profile-localhost\", \"pipe\": [{\"type\": \"ReflexKafkaConnector\", \"id\": 1, \"name\": \"Turbine 1\", \"arguments\": {\"host\": \"localhost\", \"port\": 9092, \"topic\": \"KmeansAnomaly\"}, \"parents\": []}, {\"type\": \"ReflexStringToLabeledVectorComponent\", \"id\": 2, \"name\": \"String To Labeled Vector\", \"arguments\": {\"indicesRange\": \"0-9\", \"attributes\": 10}, \"parents\": [{\"output\": 0, \"parent\": 1}]}, {\"type\": \"KmeansAnomalyComponent\", \"id\": 3, \"name\": \"KmeansAnomalyComponent\", \"arguments\": {\"enableValidation\": false, \"enablePerformance\": true, \"centroidCount\": 3, \"anomalyDistanceThreshold\": 70, \"attributes\": 10}, \"parents\": [{\"output\": 0, \"parent\": 2}]}]}",
+                        "isProfile": True,
+                        "version": "1",
+                        "engineType": "FlinkStreaming",
+                        "profileIdDependencySet": [
+                            "cb9411ce-d103-4389-bcd1-541e7e45185e"
+                        ],
+                        "isVisible": True,
+                        "defaultModel": "",
+                        "isUserDefined": False,
+                        "id": "098730d5-f9f5-46f9-a8ea-f533c1f6b35a",
+                        "name": "inference_kmeans_flink-profile-localhost",
+                        "created": 1529945514409,
+                        "createdBy": "admin"
+                    },
+                    "agent": {
+                        "address": "localhost",
+                        "eeIds": [ION1.EE_ID_0],
+                        "state": "OFFLINE",
+                        "id": ION1.AGENT_ID_0,
+                        "name": "localhost",
+                        "created": 1529945502375,
+                        "createdBy": "admin"
                     }
-                ],
+                },
                 "pipelinePatternId": ION1.PIPELINE_PATTERN_ID_1,
                 "parent": "1",
                 "children": "-1",
                 "parallelism": 1,
                 "restServerPort": 12121,
-                "isVisible": True,
-                "group": {
-                    "agents": [
-                        ION1.AGENT_ID_0
-                    ],
-                    "workflows": [
-                        "cb9411ce-d103-4389-bcd1-541e7e45185e"
-                    ],
-                    "agentSet": [
-                        {
-                            "address": "localhost",
-                            "groups": [
-                                ION1.GROUP_ID_0
-                            ],
-                            "state": "OFFLINE",
-                            "id": "ad467e90-3b95-450c-bbef-3b96fff7cc5a",
-                            "name": "localhost",
-                            "created": 1529945501824,
-                            "createdBy": "admin"
-                        }
-                    ],
-                    "id": ION1.GROUP_ID_0,
-                    "name": "g2",
-                    "created": 1529945508930,
-                    "createdBy": "admin"
-                }
+                "isVisible": True
             }
         ],
         "modelPolicy": "ALWAYS_UPDATE",
@@ -269,11 +259,9 @@ test_workflow_instances = {
             },
             "agent": {
                 "address": "localhost",
-                "groups": [
-                    ION1.GROUP_ID_0
-                ],
                 "state": "OFFLINE",
                 "id": ION1.AGENT_ID_0,
+                'eeIds': [ION1.EE_ID_0],
                 "name": "localhost",
                 "created": 1529945502375,
                 "createdBy": "admin"
@@ -336,11 +324,9 @@ test_workflow_instances = {
             },
             "agent": {
                 "address": "localhost",
-                "groups": [
-                    ION1.GROUP_ID_0
-                ],
                 "state": "OFFLINE",
                 "id": ION1.AGENT_ID_0,
+                'eeIds': [ION1.EE_ID_0],
                 "name": "localhost",
                 "created": 1529945501824,
                 "createdBy": "admin"
@@ -380,19 +366,30 @@ test_workflow_instances = {
     }
 }
 
-test_group_info = [{
-    'agentSet': [],
-    'created': 1520284712891,
-    'agents': [ION1.AGENT_ID_0],
-    'createdBy': u'admin',
-    'workflows': [u'6f28071c-eaa3-42fe-b91c-fb2b6be2d256',
-                  u'ef700667-cf7d-46d4-8fbe-460821144647',
-                  u'b5d2c4fe-85b4-4fb8-a76c-7cbd4f6fe6f5',
-                  u'9a058f13-e60b-4e65-810b-559f91226668',
-                  u'616ed0b7-6dcf-410e-9ba7-67dcf8759af4',
-                  u'b1c0a5b2-5005-44df-8288-3ad790a4105f'],
-    'id': ION1.GROUP_ID_0,
-    'name': 'training_group'
+test_ee_info = [{
+    "id": ION1.EE_ID_0,
+    "name": "EE1",
+    "created": 0,
+    "createdBy": "admin",
+    "description": "",
+    "agentId": ION1.AGENT_ID_0,
+    "url": "",
+    "configs": {
+        "engConfig": {
+            "type": "generic",
+            "arguments": {
+                "log-level": {"value": "info"}
+            }
+        },
+        "rmConfig": {
+            "type": "os",
+            "arguments": {
+                "tensorflow.ld_library_path": {"value": ""},
+                "tensorflow.path": {"value": ""},
+                "tensorflow.python": {"value": "/usr/bin/python"}
+            }
+        }
+    }
 }]
 
 test_agents_info = [{
@@ -400,7 +397,7 @@ test_agents_info = [{
     'created': 1520284711230,
     'state': u'ONLINE',
     'createdBy': u'admin',
-    'groups': [ION1.GROUP_ID_0],
+    'eeIds': [ION1.EE_ID_0],
     'address': u'localhost',
     'id': ION1.AGENT_ID_0
 }]
@@ -491,7 +488,7 @@ def build_ion_ctx():
 
     with requests_mock.mock() as m:
         m.get(rest_helper.url_get_workflow_instance(ion_instance_id), json=test_workflow_instances)
-        m.get(rest_helper.url_get_groups(), json=test_group_info)
+        m.get(rest_helper.url_get_ees(), json=test_ee_info)
         m.get(rest_helper.url_get_agents(), json=test_agents_info)
         m.get(rest_helper.url_get_health_thresholds(ion_instance_id), json=test_health_info)
 

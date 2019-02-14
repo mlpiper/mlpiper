@@ -54,6 +54,7 @@ class MLOpsRestHandles:
     LOGIN = "auth/login"
     GROUPS = "groups"
     AGENTS = "agents"
+    EES = 'executionEnvironments'
     MODELS = "models"
     WORKFLOW_INSTANCES_V2 = "workflows/instances"
     HEALTH_THRESHOLDS = "health/thresholds"
