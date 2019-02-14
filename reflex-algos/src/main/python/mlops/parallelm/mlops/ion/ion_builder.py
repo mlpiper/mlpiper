@@ -1,5 +1,5 @@
 from parallelm.mlops.common.string_ops import mask_passwords
-from parallelm.mlops.ion.ion import ION, MLAppNode, Pipeline, Group, Agent, Policy
+from parallelm.mlops.ion.ion import ION, MLAppNode, Pipeline, EE, Agent, Policy
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.base_obj import BaseObj
 from parallelm.mlops.constants import Constants
@@ -48,16 +48,16 @@ class IONBuilder(BaseObj):
             agent_set = {}
 
             wf_id = comp_dict["id"]
-
-            for x in comp_dict["pipelineAgentSet"]:
-                agent_set[x['agentId']] = x['pipelineProfileId']
+            pipeline_ee_tuple = comp_dict["pipelineEETuple"]
+            ee = pipeline_ee_tuple["executionEnvironment"]
+            agent_set[ee['agentId']] = pipeline_ee_tuple['pipelineProfileId']
 
             comp = MLAppNode(name=str(wf_id),
                            id=wf_id,
                            pipeline_pattern_id=str(comp_dict[
                                                         IONJsonConstants.PIPELINE_PATTERN_ID_TAG]),
                            pipeline_agent_set=agent_set,
-                           group_id=str(comp_dict["groupId"]))
+                           ee_id=str(ee["id"]))
             ion.nodes.append(comp)
             ion.node_by_id[comp.id] = comp
             ion.node_by_name[comp.name] = comp

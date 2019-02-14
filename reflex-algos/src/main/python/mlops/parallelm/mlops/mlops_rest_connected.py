@@ -174,12 +174,27 @@ class MlOpsRestConnected(MlOpsRestHelper):
         """
         return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.GROUPS)
 
+    def url_get_ees(self):
+        """
+        Create the REST request for the ee list
+        :return: the URL for the REST request
+        """
+        return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.EES)
+
     def get_groups(self):
         """
         Requests the list of groups from MLOps
         :return: the list of groups
         """
         url = self.url_get_groups()
+        return self._get_url_request_response_as_json(url)
+
+    def get_ees(self):
+        """
+        Requests the list of execution environment from MLOps
+        :return: the list of ee
+        """
+        url = self.url_get_ees()
         return self._get_url_request_response_as_json(url)
 
     def url_get_agents(self):
