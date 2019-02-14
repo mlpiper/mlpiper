@@ -8,7 +8,7 @@ __version__ = Constants.MLOPS_CURRENT_VERSION
 #project_name = Constants.OFFICIAL_NAME
 
 # For now until name change
-project_name = "parallelm"
+project_name = Constants.OFFICIAL_NAME
 
 from .versions import Versions
 from .mlops import MLOps

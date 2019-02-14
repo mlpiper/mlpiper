@@ -6,7 +6,7 @@ class Constants:
     Various constants related to MLOps
     """
 
-    OFFICIAL_NAME = "mlops"
+    OFFICIAL_NAME = "ml-ops"
 
     MLOPS_CURRENT_VERSION = Versions.VERSION_1_0_1
 
