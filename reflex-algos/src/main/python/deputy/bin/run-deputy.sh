@@ -9,7 +9,7 @@ echo "Script dir: $script_dir"
 python="/usr/local/bin/python2"
 deputy_egg_path="dist/deputy-1.0-py2.7.egg"
 pipeline_file_path="bin/test-pipeline.json"
-mlcomp_egg_path="../mlcomp/dist/mlcomp-1.0-py2.7.egg"
+mlcomp_egg_path="../mlcomp/dist/mlcomp-1.0.2-py2.7.egg"
 mlops_egg_path="../mlops/dist/parallelm-1.0.1-py2.7.egg"
 comp_egg_path="/tmp/python_mcenter_components-0.1-py2.7.egg"
 
