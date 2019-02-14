@@ -76,8 +76,8 @@ class Parsers(UntarTimelineCapture):
                 self._sys_stat_df_file[file_name] = pd.read_csv(extracted_dir + file_name,
                                                                 na_filter=False)
 
-            elif 'ion-details' in file_name:
-                print("parse ion-details file")
+            elif 'MLApp-details' in file_name:
+                print("parse MLApp-details file")
                 self._parse_mlapp(extracted_dir + file_name)
 
             with open(self._extracted_dir + str(file_name), 'r') as f:
@@ -175,23 +175,15 @@ class Parsers(UntarTimelineCapture):
         """
         with open(file_path, 'r') as f:
             reader1 = f.read()
-        reader1 = reader1.replace('wfNodes', ',wfNodes')
-        reader1 = reader1.replace('GroupID', ',GroupID')
-        reader1 = reader1.replace('Mode', ',Mode')
-        reader1 = reader1.replace('Type', ',Type')
-        reader1 = reader1.replace(',', '","')
-        reader1 = reader1.replace(':', '":"')
-        reader1 = reader1.replace('" [', '[{"')
-        reader1 = reader1.replace(']"', '"}]')
-        reader1 = reader1.replace(' ', '')
-        reader1 = reader1.replace(',"PipelineID', '},{"PipelineID')
-        nd1 = '{"' + reader1 + '"}'
-        kd = json.loads(nd1)
+        kd = json.loads(reader1)
         self._mlapp_id = kd["WorkflowID"]
         self._model_policy = kd["modelPolicy"]
-        self._nodes_number = len(kd["wfNodes"])
-        self._nodes_id = [nodes["PipelineID"] for nodes in kd["wfNodes"]]
-        self._nodes_type = [nodes["Type"] for nodes in kd["wfNodes"]]
+        self._nodes_number = len(kd["PipelinesInformation"])
+        self._nodes_id1 = [nodes["pipelineInstanceId"] for nodes in kd["PipelinesInformation"]]
+        self._nodes_id = [[nodes["pipelineInstanceId"], nodes["pipelineType"],
+                           nodes["pipelineName"]]  for nodes in kd["PipelinesInformation"]]
+        self._nodes_type = [nodes["pipelineType"] for nodes in kd["PipelinesInformation"]]
+        self._nodes_name = [nodes["pipelineName"] for nodes in kd["PipelinesInformation"]]
 
     def _name_stats_df(self, filename, df):
         """

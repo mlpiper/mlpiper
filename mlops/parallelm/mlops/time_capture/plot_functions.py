@@ -38,6 +38,7 @@ class PlotFunctions:
         :return:
         """
         df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
+        node_info = self._mtc.get_nodes()
         if ("keys" in df.columns) and en_plt:
             color_list = ['r', 'b', 'g', 'c', 'k', 'y', '0.75', 'm', '0.25']
             bins, bins_vert = self.hist_bin_adapt(df)
@@ -64,8 +65,10 @@ class PlotFunctions:
                 self.annotate_events(figure=ax3)
                 ax3.legend(bbox_to_anchor=(1, 1), prop={'size': 10}, loc=2)
                 ax3.grid()
-                ax3.set_title('Linegraph vs time for ' + str(name) + " @ Pipeline "
-                              + pipelines_elements)
+                pipeline_index = [i for i, node_elements in enumerate(node_info)
+                 if node_elements[0] == pipelines_elements]
+                ax3.set_title('Linegraph vs time for ' + str(name) + " @ Pipeline: "
+                              + node_info[pipeline_index[0]][1] + ", " + node_info[pipeline_index[0]][2] )
                 ax3.set_ylabel('value')
                 ax3.set_xlabel('time')
 
@@ -109,6 +112,7 @@ class PlotFunctions:
         :return:
         """
         df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
+        node_info = self._mtc.get_nodes()
         if ("keys" in df.columns) and en_plt:
             bins, bins_vert = self.hist_bin_adapt(df)
             name_pipeline, td_matrix = self.align_bins(df)
@@ -119,6 +123,8 @@ class PlotFunctions:
                 bins_scale = np.arange(0, len(bins))
                 all_pipelines = list(set(name_pipeline))
                 for p_idx, pipeline in enumerate(all_pipelines):
+                    pipeline_index = [i for i, node_elements in enumerate(node_info)
+                                      if node_elements[0] == pipeline]
                     file_index = [i for i, e in enumerate(name_pipeline)
                                   if e == pipeline]
                     for location_index in file_index:
@@ -130,7 +136,7 @@ class PlotFunctions:
                     figure.bar(bins_scale, td_matrix[location_index, :],
                                color=color_list[p_idx % (len(color_list))],
                                align='center', alpha=0.1,
-                               label="pipeline " + pipeline)
+                               label="pipeline: " + node_info[pipeline_index[0]][1] + ", " + node_info[pipeline_index[0]][2])
                 figure.set_xticks(bins_scale)
                 figure.set_xticklabels(bins_vert)
                 figure.tick_params(labelsize=8)
@@ -284,20 +290,41 @@ class PlotFunctions:
             bins = df_keys.loc[0]
             num_of_bins = len(bins)
             td_matrix_loc = np.zeros((num_graphs, num_of_bins))
+            rounded_bins = bins
+            for keys_origin_index in range(0, num_of_bins):
+                if ' to ' in bins[keys_origin_index]:
+                    bins_vect = bins[keys_origin_index].split(' to ')
+                    rounded_bins_vect = bins_vect
+                    for index_bin in range(0,2):
+                        if 'inf' not in bins_vect[index_bin]:
+                            rounded_bins_vect[index_bin] = str(round(float(bins_vect[index_bin]), 4))
+                    rounded_bins[keys_origin_index] = rounded_bins_vect[0] + ' to ' + rounded_bins_vect[1]
 
             for location_index in range(0, num_graphs):
                 df_values = []
                 for keys_origin_index in range(0, num_of_bins):
                     append_val = 0
-                    for key_index in range(0, len(df_keys.loc[location_index])):
-                        if bins[keys_origin_index] == \
-                                df_keys.loc[location_index][key_index]:
-                            append_val = df["values"].loc[location_index][key_index]
+                    if ' to ' in bins[keys_origin_index]:
+                        bins1 = df_keys.loc[location_index][keys_origin_index]
+                        bins1_vect = bins1.split(' to ')
+                        rounded_bins1_vect = bins1_vect
+                        for index_bin in range(0,2):
+                            if 'inf' not in bins1_vect[index_bin]:
+                                rounded_bins1_vect[index_bin] = str(round(float(bins1_vect[index_bin]), 4))
+                        rounded_bins1 = rounded_bins1_vect[0] + ' to ' + rounded_bins1_vect[1]
+                        if rounded_bins[keys_origin_index] == \
+                                rounded_bins1:
+                            append_val = df["values"].loc[location_index][keys_origin_index]
+                    else:
+                        for key_index in range(0, len(df_keys.loc[location_index])):
+                            if bins[keys_origin_index] == \
+                                    df_keys.loc[location_index][key_index]:
+                                append_val = df["values"].loc[location_index][key_index]
                     df_values.append(append_val)
 
                 td_matrix_loc[location_index, :] = df_values
 
-                name_pipeline_vect = df["FileName"].loc[location_index].split('-')
-                name_pipeline = name_pipeline_vect[len(name_pipeline_vect) - 4]
+                name_pipeline_vect = df["FileName"].loc[location_index].split('-Instance-')
+                name_pipeline = (name_pipeline_vect[1].split('-Agent-'))[0]
                 name_pipeline1.append(name_pipeline)
             return name_pipeline1, td_matrix_loc

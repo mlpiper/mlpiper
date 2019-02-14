@@ -1,1 +1,0 @@
-WorkflowID: fc25d0f9-44c1-4db9-ad38-b0a84f9c319b wfNodes: [PipelineID: 8c418fbe-4b38-4d56-8145-91b9c46dda68 GroupID: ddaccf57-deab-45e2-a7d5-72b524eaf443 Mode: offline Type: model_producer, PipelineID: 7918d3ca-d9c5-479e-a05b-a8f1eda3db73 GroupID: ddaccf57-deab-45e2-a7d5-72b524eaf443 Mode: offline Type: model_consumer], modelPolicy: ALWAYS_UPDATE
