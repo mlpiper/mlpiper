@@ -16,6 +16,9 @@
             "path": "PySpark/ab_testing_pyspark"
         },
         {
+            "path": "PySpark/hello_world"
+        },
+        {
             "path": "Tensorflow/stats",
             "validate": false
         },
@@ -42,6 +45,9 @@
         },
         {
             "path": "Python/model_connector_s3"
+        },
+        {
+            "path": "Python/hello-world"
         },
         {
             "path": "Python/model_connector_h2o_open"
