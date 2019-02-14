@@ -24,12 +24,12 @@ bdist:
 	python setup.py bdist
 
 egg:
-	python2 setup.py bdist_egg
-	python3 setup.py bdist_egg
+	python2 setup.py -q bdist_egg
+	python3 setup.py -q bdist_egg
 
 wheel:
-	python2 setup.py bdist_wheel
-	python3 setup.py bdist_wheel
+	python2 setup.py sdist bdist_wheel
+	python3 setup.py sdist bdist_wheel
 
 test: egg
 	env PYTHONPATH=./:tests/:${SPARK_HOME}/python python2 -m py.test tests/
