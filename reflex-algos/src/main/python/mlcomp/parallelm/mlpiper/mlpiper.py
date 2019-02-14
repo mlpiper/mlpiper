@@ -4,6 +4,7 @@ import io
 import logging
 import glob
 import json
+import tempfile
 import os
 import shutil
 import subprocess
@@ -23,7 +24,6 @@ class MLPiper(Base):
     DIST_DIR = "mlpiper_dist"
     COMPONENTS_SETUP_PY = "mcenter_components_setup.py"
 
-    DEPLOYMENT_DEPS_INATALLER = "deployment-deps-installer.sh"
     MLPIPER_SCRIPT = "mlpiper"
     DEPLOYMENT_PIPELINE = "pipeline.json"
 
@@ -221,10 +221,6 @@ class MLPiper(Base):
         with open(pipeline_file, 'w') as f:
             json.dump(self._pipeline_dict, f, indent=4)
 
-        src_entry_point = os.path.join(self._bin_dir, MLPiper.DEPLOYMENT_DEPS_INATALLER)
-        dst_entry_point = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_DEPS_INATALLER)
-        shutil.copy2(src_entry_point, dst_entry_point)
-
         src_mlpiper = os.path.join(self._bin_dir, MLPiper.MLPIPER_SCRIPT)
         shutil.copy2(src_mlpiper, self._deploy_dir)
 
@@ -232,21 +228,26 @@ class MLPiper(Base):
         self._logger.info("Cleaning up ... " + self._deploy_dir)
         shutil.rmtree(self._dist_dir)
 
-    def _install_deps(self):
-        if not self._skip_mlpiper_deps:
-            self._logger.info("Executing deployment dependencies installer ... {}"
-                              .format(MLPiper.DEPLOYMENT_DEPS_INATALLER))
-            os.chdir(self._deploy_dir)
-            cmd = ["./" + MLPiper.DEPLOYMENT_DEPS_INATALLER]
-            try:
-                subprocess.check_call(cmd)
-            except CalledProcessError as ex:
-                print(str(ex))
-                return
+    def _install_deps(self, py_deps):
+        self._logger.info("Installing py dependencies ... {}".format(py_deps))
+
+        fd, reqs_pathname = tempfile.mkstemp(prefix="mlpiper_requirements_", dir="/tmp", text=True)
+        os.write(fd, "\n".join(py_deps))
+        os.close(fd)
+
+        cmd = "yes | {} -m pip install --disable-pip-version-check --requirement {}"\
+            .format(sys.executable, reqs_pathname)
+
+        self._logger.info("cmd: " + cmd)
+        try:
+            subprocess.check_call(cmd, shell=True)
+        except subprocess.CalledProcessError as ex:
+            print(str(ex))
+        finally:
+            if os.path.exists(reqs_pathname):
+                os.remove(reqs_pathname)
 
     def run_deployment(self):
-        self._install_deps()
-
         self._logger.info("Running prepared deployment, {}".format(self._deploy_dir))
 
         sys.path.insert(0, self._deploy_dir)
@@ -265,5 +266,11 @@ class MLPiper(Base):
             raise Exception("Pipeline file not exists! path: {}".format(pipeline_file))
 
         pipeline_runner = Executor().pipeline_file(open(pipeline_file)).use_color(self._use_color)
+
+        if not self._skip_mlpiper_deps:
+            py_deps = pipeline_runner.all_py_component_dependencies()
+            if py_deps:
+                self._install_deps(py_deps)
+
         pipeline_runner.go()
 
