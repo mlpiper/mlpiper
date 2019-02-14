@@ -53,7 +53,6 @@ class EventSocketSink extends FlinkBatchComponent {
 
     /** Iterate over all inputs and perform action according to eventType registered for this connection.
       * If connection is marked as forwardEvent, expected data is ReflexEvent itself, so no need to wrap it into ReflexEvent.
-      * (Look at ModelAcceptedEventProducer)
       *
       * For all other cases, String is expected so wrap it into ReflexEvent. */
     for (i <- dsArr.indices) {

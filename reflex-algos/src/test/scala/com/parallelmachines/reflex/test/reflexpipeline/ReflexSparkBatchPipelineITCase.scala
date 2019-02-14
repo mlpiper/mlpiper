@@ -7,6 +7,7 @@ import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent.EventType
 import com.parallelmachines.reflex.common.{CategoricalHistogramForSpark, ContinuousHistogramForSpark, HealthType}
 import com.parallelmachines.reflex.pipeline.{DagGen, DataFrameUtils}
 import org.apache.flink.streaming.test.exampleScalaPrograms.clustering.ComparatorUtils
+import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.SparkSession
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Json
@@ -348,6 +349,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                         "categorialFeatureInfo": 0,
                         "featureSubsetStrategy": "auto",
                         "featuresCol": "features",
+                        "tempSharedPath": "file:///tmp",
                         "labelCol": "c0"
                     },
                     "parents": [{"parent": 2, "output": 0}]
@@ -370,7 +372,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
       val sparkSession = SparkSession.builder.
         master("local[*]").appName("Good pipeline 6 - Histogram").getOrCreate()
 
-      val model = scala.io.Source.fromFile(outTmpFilePath).mkString
+      val model = PipelineModel.read.load(outTmpFilePath)
       var df = sparkSession.sqlContext.read.option("inferSchema", value = true).option("header", header).csv(rfSampleDataPath)
 
       if (!header) {
@@ -380,8 +382,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
       val genericHealthCreator = new ContinuousHistogramForSpark(HealthType.ContinuousHistogramHealth.toString)
 
       genericHealthCreator.dfOfDenseVector = df
-      // TODO: Add Spark ML Model
-      //      genericHealthCreator.pmmlModelStr = Some(model)
+      genericHealthCreator.sparkMLModel = Some(model)
       genericHealthCreator.binSizeForEachFeatureForRef = None
       genericHealthCreator.minBinValueForEachFeatureForRef = None
       genericHealthCreator.maxBinValueForEachFeatureForRef = None
@@ -463,6 +464,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                         "categorialFeatureInfo": 0,
                         "featureSubsetStrategy": "auto",
                         "featuresCol": "features",
+                        "tempSharedPath": "file:///tmp",
                         "labelCol": "c0"
                     },
                     "parents": [{"parent": 3, "output": 0}]
@@ -485,7 +487,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
       val sparkSession = SparkSession.builder.
         master("local[*]").appName("Good Histograms").getOrCreate()
 
-      val model = scala.io.Source.fromFile(outTmpFilePath).mkString
+      val model = PipelineModel.read.load(outTmpFilePath)
       var df = sparkSession.sqlContext.read.option("inferSchema", value = true).option("header", header).csv(rfSampleDataPath)
 
       if (!header) {
@@ -495,8 +497,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
       val genericHealthCreator = new ContinuousHistogramForSpark(HealthType.ContinuousHistogramHealth.toString)
 
       genericHealthCreator.dfOfDenseVector = df
-      // TODO: Add Spark ML Model
-      //      genericHealthCreator.pmmlModelStr = Some(model)
+      genericHealthCreator.sparkMLModel = Some(model)
       genericHealthCreator.binSizeForEachFeatureForRef = None
       genericHealthCreator.minBinValueForEachFeatureForRef = None
       genericHealthCreator.maxBinValueForEachFeatureForRef = None
@@ -638,6 +639,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                 "impurity": "gini",
                 "featureSubsetStrategy": "auto",
                 "labelCol": "c0",
+                "tempSharedPath": "file:///tmp",
                 "featuresCol": "features"
               }
             }
@@ -669,7 +671,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
       val sparkSession = SparkSession.builder.
         master("local[*]").appName("Good Histograms").getOrCreate()
 
-      val model = scala.io.Source.fromFile(outTmpFilePath).mkString
+      val model = PipelineModel.read.load(outTmpFilePath)
       var df = sparkSession.sqlContext.read.option("inferSchema", value = true).option("header", header).csv(dataHistPath)
 
       if (!header) {
@@ -679,8 +681,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
       val genericHealthCreator = new CategoricalHistogramForSpark(HealthType.CategoricalHistogramHealth.toString)
 
       genericHealthCreator.dfOfDenseVector = df
-      // TODO: Add Spark ML Model
-      //      genericHealthCreator.pmmlModelStr = Some(model)
+      genericHealthCreator.sparkMLModel = Some(model)
       genericHealthCreator.enableAccumOutputOfHistograms = true
       genericHealthCreator.sc = sparkSession.sparkContext
 
@@ -783,6 +784,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                 "impurity": "gini",
                 "featureSubsetStrategy": "auto",
                 "labelCol": "A",
+                "tempSharedPath": "file:///tmp",
                 "featuresCol": "newFeatures"
               }
             }
@@ -813,7 +815,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
       val sparkSession = SparkSession.builder.
         master("local[*]").appName("Good Histograms").getOrCreate()
 
-      val model = scala.io.Source.fromFile(outTmpFilePath).mkString
+      val model = PipelineModel.read.load(outTmpFilePath)
       var df = sparkSession.sqlContext.read.option("inferSchema", value = true).option("header", header).csv(dataHistPath)
 
       if (!header) {
@@ -823,8 +825,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
       val genericHealthCreator = new ContinuousHistogramForSpark(HealthType.ContinuousHistogramHealth.toString)
 
       genericHealthCreator.dfOfDenseVector = df
-      // TODO: Add Spark ML Model
-      //      genericHealthCreator.pmmlModelStr = Some(model)
+      genericHealthCreator.sparkMLModel = Some(model)
       genericHealthCreator.binSizeForEachFeatureForRef = None
       genericHealthCreator.minBinValueForEachFeatureForRef = None
       genericHealthCreator.maxBinValueForEachFeatureForRef = None
@@ -920,6 +921,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                     "id": 3,
                     "type": "ReflexLogisticRegression",
                     "arguments" : {
+                         "tempSharedPath": "file:///tmp",
                          "labelCol": "c0",
                          "thresholds": ["0"," 0.5"],
                          "featuresCol": "features"
@@ -1009,6 +1011,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                     "id": 3,
                     "type": "ReflexLogisticRegression",
                     "arguments" : {
+                         "tempSharedPath": "file:///tmp",
                          "labelCol": "c0",
                          "thresholds": ["0"," 0.5"],
                          "featuresCol": "features"
@@ -1158,7 +1161,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                    "arguments" : {
                        "num-classes": 2,
                        "savedModelType": "sparkML",
-                       "tempSharedPath": "file:///tmp/liork/models",
+                       "tempSharedPath": "file:///tmp",
                        "num-trees": 4,
                        "maxDepth": 3,
                        "maxBins": 1000,
@@ -1923,6 +1926,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                     "id": 3,
                     "type": "ReflexGLM",
                     "arguments" : {
+                        "tempSharedPath": "file:///tmp",
                         "featuresCol": "features",
                         "predictionCol": "predictions",
                         "linkPredictionCol": "linkPrediction",
@@ -1994,6 +1998,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                     "id": 3,
                     "type": "ReflexLinearRegression",
                     "arguments" : {
+                         "tempSharedPath": "file:///tmp",
                          "labelCol": "c0",
                          "featuresCol": "features",
                          "predictionCol": "predictions"
@@ -2063,6 +2068,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                     "id": 3,
                     "type": "ReflexGBTML",
                     "arguments" : {
+                        "tempSharedPath": "file:///tmp",
                         "maxDepth": 3,
                         "significantFeaturesNumber": 50,
                         "maxBins": 3,
@@ -2136,6 +2142,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                     "id": 3,
                     "type": "ReflexRandomForestRegML",
                     "arguments" : {
+                        "tempSharedPath": "file:///tmp",
                         "maxDepth": 3,
                         "num-classes": 5,
                         "num-trees": 4,
@@ -2442,21 +2449,15 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
   }
 
   "Good Pipeline 26 - pipeline with health component" should "be valid end to end" in {
-    val modelForRfPath = getClass.getResource("/modelForRf").getPath
+    val modelForRfPath = getClass.getResource("/modelForRf.gz").getPath
 
 
     val healthStr1 = Json(DefaultFormats).write(Map[String, Any]("name" -> "TestHealthForSpark", "data" -> "\"0,1,3,4\""))
     val healthStr2 = Json(DefaultFormats).write(Map[String, Any]("name" -> "TestHealthForSpark", "data" -> "\"0,1,3,4\""))
 
-    var modelForRf = ""
     val tmpFilePath = "/tmp/prediction"
 
-    val file = new java.io.File(modelForRfPath)
-    if (file.exists()) {
-      modelForRf = scala.io.Source.fromFile(modelForRfPath).mkString
-    } else {
-      cancel()
-    }
+    var modelForRf = scala.io.Source.fromFile(modelForRfPath,"ISO-8859-1").mkString
 
     val inputs = List(ReflexEvent(EventType.Model, None, ByteString.copyFrom(modelForRf.map(_.toByte).toArray), Some("1234")),
       ReflexEvent(EventType.MLHealthModel, None, ByteString.copyFrom(healthStr1.map(_.toByte).toArray), None),
@@ -2544,21 +2545,15 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
   }
 
   "Good Pipeline 27 - health turned off" should "be valid end to end" in {
-    val modelForRfPath = getClass.getResource("/modelForRf").getPath
+    val modelForRfPath = getClass.getResource("/modelForRf.gz").getPath
 
 
     val healthStr1 = Json(DefaultFormats).write(Map[String, Any]("name" -> "TestHealthForSpark", "data" -> "\"0,1,3,4\""))
     val healthStr2 = Json(DefaultFormats).write(Map[String, Any]("name" -> "TestHealthForSpark", "data" -> "\"0,1,3,4\""))
 
-    var modelForRf = ""
     val tmpFilePath = "/tmp/prediction"
 
-    val file = new java.io.File(modelForRfPath)
-    if (file.exists()) {
-      modelForRf = scala.io.Source.fromFile(modelForRfPath).mkString
-    } else {
-      cancel()
-    }
+    var modelForRf = scala.io.Source.fromFile(modelForRfPath,"ISO-8859-1").mkString
 
     val inputs = List(ReflexEvent(EventType.Model, None, ByteString.copyFrom(modelForRf.map(_.toByte).toArray), Some("1234")),
       ReflexEvent(EventType.MLHealthModel, None, ByteString.copyFrom(healthStr1.map(_.toByte).toArray), None),
@@ -2691,6 +2686,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                     "id": 3,
                     "type": "ReflexDTRegML",
                     "arguments" : {
+                        "tempSharedPath": "file:///tmp",
                         "maxDepth": 3,
                         "maxBins": 3,
                         "featuresCol": "features",
@@ -2763,6 +2759,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                     "id": 3,
                     "type": "ReflexDTML",
                     "arguments" : {
+                        "tempSharedPath": "file:///tmp",
                         "maxDepth": 3,
                         "maxBins": 3,
                         "impurity": "gini",
@@ -2887,6 +2884,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                     "id": 8,
                     "type": "ReflexDTRegML",
                     "arguments" : {
+                     "tempSharedPath": "file:///tmp",
                      "maxDepth": 3,
                      "maxBins": 300,
                       "featuresCol": "features",
@@ -3334,6 +3332,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                          }
                      ],
                      "arguments": {
+                         "tempSharedPath": "file:///tmp",
                          "elasticNetParam": 0,
                          "family": "auto",
                          "fitIntercept": true,
@@ -3460,6 +3459,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                          }
                      ],
                      "arguments": {
+                         "tempSharedPath": "file:///tmp",
                          "elasticNetParam": 0,
                          "family": "auto",
                          "fitIntercept": true,
@@ -3481,7 +3481,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
     noException should be thrownBy DagGen.main(args)
   }
 
-  "Good Pipeline Histogram From DataFrame" should "be valid end to end" in {
+  "Building continuous histogram for data" should "be valid end to end" in {
 
     val dataHistPath = getClass.getResource("/dataHist.txt").getPath
 

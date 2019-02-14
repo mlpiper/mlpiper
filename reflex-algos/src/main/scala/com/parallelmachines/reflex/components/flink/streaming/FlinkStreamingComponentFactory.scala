@@ -29,7 +29,6 @@ object FlinkStreamingComponentFactory {
     classOf[flink.streaming.connectors.EventSocketSource],
     classOf[flink.streaming.connectors.EventSocketTwoSource],
     classOf[flink.streaming.connectors.EventSocketSink],
-    classOf[flink.streaming.connectors.ModelAcceptedEventProducer],
     classOf[flink.streaming.connectors.ReflexSocketSink],
     classOf[flink.streaming.connectors.ReflexFileSink],
 

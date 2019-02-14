@@ -8,6 +8,7 @@ import java.nio.file.{Files, Paths}
 import java.nio.charset.StandardCharsets
 import java.io.File
 
+import com.parallelmachines.mlops.MLOpsEnvVariables
 import com.parallelmachines.reflex.common.FileUtil
 import com.parallelmachines.reflex.common.constants.ReflexAlgosConstants
 import com.parallelmachines.reflex.common.util.StringOps
@@ -380,6 +381,8 @@ object DagGen {
           reflexPipe.materialize(new EnvironmentWrapper(env))
           jobExecutionResult = Some(env.execute(reflexPipe.pipeInfo.name))
         case ComputeEngineType.SparkBatch =>
+          /** This init is not really required, but helps to detect if rest host/port env vars were provided. */
+          MLOpsEnvVariables.init
           executeSparkBatchPipeline(reflexPipe, config)
         case ComputeEngineType.Tensorflow =>
           throw new Exception(s"Engine type ${reflexPipe.pipeInfo.engineType} is not runnable through this code")

@@ -19,6 +19,7 @@ private class MapModelEventToModelReceivedEvent() extends MapFunction[ReflexEven
 /**
   * Component receives Model event and sends out ModelAccepted event.
   */
+@deprecated
 class ModelAcceptedEventProducer extends FlinkStreamingComponent {
 
   override val isSource: Boolean = false

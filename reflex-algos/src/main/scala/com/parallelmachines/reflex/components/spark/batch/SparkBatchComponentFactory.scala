@@ -41,7 +41,7 @@ object SparkBatchComponentFactory {
     classOf[spark.batch.connectors.ReflexNullSourceConnector],
     classOf[spark.batch.connectors.EventSocketSource],
     classOf[spark.batch.connectors.EventSocketSink],
-    classOf[spark.batch.connectors.ModelAcceptedEventProducer],
+    classOf[spark.batch.connectors.RestDataSource],
     classOf[spark.batch.parsers.CsvToDF],
     classOf[spark.batch.connectors.DFtoFile],
     classOf[spark.batch.connectors.HiveToDF],

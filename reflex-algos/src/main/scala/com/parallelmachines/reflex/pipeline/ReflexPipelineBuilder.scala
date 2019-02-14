@@ -114,32 +114,6 @@ class ReflexPipelineBuilder {
     }
   }
 
-  /**
-    * The function checks if pipeline contains ModelConsumer component.
-    * If so it adds ModelAcceptedEventProducer component to this pipeline.
-    *
-    * So when pipeline receives Model event, it will be forwarded to model consumer
-    * and ModelAcceptedEventProducer.
-    * TODO: We need to handle case of multiple model consumer components within pipeline or multimodel support
-    * https://parallelmachines.atlassian.net/browse/REF-4880
-    */
-  private def addModelAcceptedEventProducer(): Unit = {
-    var hasModelConsumer = false
-    for (comp <- pipeInfo.pipe) {
-      val compInstance = ReflexComponentFactory(pipeInfo.engineType, comp.`type`, null)
-      compInstance match {
-        case compInst: ModelBehavior =>
-          hasModelConsumer = hasModelConsumer || compInst.modelBehaviorType == ModelBehaviorType.ModelConsumer ||
-            compInst.modelBehaviorType == ModelBehaviorType.ModelProducerConsumer
-        case _ =>
-      }
-    }
-
-    if (hasModelConsumer) {
-      pipeInfo.addComponent(Component("ModelAcceptedEventProducer", pipeInfo.getMaxId + 1, "ModelAcceptedEventProducer", ListBuffer[Parent](), None))
-    }
-  }
-
   // TODO: handle a case when a singleton can be not a source or a sink
   private def mergeSinkSingletons(): Unit = {
     val allSinkSingletons = ListBuffer[Component]()
@@ -589,10 +563,6 @@ class ReflexPipelineBuilder {
     }
 
     // Resolve defaults
-    if (pipeInfo.engineType == ComputeEngineType.FlinkStreaming || pipeInfo.engineType == ComputeEngineType.SparkBatch) {
-      addModelAcceptedEventProducer()
-    }
-
     addDefaultComponents()
 
     if (pipeInfo.engineType == ComputeEngineType.FlinkStreaming) {

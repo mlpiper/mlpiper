@@ -2,6 +2,7 @@ package com.parallelmachines.reflex.common
 
 import org.apache.spark.ml.PipelineModel
 
+@deprecated
 class SparkSaveModel {
   var sparkMLModel: PipelineModel = _
 

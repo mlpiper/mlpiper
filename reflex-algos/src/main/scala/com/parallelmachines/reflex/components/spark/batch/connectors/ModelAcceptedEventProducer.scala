@@ -17,6 +17,7 @@ import scala.reflect.runtime.universe._
   *
   * Event type will be replaced to ModelAccepted, forwarded to Sink and sent back to ECO.
   */
+@deprecated
 class ModelAcceptedEventProducer extends SparkBatchComponent {
 
   override val isSource: Boolean = false
