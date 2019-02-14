@@ -1,3 +1,3 @@
-import parallelm.main
+import parallelm.mlpiper.main
 
-parallelm.main.main()
+parallelm.mlpiper.main.main()
