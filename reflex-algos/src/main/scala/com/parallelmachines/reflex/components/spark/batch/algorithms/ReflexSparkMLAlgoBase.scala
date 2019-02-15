@@ -5,11 +5,10 @@ import java.nio.file.Files
 
 import com.parallelmachines.reflex.common._
 import com.parallelmachines.reflex.common.FeatureImportance
-import com.parallelmachines.reflex.common.enums.ModelFormat
-import com.parallelmachines.reflex.common.mlobject.{Model, SparkMLModel}
+import com.parallelmachines.reflex.common.mlobject.SparkMLModel
 import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.components.spark.batch.algorithms.MlMethod.MlMethodType
-import com.parallelmachines.reflex.components.spark.batch.connectors.{ReflexNullConnector, ReflexNullSourceConnector, SparkModelFileSink}
+import com.parallelmachines.reflex.components.spark.batch.connectors.{ReflexNullConnector, ReflexNullSourceConnector}
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
 import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
 import com.parallelmachines.reflex.web.RestApis
@@ -43,7 +42,7 @@ trait ReflexSparkMLAlgoBase extends SparkBatchComponent with ModelBehavior {
 
   private val outputModel = ComponentConnection(
     tag = typeTag[SparkMLModel],
-    defaultComponentClass = Some(classOf[SparkModelFileSink]),
+    defaultComponentClass = Some(classOf[ReflexNullConnector]),
     label = "Model",
     description = "Trained model",
     group = ConnectionGroups.MODEL)
