@@ -29,9 +29,7 @@ def upload_mlapp(mclient, mlapp_dir):
     logger.info("Loaded the following MLApp definition from file: {}".format(mlapp_workflow))
 
     agent_list = mclient.list_agents()
-    groups_list = mclient.list_groups()
     logger.info("Agents:  {}".format(agent_list))
-    logger.info("Groups:  {}".format(groups_list))
 
     agents_obj = []
     for agent in agent_list:
@@ -39,15 +37,7 @@ def upload_mlapp(mclient, mlapp_dir):
         logger.info("Agent obj: {}".format(agents_obj))
         agents_obj.append(agent_obj)
 
-    # Groups are already created, so initialize from fetched data
-    groups = {}
-    for g in groups_list:
-        logger.info("Creating group: {}".format(g["name"]))
-        group_obj = Group(agents_obj, mclient, id=g["id"])
-        logger.info("Group obj: {}".format(group_obj))
-        groups[g["name"]] = group_obj
-
     logger.info("Creating mlapp")
-    mlapp = Workflow(mlapp_workflow, mlapp_dir, groups, mclient)
+    mlapp = Workflow(mlapp_workflow, mlapp_dir, mclient)
     logger.info("mlapp: {}".format(mlapp))
     return mlapp

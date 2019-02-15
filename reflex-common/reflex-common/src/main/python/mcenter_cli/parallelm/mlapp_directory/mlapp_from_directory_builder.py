@@ -17,7 +17,6 @@ from parallelm.mlapp_directory.pipeline_json_helper import PipelineJSONHelper
 # TODO: fail if can not load models or models does not exists
 # TODO: add download for mlapp that will generate a dir
 # TODO: support uploading with prefix added for each pipeline/pattern/profile
-# TODO: support providing a list of group names to use when loading
 
 
 class MLAppFromDirectoryBuilder(object):
@@ -40,8 +39,6 @@ class MLAppFromDirectoryBuilder(object):
         self._components_desc_helper = ComponentsDescriptionHelper(self._mclient.get_components())
         self._node_to_id = {}
         self._node_to_pipeline_id = {}
-        self._group_to_id = {}
-        self._groups_info = {}
         self._prefix = ""
         self._postfix = ""
         self._pattern_id = None      # Will hold the pattern id once created
@@ -55,7 +52,6 @@ class MLAppFromDirectoryBuilder(object):
         self._verify_mlapp()
         self._add_nodes_ids()
         self._fix_node_children_and_parents()
-        self._fix_groups()
         self._fix_models()
         self._fix_pipelines_json()
 
@@ -73,11 +69,6 @@ class MLAppFromDirectoryBuilder(object):
 
     def _get_mlapp_name(self):
         return self._mlapp_info[MLAppKeywords.NAME]
-
-    def _get_group_agents(self, group_name):
-        group_info = self._groups_info[group_name]
-        agents = group_info[GroupKeywords.AGENTS].copy()
-        return agents
 
     def _load_mlapp_info(self):
         mlapp_main_file = os.path.join(self._mlapp_dir, MLAppDirBuilderDefs.MLAPP_MAIN_FILE)
@@ -222,26 +213,6 @@ class MLAppFromDirectoryBuilder(object):
             node_info = self._get_mlapp_node_info(node)
             self._fix_pipeline_json(node_info[MLAppKeywords.PIPELINE_JSON])
 
-    def _fix_groups(self):
-        """
-        Getting the group id and setting it in the mlapp
-        :return:
-        """
-        groups_info = self._mclient.list_groups()
-        self._logger.info(pprint.pformat(groups_info))
-        for group_info in groups_info:
-            group_name = group_info[GroupKeywords.NAME]
-            group_id = group_info[GroupKeywords.ID]
-            self._group_to_id[group_name] = group_id
-            self._groups_info[group_name] = group_info
-
-        for node in self._get_mlapp_nodes():
-            node_info = self._get_mlapp_node_info(node)
-            group_name = node_info[MLAppKeywords.GROUP_NAME]
-            if group_name not in self._group_to_id:
-                raise Exception("Group {} does not exists".format(group_name))
-            node_info[MLAppKeywords.GROUP_ID] = self._group_to_id[group_name]
-
     def _fix_models(self):
         """
         Going over the MLApp nodes and if detecting defaultModelPath or defaultModelName then doing the following
@@ -337,38 +308,31 @@ class MLAppFromDirectoryBuilder(object):
 
         pipeline_json = node_info[MLAppKeywords.PIPELINE_JSON]
         pattern_id = node_info[MLAppKeywords.PIPELINE_ID]
-        group_name = node_info[MLAppKeywords.GROUP_NAME]
 
         pipe_helper = PipelineJSONHelper(pipeline_json)
-        agents_ids = self._get_group_agents(group_name)
+        profile_name = pipe_helper.name + "-profile"
+        pipe_str = json.dumps(pipeline_json)
+        payload = {
+                    "name": profile_name,
+                    "engineType": pipe_helper.engine_type,
+                    "pipeline": pipe_str,
+                    "pipelinePatternId": pattern_id
+        }
 
-        agent_to_profile_id = {}
-        for agent_id in agents_ids:
+        if MLAppKeywords.NODE_DEFAULT_MODEL_ID in node_info:
+            model_id = node_info[MLAppKeywords.NODE_DEFAULT_MODEL_ID]
+            payload["defaultModelId"] = model_id
 
-            profile_name = pipe_helper.name + "-profile-" + agent_id
-            pipe_str = json.dumps(pipeline_json)
-            payload = {
-                        "name": profile_name,
-                        "engineType": pipe_helper.engine_type,
-                        "pipeline": pipe_str,
-                        "pipelinePatternId": pattern_id
-            }
+        self._logger.info("creating pipeline profile: payload {}".format(pprint.pformat(payload)))
+        pipeline_profile_id = self._mclient.create_pipeline_profile(payload)
 
-            if MLAppKeywords.NODE_DEFAULT_MODEL_ID in node_info:
-                model_id = node_info[MLAppKeywords.NODE_DEFAULT_MODEL_ID]
-                payload["defaultModelId"] = model_id
-
-            self._logger.info("creating pipeline profile: payload {}".format(pprint.pformat(payload)))
-            profile_id = self._mclient.create_pipeline_profile(payload)
-            agent_to_profile_id[agent_id] = profile_id
-
-            return agent_to_profile_id
+        return pipeline_profile_id
 
     def _create_pipelines_profile(self):
         for node in self._get_mlapp_nodes():
             node_info = self._get_mlapp_node_info(node)
-            agent_to_profile = self._create_pipeline_profile(node_info)
-            node_info[MLAppKeywords.NODE_AGENT_TO_PROFILE] = agent_to_profile
+            pipeline_profile_id = self._create_pipeline_profile(node_info)
+            node_info[MLAppKeywords.PIPELINE_PROFILE_ID] = pipeline_profile_id
 
     def _add_nodes_ids(self):
         counter = 0
@@ -425,7 +389,6 @@ class MLAppFromDirectoryBuilder(object):
             MLAppPatternKeywords.NODE_ID: node_info[MLAppKeywords.NODE_ID],
             MLAppPatternKeywords.NODE_CHILDREN: node_info[MLAppPatternKeywords.NODE_CHILDREN],
             MLAppPatternKeywords.NODE_PARENT: node_info[MLAppPatternKeywords.NODE_PARENT],
-            MLAppPatternKeywords.NODE_GROUP_ID: node_info[MLAppKeywords.GROUP_ID],
             MLAppPatternKeywords.PIPELINE_PATTERN_ID: node_info[MLAppKeywords.PIPELINE_ID],
             MLAppPatternKeywords.CRON_SCHEDULE: node_info[MLAppKeywords.CRON_SCHEDULE],
             MLAppPatternKeywords.NODE_PIPELINE_TYPE: pipe_helper.pipeline_type,
@@ -462,20 +425,15 @@ class MLAppFromDirectoryBuilder(object):
         profile_info[MLAppProfileKeywords.MODEL_POLICY] = self._mlapp_info[MLAppKeywords.MODEL_POLICY]
         profile_info[MLAppProfileKeywords.GLOBAL_TRESHOLD] = self._mlapp_info[MLAppKeywords.GLOBAL_TRESHOLD]
 
-        # Add pipelineAgentSet for each agent in the group
+        # Add pipelineEETuple for each node
         for profile_node_info in profile_info.get(MLAppProfileKeywords.NODES):
             node_id = profile_node_info[MLAppProfileKeywords.NODE_ID]
             mlapp_node_info = self._get_mlapp_node_info_by_id(node_id)
 
-            agent_set = []
-            for agent_id, pipeline_profile_id in mlapp_node_info[MLAppKeywords.NODE_AGENT_TO_PROFILE].items():
-                agent_pipeline_info = {
-                    MLAppProfileKeywords.AGENT_SET_AGENT_ID: agent_id,
-                    MLAppProfileKeywords.AGENT_SET_PIPELINE_PROFILE_ID: pipeline_profile_id
-                }
-                agent_set.append(agent_pipeline_info)
-
-            profile_node_info[MLAppProfileKeywords.NODE_PIPELINE_AGENT_SET] = agent_set
+            pipeline_ee_info = {
+                MLAppProfileKeywords.PIPELINE_EE_TUPLE_PIPELINE_PROFILE_ID: mlapp_node_info[MLAppKeywords.PIPELINE_PROFILE_ID]
+            }
+            profile_node_info[MLAppProfileKeywords.NODE_PIPELINE_EE_TUPLE] = pipeline_ee_info
 
         self._logger.info("MLApp profile {}".format(pprint.pformat(profile_info)))
         self._profile_id = self._mclient.create_ion_profile(profile_info)

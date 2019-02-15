@@ -28,23 +28,8 @@ class DirectoryFromMLAppBuilder:
         self._profile_info = None
         self._pattern_info = None
         self._mlapp_info = OrderedDict()
-        self._group_id_to_name = {}
-
-    def _get_groups_info(self):
-        """
-        Getting the group id and setting it in the mlapp
-        :return:
-        """
-        groups_info = self._mclient.list_groups()
-        self._logger.info(pprint.pformat(groups_info))
-        for group_info in groups_info:
-            group_name = group_info[GroupKeywords.NAME]
-            group_id = group_info[GroupKeywords.ID]
-            self._group_id_to_name[group_id] = group_name
 
     def _collect_all_info(self):
-        self._get_groups_info()
-
         for profile_info in self._mclient.list_ion_profiles():
             self._logger.info("Profile part: [{}]".format(self._mlapp_name))
             self._logger.info(pprint.pformat(profile_info))
@@ -60,13 +45,8 @@ class DirectoryFromMLAppBuilder:
                 for node_info in profile_info[MLAppProfileKeywords.NODES]:
                     node_id = node_info[MLAppProfileKeywords.NODE_ID]
                     pipeline_pattern_id = node_info[MLAppProfileKeywords.NODE_PIPELINE_PATTERN_ID]
-
-                    agent_set = node_info[MLAppProfileKeywords.NODE_PIPELINE_AGENT_SET]
-                    if len(agent_set) > 1:
-                        raise Exception("Not supporting downlading an MLApp with AgentSet size > 1")
-
-                    item = agent_set[0]
-                    pipeline_profile_id = item[MLAppProfileKeywords.AGENT_SET_PIPELINE_PROFILE_ID]
+                    pipeline_ee_tuple = node_info[MLAppProfileKeywords.NODE_PIPELINE_EE_TUPLE]
+                    pipeline_profile_id = pipeline_ee_tuple[MLAppProfileKeywords.PIPELINE_EE_TUPLE_PIPELINE_PROFILE_ID]
 
                     self._pipelines_info[node_id] = {"profile": self._mclient.get_pipeline_profile(pipeline_profile_id),
                                                      "pattern": self._mclient.get_pipeline_pattern(pipeline_pattern_id)
@@ -107,7 +87,7 @@ class DirectoryFromMLAppBuilder:
                 node_info[MLAppKeywords.NODE_PARENT] = [node_info[MLAppKeywords.NODE_PARENT]]
 
     def _init_mlapp_info(self):
-        self._mlapp_info[MLAppKeywords.VERSION] = MLAppVersions.V2
+        self._mlapp_info[MLAppKeywords.VERSION] = MLAppVersions.V1
         self._mlapp_info[MLAppKeywords.NAME] = self._mlapp_name
         self._copy_key_val(self._mlapp_info, self._profile_info,
                            MLAppKeywords.MODEL_POLICY, MLAppProfileKeywords.MODEL_POLICY)
@@ -124,9 +104,6 @@ class DirectoryFromMLAppBuilder:
             self._copy_key_val(mlapp_node_info, profile_node_info, MLAppKeywords.CRON_SCHEDULE, exists=True)
             self._copy_key_val(mlapp_node_info, profile_node_info, MLAppKeywords.NODE_PARENT)
 
-            # FIX group
-            group_name = self._group_id_to_name[profile_node_info[MLAppProfileKeywords.NODE_GROUP_ID]]
-            mlapp_node_info[MLAppKeywords.GROUP_NAME] = group_name
             mlapp_nodes_info[node_id] = mlapp_node_info
         self._mlapp_info[MLAppKeywords.NODES] = mlapp_nodes_info
         self._fix_mlapp_node_parent()

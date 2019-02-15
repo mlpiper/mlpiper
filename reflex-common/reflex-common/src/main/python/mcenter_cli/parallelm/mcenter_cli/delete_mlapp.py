@@ -43,10 +43,9 @@ class MLAppDeleteHelper:
                     pipeline_pattern_id = node_info[MLAppProfileKeywords.NODE_PIPELINE_PATTERN_ID]
                     self._pipeline_patterns_ids.append(pipeline_pattern_id)
 
-                    agent_set = node_info[MLAppProfileKeywords.NODE_PIPELINE_AGENT_SET]
-                    for item in agent_set:
-                        pipeline_profile_id = item[MLAppProfileKeywords.AGENT_SET_PIPELINE_PROFILE_ID]
-                        self._pipeline_profiles_ids.append(pipeline_profile_id)
+                    pipeline_ee_tuple = node_info[MLAppProfileKeywords.NODE_PIPELINE_EE_TUPLE]
+                    pipeline_profile_id = pipeline_ee_tuple[MLAppProfileKeywords.PIPELINE_EE_TUPLE_PIPELINE_PROFILE_ID]
+                    self._pipeline_profiles_ids.append(pipeline_profile_id)
                 return
         raise Exception("Could not find MLApp {}".format(self._mlapp_name))
 
