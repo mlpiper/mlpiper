@@ -12,7 +12,7 @@ from parallelm.mcenter_objects.model_access import ModelAccess
 
 
 class Workflow:
-    def __init__(self, workflow_data, mlapp_dir, all_groups, mclient, accounts={}):
+    def __init__(self, workflow_data, mlapp_dir, mclient, accounts={}):
         """
         Handles one workflow lifecycle
         """
@@ -21,7 +21,6 @@ class Workflow:
         self._workflow_data = workflow_data
         self._mlapp_dir = mlapp_dir
         self._mclient = mclient
-        self._all_groups = all_groups
 
         self._logger.info("workflow_data: {}".format(pprint.pformat(workflow_data)))
 

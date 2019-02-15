@@ -11,5 +11,4 @@ def list_mlapp(mclient):
         if len(s) > 0:
             s += "\n"
         s += fmt.format(profile_name, pattern_name)
-
     print(s)

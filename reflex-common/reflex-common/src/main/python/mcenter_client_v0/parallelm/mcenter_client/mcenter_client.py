@@ -20,7 +20,7 @@ class MLOpsRest:
     login = "login"
     auth = "auth"
     agents = "agents"
-    groups = "groups"
+    ee = "executionEnvironments"
     pipelines = "pipelines"
     pipelinePatternId = "pipelinePatternId"
     profiles = "profiles"
@@ -332,36 +332,20 @@ class MCenterClient:
         r = self.delete(url)
         return r
 
-    def create_group(self, name, agent_ids):
-        """ Creates group and returns id """
-        payload = json.dumps({"name": name, "agents": agent_ids})
-        url = self._build_url(MLOpsRest.groups)
-        r = self.post(url, payload)
-        return r
+    def create_ee(self, name, data):
+        return ""
 
-    def list_groups(self):
-        """ List existing groups """
-        url = self._build_url(MLOpsRest.groups)
-        r = self.get(url)
-        return r
+    def list_ee(self, name, data):
+        return ""
 
-    def get_group(self, g_id):
-        """ Get group by id """
-        url = self._build_url(MLOpsRest.groups, g_id)
-        r = self.get(url)
-        return r
+    def get_ee(self, ee_id):
+        return ""
 
-    def delete_group(self, group_id):
-        """ Return agents as json dict """
-        url = self._build_url(MLOpsRest.groups, group_id)
-        r = self.delete(url)
-        return r
+    def delete_ee(self, ee_id):
+        return ""
 
-    def update_group(self, group_id, payload):
-        url = self._build_url(MLOpsRest.groups, group_id)
-        payload = json.dumps(payload)
-        r = self.put(url, payload)
-        return r
+    def update_ee(self, ee_id, data):
+        return ""
 
     def create_pipeline_pattern(self, data):
         """

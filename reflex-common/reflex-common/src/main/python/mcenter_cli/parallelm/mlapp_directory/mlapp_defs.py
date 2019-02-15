@@ -44,9 +44,8 @@ class MLAppProfileKeywords:
     NODE_DEFAULT_MODEL_ID = "defaultModelId"
     NODE_GROUP_ID = "groupId"
 
-    NODE_PIPELINE_AGENT_SET = "pipelineAgentSet"
-    AGENT_SET_PIPELINE_PROFILE_ID = "pipelineProfileId"
-    AGENT_SET_AGENT_ID = "agentId"
+    NODE_PIPELINE_EE_TUPLE = "pipelineEETuple"
+    PIPELINE_EE_TUPLE_PIPELINE_PROFILE_ID = "pipelineProfileId"
 
     NODE_PARENT_MCENTER = "-98$7.65#43^21"
 
