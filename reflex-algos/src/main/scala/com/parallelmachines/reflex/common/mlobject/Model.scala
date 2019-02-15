@@ -7,26 +7,26 @@ import com.parallelmachines.reflex.common.enums.ModelFormat
   */
 class Model(name: String, format: ModelFormat, description: String = "", id: Option[String] = None) extends MLObject(MLObjectType.Model, id) {
 
-  var data: String = ""
+  var data: Option[Array[Byte]] = None
 
   require(format != ModelFormat.UNKNOWN, "Model format can not be set to UNKNOWN")
 
   /**
     * Set data on Model object
     *
-    * @param data   data to set for a model
+    * @param data byte data to set for a model
     * @return
     */
-  def set_data(data: String): Unit = {
-    this.data = data
+  def setData(data: Array[Byte]): Unit = {
+    this.data = Some(data)
   }
 
   /**
     * Get model data
     *
-    * @return String data
+    * @return Array[Byte] data
     */
-  def get_data: String = {
+  def getData: Option[Array[Byte]] = {
     data
   }
 
@@ -35,7 +35,7 @@ class Model(name: String, format: ModelFormat, description: String = "", id: Opt
     *
     * @return ModelFormat format
     */
-  def get_format: ModelFormat = {
+  def getFormat: ModelFormat = {
     format
   }
 
@@ -44,7 +44,7 @@ class Model(name: String, format: ModelFormat, description: String = "", id: Opt
     *
     * @return String name
     */
-  def get_name: String = {
+  def getName: String = {
     name
   }
 
@@ -53,12 +53,12 @@ class Model(name: String, format: ModelFormat, description: String = "", id: Opt
     *
     * @return String description
     */
-  def get_description: String = {
+  def getDescription: String = {
     description
   }
 
   override def toString: String = {
-    s"${super.toString} name: $get_name; description: $get_description; format: ${get_format.toString}"
+    s"${super.toString} name: $getName; description: $getDescription; format: ${getFormat.toString}"
   }
 }
 

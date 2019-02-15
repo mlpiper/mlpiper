@@ -323,8 +323,8 @@ class ReflexPipelineTest extends FlatSpec {
     val res = new ReflexPipelineBuilder().buildPipelineFromInfo(pipeInfo)
 
     assert(pipeInfo.getComponentsByProperties(ComponentsGroups.algorithms, isSource = false).length == 1)
-    assert(pipeInfo.getComponentsByProperties(ComponentsGroups.connectors, isSource = false).length == 2)
-    assert(pipeInfo.getComponentsByProperties(ComponentsGroups.connectors, isSource = true).length == 3)
+    assert(pipeInfo.getComponentsByProperties(ComponentsGroups.connectors, isSource = false).length == 0)
+    assert(pipeInfo.getComponentsByProperties(ComponentsGroups.connectors, isSource = true).length == 2)
     assert(pipeInfo.getComponentsByProperties(ComponentsGroups.connectors, isSource = true, Some(ConnectionGroups.DATA)).length == 2)
 
     val compsList = pipeInfo.getComponentsByProperties(ComponentsGroups.connectors, isSource = true, Some(ConnectionGroups.DATA))
@@ -335,8 +335,8 @@ class ReflexPipelineTest extends FlatSpec {
 
     assert(res != null, "json1 is not valid")
 
-    // 6 + 3 generated (model accepted event producer, event socket sink, source)
-    assert(res.nodeList.length == 9, "wrong number of nodes in DAG after parsing")
+    // 6
+    assert(res.nodeList.length == 6, "wrong number of nodes in DAG after parsing")
 
     val c1 = compsList(1)
     val c2 = c1.copy(arguments = Some(Map[String, Any]("port" -> 9092, "host" -> "daenerys-c17", "topic" -> "SVM")))
@@ -701,8 +701,8 @@ class ReflexPipelineTest extends FlatSpec {
     val res = DagTestUtil.parseGenerateValidate(json1)
     assert(res != null, "json1 is not valid")
 
-    // 6 + 3 (model accepted event producer, event socket sink, event socket source)
-    assert(res.nodeList.length == 9, "wrong number of nodes in DAG after parsing")
+    // 6
+    assert(res.nodeList.length == 6, "wrong number of nodes in DAG after parsing")
   }
 
   "Good Pipeline with input index in parent definition" should "be valid" in {
@@ -987,10 +987,8 @@ class ReflexPipelineTest extends FlatSpec {
     }
     """
     val res = DagTestUtil.parseGenerateValidate(goodJson)
-    // Expected number of nodes: 9 (3 components itself + 2 default outputs
-    // + 3 hidden components excluding same singleton eventSocketSink - event sink, source and
-    // model accepted event producer)
-    assert(res.nodeList.length == 8, "wrong number of nodes in DAG after parsing")
+    // Expected number of nodes: 5 (3 components itself + 2 default outputs)
+    assert(res.nodeList.length == 5, "wrong number of nodes in DAG after parsing")
   }
 
   "Good pipeline with default input nodes" should "be valid" in {

@@ -9,4 +9,5 @@ object RestApiName extends Enumeration {
   val stats = Value("stats")
   val modelStats = Value("modelStats")
   val download = Value("download")
+  val events = Value("events")
 }

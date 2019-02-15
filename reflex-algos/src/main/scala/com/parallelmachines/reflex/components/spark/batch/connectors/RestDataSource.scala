@@ -50,6 +50,7 @@ class RestDataSource extends SparkBatchComponent {
       if (model.isDefined) {
         requestData = false
         health = RestApis.getModelHealthStats(model.get)
+        RestApis.postModelAccepted(model.get)
       }
       Thread.sleep(timeoutMSEC)
     }

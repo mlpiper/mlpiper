@@ -1,8 +1,8 @@
 package com.parallelmachines.reflex.components.spark.batch.connectors
 
-import java.io.FileOutputStream
 
-import com.parallelmachines.reflex.common.{SparkMLPipelineModelHelper, SparkSaveModel}
+import com.parallelmachines.reflex.common.SparkMLPipelineModelHelper
+import com.parallelmachines.reflex.common.mlobject.SparkMLModel
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
 import com.parallelmachines.reflex.components.ComponentAttribute
 import com.parallelmachines.reflex.pipeline.{ComponentsGroups, ConnectionGroups}
@@ -22,7 +22,7 @@ class SparkModelFileSink extends SparkBatchComponent {
   override lazy val isVisible: Boolean = false
 
   private val input1 = ComponentConnection(
-    tag = typeTag[SparkSaveModel],
+    tag = typeTag[SparkMLModel],
     label = "Model",
     description = "Model to save to file",
     group = ConnectionGroups.MODEL)
@@ -43,7 +43,7 @@ class SparkModelFileSink extends SparkBatchComponent {
   override def materialize(env: SparkContext, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String):
   ArrayBuffer[DataWrapperBase] = {
 
-    val model = dsArr(0).data[SparkSaveModel]()
+    val model = dsArr(0).data[SparkMLModel]()
 
     //model.sparkMLModel.save(filePath.value)  //TODO: fix all save for docker abd hdfs like pyspark
     val sparkMLPipelineModelHelper = new SparkMLPipelineModelHelper()

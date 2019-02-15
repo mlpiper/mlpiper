@@ -6,6 +6,7 @@ from flask import Flask
 from flask import json
 from flask import request
 from flask import Response
+from flask_cors import CORS
 
 from parallelm.common.mlcomp_exception import MLCompException
 
@@ -51,6 +52,7 @@ class FlaskAppWrapper(object):
 
     def __init__(self, pipeline_name):
         FlaskAppWrapper.app = Flask(pipeline_name)
+        CORS(FlaskAppWrapper.app)
 
     def run(self, host, port):
         FlaskAppWrapper.app.run(host, port)

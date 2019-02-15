@@ -9,8 +9,9 @@ import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import org.slf4j.LoggerFactory
-
 import java.net.URLEncoder
+
+import org.apache.http.HttpResponse
 
 /**
   * Generic REST client implementation.
@@ -28,42 +29,78 @@ class RestClient(scheme: String, host: String, port: Option[Int] = None) {
     uriBuilder.setPort(port.get)
   }
 
-  def getRequest(path: String, params: Map[String, String]): String = {
-    var ret: String = ""
-    val get = new HttpGet()
+  /**
+    * Response content from get request can be fetched as a string, byte array
+    * and others. When content expected to be JSON, it is fetched as String.
+    * When content is e.g. model, content is byte array.
+    * Generally speaking it is all about encoding, so when we use these
+    * methods encoding is selected automatically according to content.
+    */
+
+  private def doGetRequest(path: String, params: Map[String, String]): Option[HttpResponse] = {
+    var retResponse: Option[HttpResponse] = None
+    val getRequest = new HttpGet()
 
     uriBuilder.setPath(path)
 
     if (MLOpsEnvVariables.token.isDefined) {
-      get.setHeader("Cookie", s"$getCookie;")
+      getRequest.setHeader("Cookie", s"$getCookie;")
     }
     params.foreach(param => uriBuilder.setParameter(param._1, param._2))
 
     val uri = uriBuilder.build()
-    get.setURI(uri)
+    getRequest.setURI(uri)
 
     try {
-      val response = cl.execute(get)
-
+      val response = cl.execute(getRequest)
+      if (response == null) {
+        logger.error(s"Failed to make get request to $uri")
+        return None
+      }
       if (response.getStatusLine.getStatusCode != 200) {
         logger.error(s"Failed to get data from $uri, Http error code: ${response.getStatusLine.getStatusCode} - ${response.getStatusLine.getReasonPhrase}")
-      } else {
-        ret = EntityUtils.toString(response.getEntity)
+        response.close()
+        return None
       }
-      response.close()
+      retResponse = Some(response)
     }
     catch {
       case e: Throwable =>
         logger.error(s"Failed to execute get request to $uri", e.toString)
     }
+    retResponse
+  }
+
+  def getRequestAsString(path: String, params: Map[String, String]): String = {
+    var ret: String = ""
+    val response = doGetRequest(path, params)
+
+    if (response.isDefined) {
+      val entity = response.get.getEntity
+      ret = EntityUtils.toString(entity)
+      EntityUtils.consume(entity)
+    }
     ret
   }
 
-  def postBinary(path: String, params: Map[String, String], content: String): Unit = {
+  def getRequestAsByteArray(path: String, params: Map[String, String]): Option[Array[Byte]] = {
+    var ret: Option[Array[Byte]] = None
+
+    val response = doGetRequest(path, params)
+
+    if (response.isDefined) {
+      val entity = response.get.getEntity
+      ret = Some(EntityUtils.toByteArray(entity))
+      EntityUtils.consume(entity)
+    }
+    ret
+  }
+
+  def postBinary(path: String, params: Map[String, String], content: Array[Byte]): Unit = {
     val post = new HttpPost()
 
     val entityBuilder = MultipartEntityBuilder.create
-    entityBuilder.addBinaryBody("upload_binary_data", content.getBytes(), ContentType.APPLICATION_OCTET_STREAM, "binary_data_filename")
+    entityBuilder.addBinaryBody("upload_binary_data", content, ContentType.APPLICATION_OCTET_STREAM, "binary_data_filename")
     val entity = entityBuilder.build()
 
     post.setEntity(entity)
@@ -74,7 +111,7 @@ class RestClient(scheme: String, host: String, port: Option[Int] = None) {
   /**
     * TODO: keep an eye on this function and review later, as this call is blocking
     * and can cause performance issues.
-    * */
+    **/
   def postString(path: String, params: Map[String, String], content: String): Unit = {
     val post = new HttpPost()
 

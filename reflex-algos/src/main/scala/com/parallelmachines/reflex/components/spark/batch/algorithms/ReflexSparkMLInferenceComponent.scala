@@ -8,9 +8,10 @@ package com.parallelmachines.reflex.components.spark.batch.algorithms
 import java.io.{ByteArrayInputStream, File}
 import java.nio.file.Files
 
+import com.parallelmachines.reflex.common.mlobject.Model
 import com.parallelmachines.reflex.common.{ExtractArchives, _}
 import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
-import com.parallelmachines.reflex.components.spark.batch.connectors.{EventSocketSource, ModelTypeString, ReflexNullConnector}
+import com.parallelmachines.reflex.components.spark.batch.connectors.{EventSocketSource, ModelTypeString, ReflexNullConnector, RestDataSource}
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
 import com.parallelmachines.reflex.components.{ComponentAttribute, EnablePerformanceComponentAttribute, EnableValidationComponentAttribute, LabelColComponentAttribute}
 import com.parallelmachines.reflex.pipeline._
@@ -42,16 +43,16 @@ class ReflexSparkMLInferenceComponent extends SparkBatchComponent with ModelBeha
     group = ConnectionGroups.DATA)
 
   val input2 = ComponentConnection(
-    tag = typeTag[RDD[Array[Byte]]],
-    defaultComponentClass = Some(classOf[EventSocketSource]),
+    tag = typeTag[Model],
+    defaultComponentClass = Some(classOf[RestDataSource]),
     eventTypeInfo = Some(EventDescs.Model),
     label = "Model",
     description = "Model used to serve predictions",
     group = ConnectionGroups.MODEL)
 
   val input3 = ComponentConnection(
-    tag = typeTag[RDD[Array[Byte]]],
-    defaultComponentClass = Some(classOf[EventSocketSource]),
+    tag = typeTag[RDD[String]],
+    defaultComponentClass = Some(classOf[RestDataSource]),
     eventTypeInfo = Some(EventDescs.MLHealthModel),
     label = "Contender Health Stat",
     description = "ML Health Stream",
@@ -93,6 +94,7 @@ class ReflexSparkMLInferenceComponent extends SparkBatchComponent with ModelBeha
   override def materialize(env: SparkContext, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String): ArrayBuffer[DataWrapperBase] = {
     ModelTypeString.setModelTypeString(false)
     val pipelineInfo = dsArr(0).data[SparkBatchPipelineInfo]()
+    val model = dsArr(1).data[Model]()
     val originalDataframe = pipelineInfo.dataframe
 
     val transformedDataframe = pipelineInfo.fit().transform(originalDataframe)
@@ -104,11 +106,10 @@ class ReflexSparkMLInferenceComponent extends SparkBatchComponent with ModelBeha
     var sparkMLModel: PipelineModel = null
     var tempPath = ""
     try {
-      val modelPath: Array[Byte] = dsArr(1).data[RDD[Array[Byte]]]().first()
-      val modelFile = new ByteArrayInputStream(modelPath)
+      val modelData = new ByteArrayInputStream(model.getData.get)
       val tempDir = Files.createTempDirectory("tempA")
       tempPath = tempDir.toString
-      val mainPath = ExtractArchives.extractTarGZipObj(tempPath, modelFile)
+      val mainPath = ExtractArchives.extractTarGZipObj(tempPath, modelData)
 
       val sparkMLPipelineModelHelper = new SparkMLPipelineModelHelper()
       sparkMLPipelineModelHelper.setSharedContext(sparkContext1 = env)
@@ -129,13 +130,15 @@ class ReflexSparkMLInferenceComponent extends SparkBatchComponent with ModelBeha
     val healthLib = new HealthLibSpark(enableHealth)
     healthLib.setContext(env)
     healthLib.setDfOfDenseVector(transformedDataframe)
-    healthLib.setIncomingHealth(dsArr(2).data[RDD[Array[Byte]]]().map(new String(_)))
+    healthLib.setIncomingHealth(dsArr(2).data[RDD[String]]())
 
     val continuousHealthStat = new ContinuousHistogramForSpark(HealthType.ContinuousHistogramHealth.toString)
+    continuousHealthStat.setModelId(model.getId)
 
     healthLib.addComponent(continuousHealthStat)
 
     val categoricalHealthStat = new CategoricalHistogramForSpark(HealthType.CategoricalHistogramHealth.toString)
+    categoricalHealthStat.setModelId(model.getId)
 
     healthLib.addComponent(categoricalHealthStat)
 
