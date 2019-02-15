@@ -353,6 +353,13 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                         "labelCol": "c0"
                     },
                     "parents": [{"parent": 2, "output": 0}]
+                },
+                {
+                    "name": "SparkModelFileSink",
+                    "id": 5,
+                    "type": "SparkModelFileSink",
+                    "parents": [{"parent": 4, "output": 0}],
+                    "arguments" : {}
                 }
              ]
            }
@@ -366,8 +373,9 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
 
     // Test that histograms are generated using JPMML model
     val file = new java.io.File(outTmpFilePath)
-    if (file.exists()) {
-
+    if (!file.exists()) {
+      assert(false)
+    } else {
       val header = false
       val sparkSession = SparkSession.builder.
         master("local[*]").appName("Good pipeline 6 - Histogram").getOrCreate()
@@ -468,6 +476,13 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                         "labelCol": "c0"
                     },
                     "parents": [{"parent": 3, "output": 0}]
+                },
+                {
+                    "name": "SparkModelFileSink",
+                    "id": 5,
+                    "type": "SparkModelFileSink",
+                    "parents": [{"parent": 4, "output": 0}],
+                    "arguments" : {}
                 }
              ]
            }
@@ -481,8 +496,9 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
 
     // Test that histograms are generated using JPMML model
     val file = new java.io.File(outTmpFilePath)
-    if (file.exists()) {
-
+    if (!file.exists()) {
+      assert(false)
+    } else {
       val header = false
       val sparkSession = SparkSession.builder.
         master("local[*]").appName("Good Histograms").getOrCreate()
@@ -611,7 +627,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
             },
             {
               "name": "VectorIndexerComponent",
-              "id": 3,
+              "id": 2,
               "type": "VectorIndexerComponent",
               "parents": [{"parent": 1, "output": 0}],
               "arguments" : {
@@ -621,12 +637,12 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
               }
             },
             {
-              "id": 2,
+              "id": 3,
               "name": "ReflexRandomForestML",
               "type": "ReflexRandomForestML",
               "parents": [
                 {
-                  "parent": 3,
+                  "parent": 2,
                   "output": 0,
                   "input": 0
                 }
@@ -642,6 +658,13 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                 "tempSharedPath": "file:///tmp",
                 "featuresCol": "features"
               }
+            },
+            {
+                "name": "SparkModelFileSink",
+                "id": 4,
+                "type": "SparkModelFileSink",
+                "parents": [{"parent": 3, "output": 0}],
+                "arguments" : {}
             }
           ],
           "systemConfig": {
@@ -665,8 +688,9 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
 
     // Test that histograms are generated using JPMML model
     val file = new java.io.File(outTmpFilePath)
-    if (file.exists()) {
-
+    if (!file.exists()) {
+      assert(false)
+    } else {
       val header = false
       val sparkSession = SparkSession.builder.
         master("local[*]").appName("Good Histograms").getOrCreate()
@@ -787,6 +811,13 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
                 "tempSharedPath": "file:///tmp",
                 "featuresCol": "newFeatures"
               }
+            },
+            {
+                "name": "SparkModelFileSink",
+                "id": 4,
+                "type": "SparkModelFileSink",
+                "parents": [{"parent": 3, "output": 0}],
+                "arguments" : {}
             }
           ],
           "systemConfig": {
@@ -809,8 +840,9 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
 
     // Test that histograms are generated using JPMML model
     val file = new java.io.File(outTmpFilePath)
-    if (file.exists()) {
-
+    if (!file.exists()) {
+      assert(false)
+    } else {
       val header = true
       val sparkSession = SparkSession.builder.
         master("local[*]").appName("Good Histograms").getOrCreate()
