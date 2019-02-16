@@ -23,6 +23,12 @@
             "validate": false
         },
         {
+            "path": "Tensorflow/hello-world-tensorflow"
+        },
+        {
+            "path": "Generic/hello-world-generic"
+        },
+        {
             "path": "Python/test-python-train"
         },
         {
@@ -47,7 +53,7 @@
             "path": "Python/model_connector_s3"
         },
         {
-            "path": "Python/hello-world"
+            "path": "Python/hello-world-python"
         },
         {
             "path": "Python/model_connector_h2o_open"

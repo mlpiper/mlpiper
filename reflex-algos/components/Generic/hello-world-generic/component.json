@@ -1,7 +1,7 @@
 {
     "engineType": "Generic",
     "language": "Python",
-    "name": "hello_world_generic",
+    "name": "hello-world-generic",
     "label": "Hello World Generic",
     "program": "hello_world.py",
     "modelBehavior": "Auxiliary",

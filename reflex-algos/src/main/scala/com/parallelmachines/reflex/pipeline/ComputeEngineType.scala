@@ -8,13 +8,14 @@ object ComputeEngineType extends Enumeration {
   val PySpark = Value("PySpark")
   val Tensorflow = Value("Tensorflow")
   val Python = Value("Python")
+  val Generic = Value("Generic")
   val RestModelServing = Value("RestModelServing")
 }
 
 object ExternalDirEngines {
   val externalEngineList: List[ComputeEngineType.Value] =
     List[ComputeEngineType.Value](ComputeEngineType.PySpark, ComputeEngineType.Tensorflow, ComputeEngineType.Python,
-      ComputeEngineType.RestModelServing)
+      ComputeEngineType.RestModelServing, ComputeEngineType.Generic)
   val externalEngineListString: List[String] =
     externalEngineList.map(_.toString)
 

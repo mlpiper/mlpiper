@@ -1,8 +1,8 @@
 {
   "engineType": "Python",
   "language": "Python",
-  "name": "hello-world",
-  "label": "Hello World",
+  "name": "hello-world-python",
+  "label": "Hello World Python",
   "program": "main.py",
   "modelBehavior": "Auxiliary",
   "useMLOps": true,
