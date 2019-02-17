@@ -40,7 +40,8 @@ setup(
     # data_files=[('.', ['__main__.py', 'setup.py'])],
     scripts=["bin/mlpiper",
              "bin/mcenter_components_setup.py",
-             "bin/create-egg.sh"],
+             "bin/create-egg.sh",
+             "bin/cleanup.sh"],
     install_requires=install_requires,
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     entry_points={
