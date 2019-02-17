@@ -1,4 +1,4 @@
 
-version = "1.1.2"
+version = "1.1.3"
 __version__ = version
 project_name = "ml-comp"
