@@ -139,6 +139,12 @@ def main(bin_dir=None):
             .skip_clean(options.skip_clean).use_color(not options.no_color) \
             .skip_mlpiper_deps_install(options.skip_mlpiper_deps)
 
+        if options.input_model:
+            ml_piper.input_model(options.input_model)
+
+        if options.output_model:
+            ml_piper.output_model(options.output_model)
+
         ml_piper.deploy()
 
         if options.subparser_name == "run":

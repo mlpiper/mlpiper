@@ -74,7 +74,7 @@ class MLPiper(Base):
         return self
 
     def pipeline(self, pipeline):
-        if isinstance(pipeline, io.TextIOWrapper) or isinstance(pipeline, file):
+        if isinstance(pipeline, io.TextIOWrapper):
             self._pipeline_dict = json.load(pipeline)
         elif os.path.exists(pipeline):
             self._logger.debug("Detected pipeline as a file")
@@ -144,11 +144,11 @@ class MLPiper(Base):
             self._pipeline_dict[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD] = system_config
 
         if self._input_model_filepath:
-            self._pipeline_dict[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD][java_mapping.MODEL_FILE_SOURCE_PATH_KEY]  = \
+            self._pipeline_dict[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD][java_mapping.MODEL_FILE_SOURCE_PATH_KEY] = \
                 self._input_model_filepath
 
         if self._output_model_filepath:
-            self._pipeline_dict[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD][java_mapping.MODEL_FILE_SINK_PATH_KEY]  = \
+            self._pipeline_dict[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD][java_mapping.MODEL_FILE_SINK_PATH_KEY] = \
                 self._output_model_filepath
 
     def _copy_components(self, dest_dir):
