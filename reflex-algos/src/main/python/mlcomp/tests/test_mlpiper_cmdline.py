@@ -36,10 +36,6 @@ simple_pipeline = {
 model_src_sink_pipeline = {
     "name": "Sink/Src MCenter runner test",
     "engineType": "Python",
-    "systemConfig": {
-        "modelFileSinkPath": "__PLACEHOLDER__",
-        "modelFileSourcePath": "__PLACEHOLDER__"
-    },
     "pipe": [
         {
             "name": "Test source model",
@@ -133,7 +129,7 @@ class TestMLPiper:
 
         comp_dir = os.path.join(os.path.dirname(__file__), "../../../../../components/Python")
 
-        cmd = "{} -r {} {} -f {} --deployment-dir {}".format(TestMLPiper.mlpiper_script, comp_dir, cmdline_action,
+        cmd = "{} {} -r {} -f {} --deployment-dir {}".format(TestMLPiper.mlpiper_script, cmdline_action, comp_dir,
                                                              TestMLPiper.pipeline_tmp_file, self._deployment_dir)
 
         self._exec_shell_cmd(cmd, "Failed in '{}' mlpiper command line! {}".format(cmdline_action, cmd))
@@ -166,14 +162,11 @@ class TestMLPiper:
         if os.path.exists(output_model):
             os.remove(output_model)
 
-        model_src_sink_pipeline['systemConfig']['modelFileSourcePath'] = input_model
-        model_src_sink_pipeline['systemConfig']['modelFileSinkPath'] = output_model
-
         fd, pipeline_file = mkstemp(prefix='test_mlpiper_pipeline_', dir='/tmp')
         os.write(fd, json.dumps(model_src_sink_pipeline).encode())
         os.close(fd)
 
-        cmd = "{} -r {} run -f {} --input-model '{}' --output-model '{}' --deployment-dir {}" \
+        cmd = "{} run -r {} -f {} --input-model '{}' --output-model '{}' --deployment-dir {}" \
             .format(TestMLPiper.mlpiper_script, comp_dir, pipeline_file, input_model, output_model,
                     self._deployment_dir)
         try:
