@@ -38,6 +38,7 @@ import sys
 
 from parallelm.mlpiper.mlpiper import MLPiper
 from parallelm.pipeline.component_language import ComponentLanguage
+from parallelm.mlcomp import version
 
 
 LOG_LEVELS = {'debug': logging.DEBUG, 'info': logging.INFO, 'warn': logging.WARN, 'error': logging.ERROR}
@@ -53,6 +54,9 @@ def parse_args():
     _add_deps_sub_parser(subparsers)
 
     # General arguments
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {version}'.format(version=version))
+
     parser.add_argument('--conf', required=False, default=None,
                         help="Configuration file for MLPiper runner")
 
