@@ -74,7 +74,7 @@ class MLPiper(Base):
         return self
 
     def pipeline(self, pipeline):
-        if isinstance(pipeline, io.TextIOWrapper):
+        if hasattr(pipeline, 'read'):
             self._pipeline_dict = json.load(pipeline)
         elif os.path.exists(pipeline):
             self._logger.debug("Detected pipeline as a file")
