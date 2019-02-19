@@ -12,7 +12,7 @@ from parallelm.components.restful_component import RESTfulComponent
 
 
 class SklearnRESTfulServing(RESTfulComponent):
-    JSON_KEY_NAME = "prediction_vector"
+    JSON_KEY_NAME = "data"
 
     def __init__(self, engine):
         super(SklearnRESTfulServing, self).__init__(engine)
@@ -68,18 +68,23 @@ class SklearnRESTfulServing(RESTfulComponent):
 
     def _empty_predict(self):
         model_loaded = True if self._model else False
+
         result_json = {
             "message": "got empty predict",
+            "expected_input_format" : "{{\"data\":[<vector>]}}",
             "model_loaded": model_loaded,
             "model_class": str(type(self._model))
         }
-        result_json.update(self.info_json)
 
         if model_loaded is False and self._model_loading_error:
             result_json["model_load_error"] = self._model_loading_error
+
         if self._model:
-            if hasattr(self._model, "n_features_"):
+            if not hasattr(self._model, "n_features_"):
                 result_json["n_features"] = self._model.n_features_
+                result_json["expected_input_format"] += ", where vector has {} comma separated values".format(self._model.n_features_)
+
+        result_json.update(self.info_json)
 
         return result_json
 
