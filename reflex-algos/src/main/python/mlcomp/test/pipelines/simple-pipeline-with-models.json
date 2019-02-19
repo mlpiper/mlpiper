@@ -1,0 +1,27 @@
+{
+    "name": "Sink/Src MCenter runner test",
+    "engineType": "Python",
+    "pipe": [
+        {
+            "name": "Test source model",
+            "id": 1,
+            "type": "test-predict-src",
+            "parents": [],
+            "arguments": {
+                "exit_value": 0,
+                "iter": 0
+            }
+        },
+        {
+            "name": "Test sink model",
+            "id": 2,
+            "type": "test-train-sink",
+            "parents": [],
+            "arguments": {
+                "exit_value": 0,
+                "iter": 0,
+                "model_content": "Model 1"
+            }
+        }
+    ]
+}
