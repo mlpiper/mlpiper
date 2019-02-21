@@ -1,11 +1,13 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
+import breeze.linalg.DenseVector
 import org.apache.flink.contrib.streaming.scala.utils.DataStreamUtils
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment, _}
+import org.apache.flink.streaming.scala.examples.clustering.math.{DenseVectorToNamedVectorFlatMap, ReflexNamedVector}
+import org.apache.flink.streaming.scala.examples.clustering.stat.heatmap.{HeatMap, HeatMapMethod, HeatMapValues}
+import org.apache.flink.streaming.scala.examples.common.stats.{AccumulatorInfo, StatTable}
 import org.apache.spark.sql.SparkSession
 import org.junit.runner.RunWith
-import org.mlpiper.datastructures.NamedVector
-import org.mlpiper.stat.heatmap.continuous.{HeatMap, HeatMapMethod}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -39,6 +41,240 @@ class HeatMapTest extends FlatSpec with Matchers {
   }
 
   /**
+    * Testing HeatMap Generation
+    */
+  it should "Generate Correct HeatMap From DataStream" in {
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(1)
+
+    val denseVectors: Seq[DenseVector[Double]] = HeatMapTestData.testDataStreamForHeatMap
+
+    val streamOfVectors: DataStream[DenseVector[Double]] = env.fromCollection(denseVectors)
+
+    // calculating heatmap for given stream of vectors by using "local-by-norm-mean" methodology
+    val heatMapValues = HeatMap
+      .createHeatMap(
+        stream = streamOfVectors.flatMap(new DenseVectorToNamedVectorFlatMap()),
+        localHeatMapMethod = HeatMapMethod.LocalByNormMean,
+        localWindowSize = 4,
+        globalHeatMapMethod = None,
+        globalWindowSize = None,
+        doubleWindowing = false)
+
+    val heatMapValuesDataStreamSeq: Seq[Map[String, Double]] = DataStreamUtils(heatMapValues).collect().toSeq.map(_.heatMapValue)
+
+    val expectedHeatMapValuesDataStreamSeq: Seq[Map[String, Double]] = HeatMapTestData.expectedMeanHeatMap
+
+    compareTwoMapsSeq(a = heatMapValuesDataStreamSeq, b = expectedHeatMapValuesDataStreamSeq)
+  }
+
+  /**
+    * Testing HeatMap Generation in Accumulator
+    */
+  it should "Generate Correct HeatMap From Accumulator" in {
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(1)
+
+    val denseVectors: Seq[DenseVector[Double]] = HeatMapTestData.testDataStreamForHeatMap
+
+    val streamOfVectors: DataStream[DenseVector[Double]] = env.fromCollection(denseVectors)
+
+    // calculating heatmap for given stream of vectors by using "local-by-norm-mean" methodology
+    HeatMap
+      .createHeatMap(
+        stream = streamOfVectors.flatMap(new DenseVectorToNamedVectorFlatMap()),
+        localHeatMapMethod = HeatMapMethod.LocalByNormMean,
+        localWindowSize = 4,
+        globalHeatMapMethod = None,
+        globalWindowSize = None,
+        doubleWindowing = false)
+
+    val job = env.execute()
+
+    val heatMapValue = job
+      .getAccumulatorResult[AccumulatorInfo[HeatMapValues]](StatTable.DATA_HEATMAP.toString)
+      .value
+      .heatMapValue
+
+    val expectedHeatMapValue = HeatMapTestData.expectedMeanHeatMap.last
+
+    compareTwoMaps(heatMapValue, expectedHeatMapValue) should be(true)
+  }
+
+  /**
+    * Testing HeatMap Generation For Window Of Two
+    */
+  it should "Generate Correct HeatMap From DataStream With Window Of 2" in {
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(1)
+
+    val denseVectors: Seq[DenseVector[Double]] = HeatMapTestData.testDataStreamForHeatMap
+
+    val streamOfVectors: DataStream[DenseVector[Double]] = env.fromCollection(denseVectors)
+
+    // calculating heatmap for given stream of vectors by using "local-by-norm-mean" methodology
+    val heatMapValues = HeatMap
+      .createHeatMap(
+        stream = streamOfVectors.flatMap(new DenseVectorToNamedVectorFlatMap()),
+        localHeatMapMethod = HeatMapMethod.LocalByNormMean,
+        localWindowSize = 2,
+        globalHeatMapMethod = None,
+        globalWindowSize = None,
+        doubleWindowing = false)
+
+    val heatMapValuesDataStreamSeq: Seq[Map[String, Double]] = DataStreamUtils(heatMapValues).collect().toSeq.map(_.heatMapValue)
+    val expectedHeatMapValuesDataStreamSeq: Seq[Map[String, Double]] = HeatMapTestData.expectedMeanHeatMapForWindowOfTwo
+
+    compareTwoMapsSeq(heatMapValuesDataStreamSeq, expectedHeatMapValuesDataStreamSeq)
+  }
+
+  /**
+    * Testing HeatMap Generation For Constants
+    */
+  it should "Generate Correct HeatMap From DataStream Of Constant" in {
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(1)
+
+    val denseVectors: Seq[DenseVector[Double]] = HeatMapTestData.testDataStreamOfConstantsForHeatMap
+
+    val streamOfVectors: DataStream[DenseVector[Double]] = env.fromCollection(denseVectors)
+
+    // calculating heatmap for given stream of vectors by using "local-by-norm-mean" methodology
+    val heatMapValues = HeatMap
+      .createHeatMap(
+        stream = streamOfVectors.flatMap(new DenseVectorToNamedVectorFlatMap()),
+        localHeatMapMethod = HeatMapMethod.LocalByNormMean,
+        localWindowSize = 4,
+        globalHeatMapMethod = None,
+        globalWindowSize = None,
+        doubleWindowing = false)
+
+    val heatMapValuesDataStreamSeq: Seq[Map[String, Double]] = DataStreamUtils(heatMapValues).collect().toSeq.map(_.heatMapValue)
+    val expectedHeatMapValuesDataStreamSeq: Seq[Map[String, Double]] = HeatMapTestData.expectedMeanHeatMapOfConstants
+
+    compareTwoMapsSeq(heatMapValuesDataStreamSeq, expectedHeatMapValuesDataStreamSeq)
+  }
+
+  /**
+    * Testing HeatMap Generation
+    */
+  it should "Generate Correct HeatMap From DataStream For Higher Parallelism" in {
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(2)
+
+    val denseVectors: Seq[DenseVector[Double]] = HeatMapTestData.testDataStreamForHeatMapForHigherParallism
+
+    val streamOfVectors: DataStream[DenseVector[Double]] = env.fromCollection(denseVectors)
+
+    // calculating heatmap for given stream of vectors by using "local-by-norm-mean" methodology
+    val heatMapValues = HeatMap
+      .createHeatMap(
+        stream = streamOfVectors.flatMap(new DenseVectorToNamedVectorFlatMap()),
+        localHeatMapMethod = HeatMapMethod.LocalByNormMean,
+        localWindowSize = 4,
+        globalHeatMapMethod = None,
+        globalWindowSize = None,
+        doubleWindowing = false)
+
+    val heatMapValuesDataStreamSeq: Seq[Map[String, Double]] = DataStreamUtils(heatMapValues).collect().toSeq.map(_.heatMapValue)
+    val expectedHeatMapValuesDataStreamSeq: Seq[Map[String, Double]] = HeatMapTestData.expectedMeanHeatMap
+
+    compareTwoMapsSeq(heatMapValuesDataStreamSeq, expectedHeatMapValuesDataStreamSeq)
+  }
+
+  /**
+    * Testing HeatMap Generation in Accumulator
+    */
+  it should "Generate Correct HeatMap From Accumulator For Higher Parallelism" in {
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(2)
+
+    val denseVectors: Seq[DenseVector[Double]] = HeatMapTestData.testDataStreamForHeatMapForHigherParallism
+
+    val streamOfVectors: DataStream[DenseVector[Double]] = env.fromCollection(denseVectors)
+
+    // calculating heatmap for given stream of vectors by using "local-by-norm-mean" methodology
+    HeatMap
+      .createHeatMap(
+        stream = streamOfVectors.flatMap(new DenseVectorToNamedVectorFlatMap()),
+        localHeatMapMethod = HeatMapMethod.LocalByNormMean,
+        localWindowSize = 4,
+        globalHeatMapMethod = None,
+        globalWindowSize = None,
+        doubleWindowing = false)
+
+    val job = env.execute()
+
+    val heatMapValue = job
+      .getAccumulatorResult[AccumulatorInfo[HeatMapValues]](StatTable.DATA_HEATMAP.toString)
+      .value
+      .heatMapValue
+
+    // expected value should be average of HeatMaps
+    val expectedHeatMapValue = HeatMapTestData.expectedMeanHeatMap.map(HeatMapValues(_)).reduce(_ + _)
+
+    compareTwoMaps(heatMapValue, expectedHeatMapValue.heatMapValue)
+  }
+
+  /**
+    * Testing HeatMap Generation For Double Windowing
+    * First Window - Mean
+    * Second Window - MinMax Scale
+    */
+  it should "Generate Correct HeatMap From DataStream For Double Windowing" in {
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(1)
+
+    val denseVectors: Seq[DenseVector[Double]] = HeatMapTestData.testDataStreamForHeatMap
+
+    val streamOfVectors: DataStream[DenseVector[Double]] = env.fromCollection(denseVectors)
+
+    // calculating heatmap for given stream of vectors by using "local-by-norm-mean" methodology
+    val heatMapValues = HeatMap
+      .createHeatMap(
+        stream = streamOfVectors.flatMap(new DenseVectorToNamedVectorFlatMap()),
+        localHeatMapMethod = HeatMapMethod.LocalByMean,
+        localWindowSize = 2L,
+        globalHeatMapMethod = Some(HeatMapMethod.GlobalByMinMaxScale),
+        globalWindowSize = Some(3L),
+        doubleWindowing = true)
+
+    val heatMapValuesDataStreamSeq: Seq[Map[String, Double]] = DataStreamUtils(heatMapValues).collect().toSeq.map(_.heatMapValue)
+    val expectedHeatMapValuesDataStreamSeq: Seq[Map[String, Double]] = HeatMapTestData.expectedMeanHeatMapForDoubleWindow_Mean_MinMax
+
+    compareTwoMapsSeq(heatMapValuesDataStreamSeq, expectedHeatMapValuesDataStreamSeq)
+  }
+
+  /**
+    * Testing HeatMap Generation For Double Windowing
+    * First Window - Mean
+    * Second Window - Standard Scale
+    */
+  it should "Generate Correct HeatMap From DataStream For Double Windowing Mean + Standard" in {
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(1)
+
+    val denseMatrixes: Seq[DenseVector[Double]] = HeatMapTestData.testDataStreamForHeatMap
+
+    val streamOfVectors: DataStream[DenseVector[Double]] = env.fromCollection(denseMatrixes)
+
+    // calculating heatmap for given stream of vectors by using "local-by-norm-mean" methodology
+    val heatMapValues = HeatMap
+      .createHeatMap(
+        stream = streamOfVectors.flatMap(new DenseVectorToNamedVectorFlatMap()),
+        localHeatMapMethod = HeatMapMethod.LocalByMean,
+        localWindowSize = 2L,
+        globalHeatMapMethod = Some(HeatMapMethod.GlobalByStandardScale),
+        globalWindowSize = Some(3L),
+        doubleWindowing = true)
+
+    val heatMapValuesDataStreamSeq: Seq[Map[String, Double]] = DataStreamUtils(heatMapValues).collect().toSeq.map(_.heatMapValue)
+    val expectedHeatMapValuesDataStreamSeq: Seq[Map[String, Double]] = HeatMapTestData.expectedMeanHeatMapForDoubleWindow_Mean_Standard
+
+    compareTwoMapsSeq(heatMapValuesDataStreamSeq, expectedHeatMapValuesDataStreamSeq)
+  }
+
+  /**
     * Testing HeatMap Generation For Double Windowing
     * First Window - Mean
     * Second Window - Standard Scale
@@ -47,9 +283,9 @@ class HeatMapTest extends FlatSpec with Matchers {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
 
-    val denseMatrixes: Seq[NamedVector] = HeatMapTestData.testDataStreamOfNamedVectorForHeatMap
+    val denseMatrixes: Seq[ReflexNamedVector] = HeatMapTestData.testDataStreamOfNamedVectorForHeatMap
 
-    val streamOfVectors: DataStream[NamedVector] = env.fromCollection(denseMatrixes)
+    val streamOfVectors: DataStream[ReflexNamedVector] = env.fromCollection(denseMatrixes)
 
     // calculating heatmap for given stream of vectors by using "local-by-norm-mean" methodology
     val heatMapValues = HeatMap

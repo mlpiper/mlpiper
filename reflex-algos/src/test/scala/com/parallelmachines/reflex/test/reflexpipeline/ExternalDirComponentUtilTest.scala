@@ -15,7 +15,7 @@ class ExternalDirComponentUtilTest extends FlatSpec {
 
   "External component directory" should "be valid" in {
 
-    val componentsDir = DagTestUtil.getComponentsDir
+    val componentsDir = DagTestUtil.getComponentsDir()
     logger.info(s"compDir $componentsDir")
     val testCompDir = Paths.get(componentsDir, ComputeEngineType.PySpark.toString, "mllib-random-forest").toAbsolutePath.toString
     logger.info(s"TestCompDir : $testCompDir")

@@ -1,9 +1,9 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
 import breeze.linalg.DenseVector
+import org.apache.flink.streaming.scala.examples.clustering.math.{ReflexColumnEntry, ReflexNamedVector}
+import org.apache.flink.streaming.scala.examples.common.parsing.ParameterIndices
 import com.parallelmachines.reflex.common.enums.OpType
-import org.mlpiper.datastructures.{ColumnEntry, NamedVector}
-import org.mlpiper.utils.ParameterIndices
 
 object HeatMapTestData {
 
@@ -21,40 +21,40 @@ object HeatMapTestData {
   )
 
   // NamedVectors
-  val testDataStreamOfNamedVectorForHeatMap: Seq[NamedVector] = Seq[NamedVector](
-    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "B", columnValue = 1.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "C", columnValue = 100.0, OpType.CONTINUOUS))),
+  val testDataStreamOfNamedVectorForHeatMap: Seq[ReflexNamedVector] = Seq[ReflexNamedVector](
+    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "B", columnValue = 1.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "C", columnValue = 100.0, OpType.CONTINUOUS))),
 
-    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 30.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "B", columnValue = 0.5, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "C", columnValue = 50.0, OpType.CONTINUOUS))),
+    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 30.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "B", columnValue = 0.5, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "C", columnValue = 50.0, OpType.CONTINUOUS))),
 
-    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = -10.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "B", columnValue = 0.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "C", columnValue = -100.0, OpType.CONTINUOUS))),
+    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = -10.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "B", columnValue = 0.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "C", columnValue = -100.0, OpType.CONTINUOUS))),
 
-    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = -20.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "B", columnValue = -1.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "C", columnValue = -50.0, OpType.CONTINUOUS))),
-
-
-    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = -20.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "B", columnValue = -2.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "C", columnValue = 50.0, OpType.CONTINUOUS))),
+    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = -20.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "B", columnValue = -1.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "C", columnValue = -50.0, OpType.CONTINUOUS))),
 
 
-    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 30.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "B", columnValue = 3.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "C", columnValue = -25.0, OpType.CONTINUOUS))),
+    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = -20.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "B", columnValue = -2.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "C", columnValue = 50.0, OpType.CONTINUOUS))),
 
-    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = -40.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "B", columnValue = -9.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "C", columnValue = 75.0, OpType.CONTINUOUS))),
 
-    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 60.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "B", columnValue = 11.0, OpType.CONTINUOUS),
-      ColumnEntry(columnName = "C", columnValue = -20.0, OpType.CONTINUOUS)))
+    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 30.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "B", columnValue = 3.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "C", columnValue = -25.0, OpType.CONTINUOUS))),
+
+    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = -40.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "B", columnValue = -9.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "C", columnValue = 75.0, OpType.CONTINUOUS))),
+
+    ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 60.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "B", columnValue = 11.0, OpType.CONTINUOUS),
+      ReflexColumnEntry(columnName = "C", columnValue = -20.0, OpType.CONTINUOUS)))
   )
 
   // expected mean heatmap will be mean values of attributes for given minibatch and then min-max-scaling of average values

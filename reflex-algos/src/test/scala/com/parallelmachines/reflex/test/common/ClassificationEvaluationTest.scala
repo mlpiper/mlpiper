@@ -1,10 +1,10 @@
 package com.parallelmachines.reflex.test.common
 
 import breeze.linalg.DenseMatrix
+import org.apache.flink.streaming.scala.examples.common.ml.evaluation.ClassificationEvaluation
 import org.apache.flink.streaming.test.exampleScalaPrograms.clustering.ComparatorUtils
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.junit.runner.RunWith
-import org.mlpiper.stat.algos.ClassificationEvaluation
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 

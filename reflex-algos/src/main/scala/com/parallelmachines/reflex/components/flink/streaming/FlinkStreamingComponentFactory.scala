@@ -38,7 +38,10 @@ object FlinkStreamingComponentFactory {
 
     // Parsing
     classOf[flink.streaming.parsers.ReflexStringToBreezeVectorComponent],
-    classOf[flink.streaming.parsers.ReflexStringToLabeledVectorComponent]
+    classOf[flink.streaming.parsers.ReflexStringToLabeledVectorComponent],
+    classOf[flink.streaming.parsers.ReflexJsonToNamedVectorComponent],
+    classOf[flink.streaming.parsers.ReflexPredictionToJsonComponent],
+    classOf[flink.streaming.parsers.ReflexStringToNamedVectorComponent]
   )
 
   private val testFlinkStreamingComponents = mutable.MutableList[Class[_]](

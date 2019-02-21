@@ -1,10 +1,10 @@
 package com.parallelmachines.reflex.test.common
 
-import com.parallelmachines.reflex.common.enums.OpType
+import com.parallelmachines.reflex.common.dataanalysis.{ContinuousDataAnalysisResult, ContinuousDataAnalyst}
+import org.apache.flink.streaming.scala.examples.clustering.math.{ReflexColumnEntry, ReflexNamedVector}
 import org.apache.spark.sql.SparkSession
+import com.parallelmachines.reflex.common.enums.OpType
 import org.junit.runner.RunWith
-import org.mlpiper.datastructures.{ColumnEntry, NamedVector}
-import org.mlpiper.stat.dataanalysis.continuous.{ContinuousDataAnalysisResult, ContinuousDataAnalyst}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -18,21 +18,21 @@ class ContinuousDataAnalystTest extends FlatSpec with Matchers {
       master("local[*]").appName("Good Continuous DA").getOrCreate()
 
     // NamedVectors
-    val seqOfNamedVectorForCont: Seq[NamedVector] = Seq[NamedVector](
-      NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 1.0, OpType.CONTINUOUS),
-        ColumnEntry(columnName = "B", columnValue = 10.0, OpType.CONTINUOUS))),
+    val seqOfNamedVectorForCont: Seq[ReflexNamedVector] = Seq[ReflexNamedVector](
+      ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 1.0, OpType.CONTINUOUS),
+        ReflexColumnEntry(columnName = "B", columnValue = 10.0, OpType.CONTINUOUS))),
 
-      NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 2.0, OpType.CONTINUOUS),
-        ColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
+      ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 2.0, OpType.CONTINUOUS),
+        ReflexColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
 
-      NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
-        ColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
+      ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
+        ReflexColumnEntry(columnName = "B", columnValue = 100.0, OpType.CONTINUOUS))),
 
-      NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = None, OpType.CONTINUOUS),
-        ColumnEntry(columnName = "B", columnValue = null, OpType.CONTINUOUS))),
+      ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = None, OpType.CONTINUOUS),
+        ReflexColumnEntry(columnName = "B", columnValue = null, OpType.CONTINUOUS))),
 
-      NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
-        ColumnEntry(columnName = "B", columnValue = Double.NaN, OpType.CONTINUOUS)))
+      ReflexNamedVector(Array[ReflexColumnEntry](ReflexColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
+        ReflexColumnEntry(columnName = "B", columnValue = Double.NaN, OpType.CONTINUOUS)))
     )
 
     //+----+-----+

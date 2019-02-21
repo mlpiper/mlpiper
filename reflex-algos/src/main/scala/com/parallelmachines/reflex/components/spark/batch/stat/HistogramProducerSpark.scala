@@ -9,7 +9,6 @@ import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.rdd.RDD
-import org.mlpiper.stat.healthlib.{CategoricalHealthForSpark, ContinuousHistogramForSpark, HealthLibSpark, HealthType}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -77,7 +76,7 @@ class HistogramProducerSpark extends SparkBatchComponent {
     healthLib.addComponent(continuousHistogramForSpark)
 
     // categorical histogram calculation
-    val categoricalHistogramForSpark = new CategoricalHealthForSpark(HealthType.CategoricalHistogramHealth.toString)
+    val categoricalHistogramForSpark = new CategoricalHistogramForSpark(HealthType.CategoricalHistogramHealth.toString)
     healthLib.addComponent(categoricalHistogramForSpark)
 
     healthLib.generateHealth()

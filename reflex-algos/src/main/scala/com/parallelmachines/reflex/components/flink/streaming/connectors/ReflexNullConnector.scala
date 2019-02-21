@@ -3,7 +3,7 @@ package com.parallelmachines.reflex.components.flink.streaming.connectors
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
 import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import org.apache.flink.streaming.scala.examples.flink.utils.NullSinkForFlink
+import org.apache.flink.streaming.scala.examples.common.serialize.NullSinkForFlink
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

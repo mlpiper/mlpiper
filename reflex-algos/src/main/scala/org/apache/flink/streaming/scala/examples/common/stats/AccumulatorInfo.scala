@@ -2,7 +2,8 @@ package org.apache.flink.streaming.scala.examples.common.stats
 
 import breeze.linalg.{DenseMatrix, DenseVector}
 import com.parallelmachines.reflex.common.InfoType.InfoType
-import org.mlpiper.utils.ParsingUtils
+import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils
+import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils.iterableToJSON
 
 import scala.collection.mutable
 
@@ -230,7 +231,7 @@ object AccumValueStringCreator {
   private def arrayToStringRep(array: Array[_]): String = {
     val attrNames = array.indices.toArray.map(_.toString)
 
-    ParsingUtils.iterableToJSON((attrNames zip array).toMap)
+    iterableToJSON((attrNames zip array).toMap)
   }
 
   /**
@@ -241,7 +242,7 @@ object AccumValueStringCreator {
     */
   def accumMapToJSON(map: scala.collection.Map[Any, Any])
   : String = {
-    ParsingUtils.iterableToJSON(map)
+    iterableToJSON(map)
   }
 
   /**
@@ -281,6 +282,6 @@ object AccumValueStringCreator {
         (arrayOfColLabel zip columnValues).toMap
     }
 
-    ParsingUtils.iterableToJSON((arrayOfRowLabel zip arrayOfRowString).toMap)
+    iterableToJSON((arrayOfRowLabel zip arrayOfRowString).toMap)
   }
 }

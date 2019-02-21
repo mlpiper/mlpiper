@@ -31,7 +31,7 @@ class MLOpsPY4JWrapper(object):
             print("no-mlops: stat {} {}".format(stat_name, stat_value))
 
     class Java:
-        implements = ["org.mlpiper.mlops.MLOps"]
+        implements = ["com.parallelm.mlcomp.MLOps"]
 
 
 class JavaConnectedComponentRunner(ComponentRunner):

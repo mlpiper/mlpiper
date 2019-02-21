@@ -1,13 +1,18 @@
 package com.parallelmachines.reflex.factory
 
-import java.io.File
-import java.nio.file.{Files, Paths}
-
-import org.mlpiper.utils.FileUtil
+import com.parallelmachines.reflex.pipeline.{ComputeEngineType, ReflexPipelineComponent}
 import org.slf4j.LoggerFactory
 
-import scala.collection.JavaConverters._
 import scala.collection.mutable
+import java.nio.file.{Files, Paths}
+import java.io.File
+
+import com.parallelmachines.reflex.common.FileUtil
+import com.parallelmachines.reflex.components.flink.streaming.algorithms.ModelBehaviorType
+import com.parallelmachines.reflex.factory.ExternalDirComponentUtil.logger
+
+import scala.io.Source
+import scala.collection.JavaConverters._
 
 /**
   * A factory for Tensorflow python components, each component is provided as a directory containing the component
@@ -55,11 +60,11 @@ abstract class ExternalFileComponentFactory(testMode: Boolean, val externalDir:S
 
   def doesContainCompMetadataFile(compDir: File): Boolean = {
     var exists = false
-    val refFile = Paths.get(compDir.toString, ComponentReferenceFilename).toFile
+    val refFile = Paths.get(compDir.toString, componentReferenceFilename).toFile
     if (refFile.exists()) {
       exists = true
     } else {
-      val metadataFile = Paths.get(compDir.toString, ComponentSignatureFilename).toFile
+      val metadataFile = Paths.get(compDir.toString, componentSignatureFilename).toFile
       if (metadataFile.exists()) {
         exists = true
       }
@@ -210,14 +215,14 @@ abstract class ExternalFileComponentFactory(testMode: Boolean, val externalDir:S
 
   def readCompMeta(compDirPath: String): (String, ComponentMetadata, String) = {
     var metadataFilename : String = null
-    val metaRefFile = Paths.get(compDirPath, ComponentReferenceFilename).toFile
+    val metaRefFile = Paths.get(compDirPath, componentReferenceFilename).toFile
     if (metaRefFile.exists()) {
       val compRef = ComponentJSONReferenceParser.parseReferenceFile(metaRefFile.toString)
       metadataFilename = compRef.metadataFilename
     } else {
       logger.debug(s"Component metadata reference file was not found: ${metaRefFile.toString}! Falling back " +
-        s"to default metadata file name: $ComponentSignatureFilename!")
-      metadataFilename = ComponentSignatureFilename
+        s"to default metadata file name: $componentSignatureFilename!")
+      metadataFilename = componentSignatureFilename
     }
 
     val compMetadataFile = Paths.get(compDirPath, metadataFilename).toFile

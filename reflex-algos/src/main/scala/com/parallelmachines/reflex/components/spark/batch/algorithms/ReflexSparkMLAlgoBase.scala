@@ -3,8 +3,9 @@ package com.parallelmachines.reflex.components.spark.batch.algorithms
 import java.io.File
 import java.nio.file.Files
 
+import com.parallelmachines.reflex.common._
+import com.parallelmachines.reflex.common.FeatureImportance
 import com.parallelmachines.reflex.common.mlobject.SparkMLModel
-import com.parallelmachines.reflex.common.{FeatureImportance, _}
 import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.components.spark.batch.algorithms.MlMethod.MlMethodType
 import com.parallelmachines.reflex.components.spark.batch.connectors.{ReflexNullConnector, ReflexNullSourceConnector}
@@ -12,13 +13,11 @@ import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, 
 import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
 import com.parallelmachines.reflex.web.RestApis
 import org.apache.commons.io.FileUtils
+import org.apache.flink.streaming.scala.examples.common.ml.evaluation.{ClassificationEvaluation, RegressionEvaluation}
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.{PipelineModel, PipelineStage}
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.StructType
-import org.mlpiper.sparkutils.SparkMLPipelineModelHelper
-import org.mlpiper.stat.algos.{ClassificationEvaluation, RegressionEvaluation}
-import org.mlpiper.stat.healthlib.{CategoricalHealthForSpark, ContinuousHistogramForSpark, HealthLibSpark, HealthType}
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ArrayBuffer
@@ -70,7 +69,7 @@ trait ReflexSparkMLAlgoBase extends SparkBatchComponent with ModelBehavior {
 
   val mlType: MlMethodType = MlMethod.Classification
 
-  def getAlgoStage: PipelineStage
+  def getAlgoStage(): PipelineStage
 
   /** Method provides abstract definition for generating training stats.
     * Algorithm should override this method to generate stats.
@@ -89,9 +88,9 @@ trait ReflexSparkMLAlgoBase extends SparkBatchComponent with ModelBehavior {
                                  dsArr: ArrayBuffer[DataWrapperBase],
                                  pipelineModel: PipelineModel)
   : Unit = {
-    val pipelineInfo = dsArr(0).data[SparkBatchPipelineInfo]()
+    val pipelineInfo = dsArr(0).data[SparkBatchPipelineInfo]
     val validation = dsArr(1).data[SparkBatchPipelineInfo]()
-    val train = dsArr(0).data[SparkBatchPipelineInfo]()
+    val train = dsArr(0).data[SparkBatchPipelineInfo]
 
     val validationDf =
     // if validation df is empty then we can use training df as validator
@@ -124,7 +123,7 @@ trait ReflexSparkMLAlgoBase extends SparkBatchComponent with ModelBehavior {
         predictedDF.select(predictedLabelColumn, validationLabelColumn)
 
       mlType match {
-        case MlMethod.Classification =>
+        case MlMethod.Classification => {
           val labelTransformationDetails =
             SparkMLLabelDetails.getLabelTransformationDetails(pipelineModel = pipelineModel)
 
@@ -143,8 +142,9 @@ trait ReflexSparkMLAlgoBase extends SparkBatchComponent with ModelBehavior {
             )
 
           classificationEvaluationObject.updateStatAccumulator()
+        }
 
-        case MlMethod.Regression =>
+        case MlMethod.Regression => {
           val evaluationRegStatistics = RegressionEvaluation
             .generateStats(
               dataFrame = mergedPredictedAndActualLabelDFs
@@ -155,6 +155,7 @@ trait ReflexSparkMLAlgoBase extends SparkBatchComponent with ModelBehavior {
               sparkContext = env)
 
           regressionEvaluationObject.updateStatAccumulator()
+        }
       }
     }
   }
@@ -172,7 +173,7 @@ trait ReflexSparkMLAlgoBase extends SparkBatchComponent with ModelBehavior {
 
     val pipelineInfo = dsArr(0).data[SparkBatchPipelineInfo]()
 
-    val algoStage = getAlgoStage
+    val algoStage = getAlgoStage()
 
     require(featuresColName != null, s"featuresColName must be set in classes which inherit from this base ${getClass.getSimpleName}")
     pipelineInfo.addStage(stage = algoStage)
@@ -204,7 +205,7 @@ trait ReflexSparkMLAlgoBase extends SparkBatchComponent with ModelBehavior {
     healthLib.addComponent(continuousHistogramForSpark)
 
     // categorical histogram calculation
-    val categoricalHistogramForSpark = new CategoricalHealthForSpark(HealthType.CategoricalHistogramHealth.toString)
+    val categoricalHistogramForSpark = new CategoricalHistogramForSpark(HealthType.CategoricalHistogramHealth.toString)
 
     categoricalHistogramForSpark.enableAccumOutputOfHistograms = true
     categoricalHistogramForSpark.sparkMLModel = Option(pipelineModel)

@@ -18,8 +18,8 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
 import breeze.linalg.{DenseVector => BreezeDenseVector}
-import org.mlpiper.datastructures.LabeledVector
-import org.mlpiper.utils.ParameterIndices
+import org.apache.flink.streaming.scala.examples.clustering.math.LabeledVector
+import org.apache.flink.streaming.scala.examples.common.parsing.ParameterIndices
 
 object StringToIndexedVectorTestData {
   val validVectorNrElements: Int = 11

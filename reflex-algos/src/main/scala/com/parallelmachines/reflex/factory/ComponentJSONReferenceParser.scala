@@ -6,8 +6,9 @@ import java.nio.file.Paths
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization.write
-import org.mlpiper.utils.FileUtil
 import org.slf4j.LoggerFactory
+
+import com.parallelmachines.reflex.common.FileUtil
 
 /**
   * Represents a reference structure, which points to the component's metadata (signature/description) file.
@@ -56,7 +57,7 @@ object ComponentJSONReferenceParser {
 
   @throws(classOf[IOException])
   def generateReference(metadataFilename: String, dirPath: String): Unit = {
-    val refPath = Paths.get(dirPath, ComponentReferenceFilename)
+    val refPath = Paths.get(dirPath, componentReferenceFilename)
     saveReference(ComponentReference(metadataFilename), refPath.toString)
   }
 }

@@ -4,6 +4,7 @@ import breeze.linalg.DenseVector
 import com.google.protobuf.ByteString
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent.EventType
+import com.parallelmachines.reflex.common.{CategoricalHistogramForSpark, ContinuousHistogramForSpark, HealthType}
 import com.parallelmachines.reflex.pipeline.{DagGen, DataFrameUtils}
 import org.apache.flink.streaming.test.exampleScalaPrograms.clustering.ComparatorUtils
 import org.apache.spark.ml.PipelineModel
@@ -11,7 +12,6 @@ import org.apache.spark.sql.SparkSession
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Json
 import org.junit.runner.RunWith
-import org.mlpiper.stat.healthlib.{CategoricalHealthForSpark, ContinuousHistogramForSpark, HealthType}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -702,7 +702,7 @@ class ReflexSparkBatchPipelineITCase extends FlatSpec with TestEnv with Matchers
         df = DataFrameUtils.renameColumns(df)
       }
 
-      val genericHealthCreator = new CategoricalHealthForSpark(HealthType.CategoricalHistogramHealth.toString)
+      val genericHealthCreator = new CategoricalHistogramForSpark(HealthType.CategoricalHistogramHealth.toString)
 
       genericHealthCreator.dfOfDenseVector = df
       genericHealthCreator.sparkMLModel = Some(model)

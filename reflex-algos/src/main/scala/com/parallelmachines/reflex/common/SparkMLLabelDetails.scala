@@ -4,7 +4,9 @@ import org.apache.spark.ml.PipelineModel
 import org.apache.spark.ml.classification.{ClassificationModel, GBTClassificationModel}
 import org.apache.spark.ml.feature.StringIndexerModel
 import org.slf4j.{Logger, LoggerFactory}
+import org.w3c.dom.Element
 
+import scala.collection.JavaConversions._
 import scala.collection.mutable
 
 /**

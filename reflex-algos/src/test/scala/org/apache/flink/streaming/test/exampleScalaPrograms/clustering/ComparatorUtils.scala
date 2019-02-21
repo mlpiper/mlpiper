@@ -1,7 +1,7 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
 import breeze.linalg.{DenseMatrix, DenseVector}
-import org.mlpiper.utils.ParameterIndices
+import org.apache.flink.streaming.scala.examples.common.parsing.ParameterIndices
 
 import scala.collection.mutable.ListBuffer
 import scala.util.control.Breaks._

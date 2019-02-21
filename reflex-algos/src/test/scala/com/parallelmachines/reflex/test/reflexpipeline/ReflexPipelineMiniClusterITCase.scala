@@ -1,19 +1,21 @@
 package com.parallelmachines.reflex.test.reflexpipeline
 
-import java.io._
+import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.scalatest.Matchers
+import com.parallelmachines.reflex.pipeline._
+
+import scala.collection.mutable
 import java.net._
+import java.io._
 
 import com.google.protobuf.{ByteString, InvalidProtocolBufferException}
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent.EventType
 import com.parallelmachines.reflex.factory.{ByClassComponentFactory, ReflexComponentFactory}
-import com.parallelmachines.reflex.pipeline._
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.api.scala.ExecutionEnvironment
 import org.apache.flink.streaming.test.exampleScalaPrograms.clustering.{AllJobStopper, PMMiniCluster}
 import org.junit.Test
-import org.scalatest.Matchers
-
-import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 
 class HealthEventWriteReadSocketServer(inputItems: List[ReflexEvent], writeMode: Boolean = true, var waitExplicitStop: Boolean = false) {
@@ -50,7 +52,7 @@ class HealthEventWriteReadSocketServer(inputItems: List[ReflexEvent], writeMode:
               isConnected = false
             }
           } catch {
-            case _ | _: SocketTimeoutException =>
+            case e@(_: java.net.SocketException | _: SocketTimeoutException) =>
             case e: InvalidProtocolBufferException =>
               isConnected = false
               throw e
@@ -298,6 +300,89 @@ class ReflexPipelineMiniClusterITCase extends PMMiniCluster with Matchers {
     readServerThread.join()
 
     assert(readServer.outputList.length == inputs.length * 3)
+    readServer.server.close()
+  }
+
+  @Test
+  def testBatchEventSocketSinkAPI() {
+
+    val inputs1 = List("Data message 1", "Data message 2", "Data message 3", "Data message 4")
+    val inputs2 = List("Data message 5", "Data message 6")
+
+    val file1 = File.createTempFile("samples1", ".tmp")
+    val file2 = File.createTempFile("samples2", ".tmp")
+    file1.deleteOnExit()
+    file2.deleteOnExit()
+    val bw1 = new PrintWriter(new FileWriter(file1))
+    val bw2 = new PrintWriter(new FileWriter(file2))
+
+    for (l <- inputs1) {
+      bw1.println(l)
+    }
+    bw1.close()
+
+    for (l <- inputs2) {
+      bw2.println(l)
+    }
+    bw2.close()
+
+    val fileName1 = file1.getAbsolutePath
+    val fileName2 = file2.getAbsolutePath
+
+    val readServer = new HealthEventWriteReadSocketServer(null, writeMode = false, waitExplicitStop = true)
+
+    val readServerThread = new Thread {
+      override def run(): Unit = {
+        readServer.run()
+      }
+    }
+
+    val sinkPort = readServer.port
+
+    readServerThread.start()
+
+    DagTestUtil.initComponentFactory()
+    CollectedData.clear
+
+    val flinkBatchInfo = ReflexComponentFactory.getEngineFactory(ComputeEngineType.FlinkBatch).asInstanceOf[ByClassComponentFactory]
+    flinkBatchInfo.registerComponent(classOf[com.parallelmachines.reflex.test.components.TestBatchAlgoComponent])
+
+    val testPipeInfo = ReflexPipelineInfo()
+    testPipeInfo.engineType = ComputeEngineType.FlinkBatch
+    testPipeInfo.systemConfig.statsDBHost = "localhost"
+    testPipeInfo.systemConfig.statsDBPort = 8086
+    testPipeInfo.systemConfig.mlObjectSocketHost = Some("localhost")
+    testPipeInfo.systemConfig.mlObjectSocketSinkPort = Some(sinkPort)
+    testPipeInfo.systemConfig.workflowInstanceId = "8117aced55d7427e8cb3d9b82e4e26ac"
+    testPipeInfo.systemConfig.statsMeasurementID = "1"
+    testPipeInfo.systemConfig.modelFileSinkPath = "/tmp/tmpFile"
+
+    testPipeInfo.addComponent(Component("FlinkBatchFileConnector1", 1, "FlinkBatchFileConnector", ListBuffer[Parent](), Some(Map[String, Any]("fileName" -> fileName1))))
+    testPipeInfo.addComponent(Component("FlinkBatchFileConnector1", 2, "FlinkBatchFileConnector", ListBuffer[Parent](), Some(Map[String, Any]("fileName" -> fileName2))))
+    testPipeInfo.addComponent(Component("TestBatchAlgoComponent", 3, "TestBatchAlgoComponent", ListBuffer[Parent](Parent(1, 0, None, None, None), Parent(2, 0, None, None, None)), None))
+    testPipeInfo.addComponent(Component("EventSocketSink", 4, "EventSocketSink", ListBuffer[Parent](Parent(3, 0, Some(0), Some(ReflexEvent.EventType.Model.toString()), None)), None))
+    testPipeInfo.addComponent(Component("EventSocketSink", 5, "EventSocketSink", ListBuffer[Parent](Parent(3, 1, Some(1), Some(ReflexEvent.EventType.MLHealthModel.toString()), None)), None))
+
+    val pipelineBuilder = new ReflexPipelineBuilder()
+    val reflexPipe = pipelineBuilder.buildPipelineFromInfo(testPipeInfo)
+
+    assert(reflexPipe.nodeList.size == 4)
+
+    val env = ExecutionEnvironment.getExecutionEnvironment
+    env.setParallelism(4)
+
+    reflexPipe.materialize(EnvironmentWrapper(env))
+    env.execute(reflexPipe.pipeInfo.name)
+
+    Thread.sleep(500)
+    readServer.forceStop()
+
+    assert(readServer.outputList.size == 6)
+    assert(readServer.outputList.count(_.eventType == EventType.Model) == 4)
+    assert(readServer.outputList.count(_.eventType == EventType.MLHealthModel) == 2)
+
+    ReflexComponentFactory.cleanup()
+    readServerThread.join(1000)
     readServer.server.close()
   }
 }

@@ -1,6 +1,6 @@
 package com.parallelmachines.reflex.test.common
 
-import org.mlpiper.mlops.MLOps
+import com.parallelmachines.mlops.MLOps
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner

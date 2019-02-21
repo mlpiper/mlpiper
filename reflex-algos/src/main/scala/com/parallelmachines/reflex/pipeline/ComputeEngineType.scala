@@ -2,6 +2,7 @@ package com.parallelmachines.reflex.pipeline
 
 object ComputeEngineType extends Enumeration {
   type ComputeEngineType = Value
+  val FlinkBatch = Value("FlinkBatch")
   val FlinkStreaming = Value("FlinkStreaming")
   val SparkBatch = Value("SparkBatch")
   val PySpark = Value("PySpark")

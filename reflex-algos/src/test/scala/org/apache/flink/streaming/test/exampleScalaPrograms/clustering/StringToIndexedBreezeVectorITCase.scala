@@ -23,10 +23,10 @@ import StringToIndexedVectorTestData._
 import org.apache.flink.streaming.api.scala._
 import org.apache.flink.contrib.streaming.scala.utils.DataStreamUtils
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import org.apache.flink.streaming.scala.examples.flink.utils.functions.conversion.StringToIndexedBreezeVectorFlatMap
+import org.apache.flink.streaming.scala.examples.common.parsing.ParameterIndices
+import org.apache.flink.streaming.scala.examples.functions.conversion.StringToIndexedBreezeVectorFlatMap
 import org.apache.flink.streaming.util.StreamingMultipleProgramsTestBase
 import org.junit.Test
-import org.mlpiper.utils.ParameterIndices
 import org.scalatest.Matchers
 
 class StringToIndexedBreezeVectorITCase extends StreamingMultipleProgramsTestBase with Matchers {

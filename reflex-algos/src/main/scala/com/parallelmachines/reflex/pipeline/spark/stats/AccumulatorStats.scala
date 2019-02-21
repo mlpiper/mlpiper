@@ -1,11 +1,10 @@
 package com.parallelmachines.reflex.pipeline.spark.stats
 
+import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils
 import org.apache.spark.scheduler.AccumulableInfo
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization.write
-import org.mlpiper.utils.ParsingUtils
 import org.slf4j.LoggerFactory
-
 import scala.collection.mutable.ListBuffer
 
 

@@ -3,7 +3,9 @@ package com.parallelmachines.reflex.test.reflexpipeline
 import java.io._
 import java.net._
 
+import com.parallelmachines.reflex.factory.ReflexComponentFactory
 import com.parallelmachines.reflex.pipeline._
+import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
@@ -58,7 +60,7 @@ class ReflexPipelineITCase extends FlatSpec with Matchers {
     val componentsFile = java.io.File.createTempFile("components", ".json")
     componentsFile.deleteOnExit()
 
-    val componentsDir = DagTestUtil.getComponentsDir
+    val componentsDir = DagTestUtil.getComponentsDir()
 
     val args = Array[String]("--comp-desc", s"${componentsFile.getAbsolutePath}", "--external-comp", s"$componentsDir")
     noException should be thrownBy DagGen.main(args)

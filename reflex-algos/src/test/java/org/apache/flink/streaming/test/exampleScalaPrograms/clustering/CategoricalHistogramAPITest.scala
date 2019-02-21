@@ -1,10 +1,10 @@
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
 import breeze.linalg.DenseVector
+import org.apache.flink.streaming.scala.examples.clustering.math.{ReflexColumnVectorEntry, ReflexNamedMatrix}
+import org.apache.flink.streaming.scala.examples.clustering.stat.HistogramComparatorTypes
+import org.apache.flink.streaming.scala.examples.clustering.stat.categorical.{Histogram => CategoricalHistogram, HistogramWrapper => CategoricalHistogramWrapper, _}
 import org.junit.runner.RunWith
-import org.mlpiper.datastructures.{ColumnVectorEntry, NamedMatrix}
-import org.mlpiper.stat.histogram.HistogramComparatorTypes
-import org.mlpiper.stat.histogram.categorical.{HistogramWrapper => CategoricalHistogramWrapper, _}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -34,7 +34,7 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
   }
 
   it should "Create Correct Histogram After Histogram Format" in {
-    val hist = new Histogram(categoricalCounts = Map("1.0" -> 4.0, "2.0" -> 2.0, "3.0" -> 1.0))
+    val hist = new CategoricalHistogram(categoricalCounts = Map("1.0" -> 4.0, "2.0" -> 2.0, "3.0" -> 1.0))
 
     val formattedHist1 =
       HistogramFormatting.formatHistogram(hist,
@@ -59,7 +59,7 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
   }
 
   it should "Create Correct Histogram After Histogram Format Where Predefined Categories Are Not There" in {
-    val hist = new Histogram(categoricalCounts = Map("A" -> 4.0, "B" -> 2.0, "C" -> 1.0,
+    val hist = new CategoricalHistogram(categoricalCounts = Map("A" -> 4.0, "B" -> 2.0, "C" -> 1.0,
       "D" -> 3.0, "E" -> 5.0, "F" -> 7.0,
       "I" -> 8.0, "H" -> 9.0, "G" -> 5.0,
       "J" -> 10.0, "K" -> 12.0, "L" -> 11.0,
@@ -84,10 +84,10 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
     * Testing Featured Histogram to From Named Matrix
     */
   it should "Testing Featured Histogram to From Named Matrix" in {
-    val reflexColumnEntryForCol0 = ColumnVectorEntry(columnName = "c0", columnValue = DenseVector(1.0, 1.0, 1.0, 2.0, 2.0, 3.0, 1.0))
-    val reflexColumnEntryForCol1 = ColumnVectorEntry(columnName = "c1", columnValue = DenseVector(1.0, 3.0, 4.0, 2.0, 5.0, 3.0, 1.0))
+    val reflexColumnEntryForCol0 = ReflexColumnVectorEntry(columnName = "c0", columnValue = DenseVector(1.0, 1.0, 1.0, 2.0, 2.0, 3.0, 1.0))
+    val reflexColumnEntryForCol1 = ReflexColumnVectorEntry(columnName = "c1", columnValue = DenseVector(1.0, 3.0, 4.0, 2.0, 5.0, 3.0, 1.0))
 
-    val denseMatrixRep: NamedMatrix = NamedMatrix(arrayOfVector = Array(reflexColumnEntryForCol0, reflexColumnEntryForCol1))
+    val denseMatrixRep: ReflexNamedMatrix = ReflexNamedMatrix(arrayOfVector = Array(reflexColumnEntryForCol0, reflexColumnEntryForCol1))
 
     val featuredHistogram = NamedMatrixToFeaturedHistogram(denseMatrixRep)
 
@@ -104,10 +104,10 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
     * Testing combine functionality of two hist
     */
   it should "Correctly Combine Two Hist Details" in {
-    val hist1 = new Histogram(categoricalCounts = Map("1.0" -> 4.0, "2.0" -> 2.0, "3.0" -> 1.0))
-    val hist2 = new Histogram(categoricalCounts = Map("1.0" -> 1.0, "2.0" -> 4.0, "4.0" -> 2.0))
+    val hist1 = new CategoricalHistogram(categoricalCounts = Map("1.0" -> 4.0, "2.0" -> 2.0, "3.0" -> 1.0))
+    val hist2 = new CategoricalHistogram(categoricalCounts = Map("1.0" -> 1.0, "2.0" -> 4.0, "4.0" -> 2.0))
 
-    val combinedHist: Histogram = CombineHistograms.reduce(hist1, hist2)
+    val combinedHist: CategoricalHistogram = CombineHistograms.reduce(hist1, hist2)
 
     val expectedHist = Map("1.0" -> 5.0, "2.0" -> 6.0, "3.0" -> 1.0, "4.0" -> 2.0)
 
@@ -118,8 +118,8 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
     * Testing compare functionality of two histograms
     */
   it should "Correctly Generate Normalized Compare Score For Two Hist" in {
-    val contenderHistogram = new Histogram(Map("1.0" -> 5.0, "2.0" -> 2.0, "3.0" -> 3.0))
-    val inferringHistogram = new Histogram(Map("1.0" -> 45.0, "2.0" -> 25.0, "3.0" -> 30.0))
+    val contenderHistogram = new CategoricalHistogram(Map("1.0" -> 5.0, "2.0" -> 2.0, "3.0" -> 3.0))
+    val inferringHistogram = new CategoricalHistogram(Map("1.0" -> 45.0, "2.0" -> 25.0, "3.0" -> 30.0))
 
     val normScore: Double = CompareTwoHistograms.compare(contenderHistogram = contenderHistogram, inferringHistogram = inferringHistogram, HistogramComparatorTypes.ProbabilityDistribution, addAdjustmentNormalizingEdge = true)
 
@@ -138,8 +138,8 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
     * Testing compare functionality of two histograms For Two Normalized Hist
     */
   it should "Correctly Generate Normalized Compare Score For Two Normalized Hist" in {
-    val contenderHistogram = new Histogram(Map("1.0" -> 0.5, "2.0" -> 0.20, "3.0" -> 0.20))
-    val inferringHistogram = new Histogram(Map("1.0" -> 0.45, "2.0" -> 0.20, "3.0" -> 0.15))
+    val contenderHistogram = new CategoricalHistogram(Map("1.0" -> 0.5, "2.0" -> 0.20, "3.0" -> 0.20))
+    val inferringHistogram = new CategoricalHistogram(Map("1.0" -> 0.45, "2.0" -> 0.20, "3.0" -> 0.15))
 
     val normScore: Double =
       CompareTwoHistograms.compare(contenderHistogram = contenderHistogram,
@@ -164,8 +164,8 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
     * Testing compare functionality of two histograms
     */
   it should "Correctly Generate Normalized Compare Score For Two Hist Which Have Different Cates" in {
-    val contenderHistogram = new Histogram(Map("1.0" -> 5.0, "2.0" -> 2.0, "3.0" -> 3.0))
-    val inferringHistogram = new Histogram(Map("1.0" -> 45.0, "2.0" -> 25.0, "4.0" -> 30.0))
+    val contenderHistogram = new CategoricalHistogram(Map("1.0" -> 5.0, "2.0" -> 2.0, "3.0" -> 3.0))
+    val inferringHistogram = new CategoricalHistogram(Map("1.0" -> 45.0, "2.0" -> 25.0, "4.0" -> 30.0))
 
     val normScore: Double =
       CompareTwoHistograms.compare(contenderHistogram = contenderHistogram,
@@ -188,17 +188,17 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
     val featureID1 = "0"
     val featureID2 = "1"
 
-    val contenderHistogramForFeature1 = new Histogram(Map("1.0" -> 5.0, "2.0" -> 2.0, "3.0" -> 3.0))
-    val inferringHistogramForFeature1 = new Histogram(Map("1.0" -> 45.0, "2.0" -> 25.0, "4.0" -> 30.0))
+    val contenderHistogramForFeature1 = new CategoricalHistogram(Map("1.0" -> 5.0, "2.0" -> 2.0, "3.0" -> 3.0))
+    val inferringHistogramForFeature1 = new CategoricalHistogram(Map("1.0" -> 45.0, "2.0" -> 25.0, "4.0" -> 30.0))
 
-    val contenderHistogramForFeature2 = new Histogram(Map("1.0" -> 50.0, "2.0" -> 20.0, "3.0" -> 30.0))
-    val inferringHistogramForFeature2 = new Histogram(Map("1.0" -> 4.5, "2.0" -> 2.5, "3.0" -> 3.0))
+    val contenderHistogramForFeature2 = new CategoricalHistogram(Map("1.0" -> 50.0, "2.0" -> 20.0, "3.0" -> 30.0))
+    val inferringHistogramForFeature2 = new CategoricalHistogram(Map("1.0" -> 4.5, "2.0" -> 2.5, "3.0" -> 3.0))
 
     // ref map containing featureID and hist
-    val contenderFeatureIDAndHist = mutable.Map[String, Histogram](featureID1 -> contenderHistogramForFeature1, featureID2 -> contenderHistogramForFeature2)
+    val contenderFeatureIDAndHist = mutable.Map[String, CategoricalHistogram](featureID1 -> contenderHistogramForFeature1, featureID2 -> contenderHistogramForFeature2)
 
     // contender map containing featureID and hist
-    val inferringFeatureIDAndHist = mutable.Map[String, Histogram](featureID1 -> inferringHistogramForFeature1, featureID2 -> inferringHistogramForFeature2)
+    val inferringFeatureIDAndHist = mutable.Map[String, CategoricalHistogram](featureID1 -> inferringHistogramForFeature1, featureID2 -> inferringHistogramForFeature2)
 
     val normScoreArray =
       CompareTwoFeaturedHistograms.compare(contenderFeatureHist = contenderFeatureIDAndHist,
@@ -218,8 +218,8 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
     * Testing Histogram to String format functionality
     */
   it should "Test Categorical String Conversion" in {
-    val histForFeature1 = new Histogram(categoricalCounts = Map("1.0" -> 4.0, "2.0" -> 2.0, "3.0" -> 1.0))
-    val histForFeature2 = new Histogram(categoricalCounts = Map("1.0" -> 1.0, "2.0" -> 4.0, "4.0" -> 2.0))
+    val histForFeature1 = new CategoricalHistogram(categoricalCounts = Map("1.0" -> 4.0, "2.0" -> 2.0, "3.0" -> 1.0))
+    val histForFeature2 = new CategoricalHistogram(categoricalCounts = Map("1.0" -> 1.0, "2.0" -> 4.0, "4.0" -> 2.0))
 
     val hist1Json = histForFeature1.toGraphString()
     val hist2Json = histForFeature2.toGraphString()
@@ -240,16 +240,16 @@ class CategoricalHistogramAPITest extends FlatSpec with Matchers {
 
     val feature1Hist = Map("1.0" -> 4.0, "2.0" -> 2.0, "3.0" -> 4.0)
 
-    val histForFeature1 = new Histogram(feature1Hist)
+    val histForFeature1 = new CategoricalHistogram(feature1Hist)
 
     val featureID2 = "2"
 
     val feature2Hist = Map("1.0" -> 5.0, "2.0" -> 3.0, "4.0" -> 2.0)
 
-    val histForFeature2 = new Histogram(feature2Hist)
+    val histForFeature2 = new CategoricalHistogram(feature2Hist)
 
     // map containing featureID and hist
-    val mapOfFeatureIDAndHist = mutable.Map[String, Histogram]()
+    val mapOfFeatureIDAndHist = mutable.Map[String, CategoricalHistogram]()
     mapOfFeatureIDAndHist += (featureID1 -> histForFeature1)
     mapOfFeatureIDAndHist += (featureID2 -> histForFeature2)
 

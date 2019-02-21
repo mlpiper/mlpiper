@@ -5,7 +5,7 @@ import com.parallelmachines.reflex.common.InfoType
 import org.apache.flink.api.common.functions.RichMapFunction
 import org.apache.flink.streaming.api.scala.{StreamExecutionEnvironment, _}
 import org.apache.flink.streaming.scala.examples.common.stats._
-import org.apache.flink.streaming.scala.examples.flink.utils.functions.source.RoundRobinIterableSourceFunction
+import org.apache.flink.streaming.scala.examples.functions.source.RoundRobinIterableSourceFunction
 import org.apache.flink.streaming.test.exampleScalaPrograms.clustering.GlobalStatsTest.GlobalStatMapNumeric
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.{SparkConf, SparkContext}

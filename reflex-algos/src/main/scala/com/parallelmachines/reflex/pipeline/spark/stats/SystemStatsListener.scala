@@ -1,14 +1,14 @@
 package com.parallelmachines.reflex.pipeline.spark.stats
 
-import org.mlpiper.mlops.MLOpsEnvVariables
+import com.parallelmachines.mlops.MLOpsEnvVariables
 import com.parallelmachines.reflex.web.RestApis.buildURIPath
 import com.parallelmachines.reflex.web.{RestApiName, RestClient}
+import org.apache.flink.streaming.scala.examples.clustering.utils.ParsingUtils
 import org.apache.spark.scheduler._
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
 import org.json4s.DefaultFormats
-import org.mlpiper.utils.ParsingUtils
 
 
 class SystemStatsListener extends SparkListener {

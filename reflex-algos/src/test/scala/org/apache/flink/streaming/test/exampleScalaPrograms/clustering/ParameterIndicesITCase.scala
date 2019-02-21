@@ -17,9 +17,9 @@
  */
 package org.apache.flink.streaming.test.exampleScalaPrograms.clustering
 
+import org.apache.flink.streaming.scala.examples.common.parsing.ParameterIndices
 import org.apache.flink.streaming.util.StreamingMultipleProgramsTestBase
 import org.junit.Test
-import org.mlpiper.utils.ParameterIndices
 import org.scalatest.Matchers
 
 class ParameterIndicesITCase extends StreamingMultipleProgramsTestBase with Matchers {
