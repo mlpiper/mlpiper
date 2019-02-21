@@ -208,8 +208,8 @@ object RestApis {
     * @param Model model to fetch stats for
     * @return String json string for health stats
     */
-  def getModelHealthStats(model: Model): String = {
-    var ret: String = ""
+  def getModelHealthStats(model: Model): List[String] = {
+    var ret: List[String] = List[String]()
     if (!isReady) {
       return ret
     }
@@ -223,8 +223,8 @@ object RestApis {
     try {
       val listOfMap = parse(response).extract[List[Map[String, String]]]
       if (listOfMap.nonEmpty) {
-        val listOfMLHealthModel = listOfMap.filter(m => (m.get("type").get == EventType.MLHealthModel.name))
-        ret = listOfMLHealthModel.head.get("data").get
+        val listOfMLHealthModel = listOfMap.filter(m => m("type") == EventType.MLHealthModel.name)
+        ret = listOfMLHealthModel.map(m => m("data"))
       }
     } catch {
       case e: Throwable =>

@@ -40,7 +40,7 @@ class RestDataSource extends SparkBatchComponent {
     var retArray = mutable.ArrayBuffer[DataWrapperBase]()
     var requestData = true
 
-    var health = ""
+    var health = List[String]()
     var model: Option[Model] = None
 
     /* Fetch last approved model and the health stats for it. */
@@ -65,7 +65,7 @@ class RestDataSource extends SparkBatchComponent {
         case ReflexEvent.EventType.Model =>
           retArray += new DataWrapper(model.get)
         case ReflexEvent.EventType.MLHealthModel =>
-          retArray += new DataWrapper(env.parallelize(List[String](health)))
+          retArray += new DataWrapper(env.parallelize(health))
       }
     }
     retArray
