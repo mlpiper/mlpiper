@@ -80,7 +80,7 @@ class EventBroker(object):
                 node = ion.node_by_pipe_inst_id[pipe_inst]
                 nodes_list.append(node.name)
             else:
-                raise MLOpsException("Error pipeline instance id is not found {}".format(pipe_inst))
+                nodes_list.append('N/A')
 
         df[DataframeColNames.ION_NODE] = nodes_list
         return df
