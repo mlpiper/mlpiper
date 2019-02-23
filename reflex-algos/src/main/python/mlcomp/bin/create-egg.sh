@@ -21,7 +21,8 @@ done
 ${script_dir}/cleanup.sh ${root_dir}
 
 cd ${root_dir}
-python setup.py ${silent} bdist_egg
+python2 setup.py ${silent} bdist_egg
+python3 setup.py ${silent} bdist_egg
 
 tmp_path=$(mktemp -d)
 mv dist ${tmp_path}

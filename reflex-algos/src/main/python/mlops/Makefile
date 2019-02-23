@@ -37,7 +37,7 @@ test: egg
 
 local: test
 	cp dist/parallelm-1.0.1-py2.7.egg ../../../../target/
-	cp dist/parallelm-1.0.1-py3.6.egg ../../../../target/
+	cp dist/parallelm-1.0.1-py3.*.egg ../../../../target/
 
 cover: egg
 	env PYTHONPATH=./ coverage2 run -m py.test tests/
