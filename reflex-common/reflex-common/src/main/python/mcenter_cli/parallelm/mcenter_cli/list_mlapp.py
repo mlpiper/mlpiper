@@ -1,7 +1,7 @@
 from parallelm.mlapp_directory.mlapp_defs import MLAppProfileKeywords
 
 
-def list_mlapp(mclient):
+def list_mlapp(mclient, args=None):
     fmt = "{:<35} {:<35}"
     s = ""
     s += fmt.format("Profile Name", "Pattern Name")
