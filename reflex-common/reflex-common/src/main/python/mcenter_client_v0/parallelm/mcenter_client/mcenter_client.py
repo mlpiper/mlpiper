@@ -33,6 +33,9 @@ class MLOpsRest:
     modelConnector = "modelConnector"
     modelConnectorImport = "import"
     connectorName = "connectorName"
+    ees = "executionEnvironments"
+    eeTypes = "executionEnvironmentTypes"
+    eeTemplates = "executionEnvironmentTemplates"
 
 
 class MCenterAccountType:
@@ -332,20 +335,41 @@ class MCenterClient:
         r = self.delete(url)
         return r
 
-    def create_ee(self, name, data):
-        return ""
+    def ee_get_template(self, eng_type, rm_type):
+        """ Fetch ee template for given engine and rm type """
+        url = self._build_url(MLOpsRest.eeTemplates, engineType=eng_type, rmType=rm_type)
+        r = self.get(url)
+        return r
 
-    def list_ee(self, name, data):
-        return ""
+    def ee_get_types(self):
+        """ Fetch all ee types available """
+        url = self._build_url(MLOpsRest.eeTypes)
+        r = self.get(url)
+        return r
 
-    def get_ee(self, ee_id):
-        return ""
+    def ee_list(self):
+        """ List existing ees """
+        url = self._build_url(MLOpsRest.ees)
+        r = self.get(url)
+        return r
 
-    def delete_ee(self, ee_id):
-        return ""
+    def ee_create(self, data):
+        """ Creates ee and returns ee """
+        payload = json.dumps(data)
+        url = self._build_url(MLOpsRest.ees)
+        r = self.post(url, payload)
+        return r
 
-    def update_ee(self, ee_id, data):
-        return ""
+    def ee_get(self, ee_id):
+        url = self._build_url(MLOpsRest.ees, ee_id)
+        r = self.get(url)
+        return r
+
+    def ee_delete(self, ee_id):
+        """ Delete ee by id """
+        url = self._build_url(MLOpsRest.ees, ee_id)
+        r = self.delete(url)
+        return r
 
     def create_pipeline_pattern(self, data):
         """
