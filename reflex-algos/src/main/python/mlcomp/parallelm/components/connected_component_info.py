@@ -1,5 +1,5 @@
 
-class ConnectedComponentInfo:
+class ConnectedComponentInfo(object):
     """
     Information about a connected component, which is needed in order to run the component, and provide information to
     child components.

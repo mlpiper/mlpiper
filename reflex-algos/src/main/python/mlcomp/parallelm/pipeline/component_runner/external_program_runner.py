@@ -111,7 +111,7 @@ class ExternalProgramRunner(Base):
         return ret_val, output_objs
 
     def _gen_component_info(self, parents_objects, input_args):
-        self._logger.info("Generating ConnectedComponentInfo pickeled object")
+        self._logger.info("Generating ConnectedComponentInfo pickled object")
 
         comp_info = ConnectedComponentInfo()
         comp_info.params = input_args
@@ -122,7 +122,7 @@ class ExternalProgramRunner(Base):
         mlcomp.save_component_info(comp_info, comp_info_file)
 
     def _read_component_info(self):
-        self._logger.info("Reading from ConnectedComponentInfo pickeled object")
+        self._logger.info("Reading from ConnectedComponentInfo pickled object")
         comp_info = mlcomp.load_component_info()
         self._logger.debug("Object: {}".format(comp_info))
         return comp_info.output_objs
