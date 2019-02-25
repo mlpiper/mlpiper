@@ -29,15 +29,19 @@ class PlotFunctions:
         self._multigraph_df_file = mtc.get_multigraph_df_file()
         self._attribute_names_list = mtc.get_attribute_names_list()
 
-    def line_plot(self, name):
+    def line_plot(self, name, df_name=None):
         """
         Plotting of line graphs per bin per file name
 
         :param self:
-        :param name: attibute name
+        :param name: attribute name
+        :param df_name: attribute df optional
         :return:
         """
-        df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
+
+        df = df_name
+        if df_name is None:
+            df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
         node_info = self._mtc.get_nodes()
         if ("keys" in df.columns) and en_plt:
             color_list = ['r', 'b', 'g', 'c', 'k', 'y', '0.75', 'm', '0.25']
@@ -68,7 +72,7 @@ class PlotFunctions:
                 pipeline_index = [i for i, node_elements in enumerate(node_info)
                  if node_elements[0] == pipelines_elements]
                 ax3.set_title('Linegraph vs time for ' + str(name) + " @ Pipeline: "
-                              + node_info[pipeline_index[0]][1] + ", " + node_info[pipeline_index[0]][2] )
+                              + node_info[pipeline_index[0]][1] + ", " + node_info[pipeline_index[0]][2])
                 ax3.set_ylabel('value')
                 ax3.set_xlabel('time')
 
@@ -103,15 +107,18 @@ class PlotFunctions:
                     figure.axvline(x=self._events_df_file["time"]
                                    .loc[location_index], linewidth=2, linestyle='dashed', color='r')
 
-    def bar_plot(self, name):
+    def bar_plot(self, name, df_name=None):
         """
         Plotting of Overlapping Bar Graphs:
 
         :param self:
         :param name: Attribute name
+        :param df_name: dataframe
         :return:
         """
-        df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
+        df = df_name
+        if df_name is None:
+            df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
         node_info = self._mtc.get_nodes()
         if ("keys" in df.columns) and en_plt:
             bins, bins_vert = self.hist_bin_adapt(df)
@@ -148,9 +155,29 @@ class PlotFunctions:
 
     # Matrix Printing
 
+    def get_matrix_names(self):
+        """
+        get matrix names:
+
+        :param self:
+        :return matrix_name_list:
+        """
+        matrix_name_list = []
+        node_info = self._mtc.get_nodes()
+        for filename in self._file_names:
+            try:
+                df_file = self._matrix_df_file[filename]
+                name_list = df_file["Name"].unique()
+                node_name = self.file_to_node(filename)
+                name_list1 = [[name_el, node_name] for name_el in name_list.tolist()]
+                matrix_name_list += name_list1
+            except Exception:
+                pass
+        return matrix_name_list
+
     def print_matrix(self):
         """
-        printing matix:
+        printing matrix:
 
         :param self:
         :return:
@@ -187,8 +214,48 @@ class PlotFunctions:
                         print(tabulate(matrix_df, headers='keys', tablefmt='psql'))
                     else:
                         print(matrix_df)
-            except Exception as err:
+            except Exception:
                 pass
+
+    def get_matrix_df(self, name):
+        """
+        getting the DF of a matrix according to the name:
+
+        :param self:
+        :return: matrix_df
+        """
+        matrix_df = pd.DataFrame()
+        for filename in self._file_names:
+            try:
+                node_name = self.file_to_node(filename)
+                if (name[1] == node_name):
+                    df_file = self._matrix_df_file[filename]
+                    name_list = df_file["Name"].unique()
+                    if name[0] in name_list:
+                        df = df_file[df_file['Name'] == name[0]]
+                        df = df.reset_index()
+                        num_graphs = df.shape[0]
+                        col_num = 0
+                        header = []
+                        header_names = []
+                        for location_index in range(0, num_graphs):
+                            matrix_loc = {}
+                            if df["ROW_NAME"].loc[location_index] == "HEADER":
+                                header = df["ROW_VALUE"].loc[location_index]
+                                col_num = len(header)
+                            else:
+                                matrix_loc["ROW_NAME"] = df["ROW_NAME"].loc[location_index]
+                                matrix_loc["datetime"] = df["datetime"].loc[location_index]
+                                header_names = []
+                                for col_index in range(0, col_num):
+                                    matrix_loc[str(header[col_index])] = \
+                                        (df["ROW_VALUE"].loc[location_index])[col_index]
+                                    header_names.append(str(header[col_index]))
+                                matrix_df = matrix_df.append(pd.Series(matrix_loc), ignore_index=True)
+                        matrix_df = matrix_df[["ROW_NAME"] + header_names + ["datetime"]]
+            except Exception:
+                pass
+        return matrix_df
 
     def multigraph_plot(self):
         """
@@ -328,3 +395,18 @@ class PlotFunctions:
                 name_pipeline = (name_pipeline_vect[1].split('-Agent-'))[0]
                 name_pipeline1.append(name_pipeline)
             return name_pipeline1, td_matrix_loc
+
+    def file_to_node(self, filename):
+        """
+        get node name from file name:
+
+        :param self:
+        :param filename:
+        :return node_name:
+        """
+        node_info = self._mtc.get_nodes()
+        name_pipeline_vect = filename.split('-Instance-')
+        name_pipeline = (name_pipeline_vect[1].split('-Agent-'))[0]
+        pipeline_index = [i for i, node_elements in enumerate(node_info)
+                          if node_elements[0] == name_pipeline]
+        return node_info[pipeline_index[0]][2]
