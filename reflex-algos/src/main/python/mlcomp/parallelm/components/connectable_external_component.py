@@ -35,7 +35,10 @@ class ConnectableExternalComponent(Base):
             self._set_info_file(info_file_path)
 
         with open(info_file_path, "wb") as pickle_file:
-            pickle.dump(comp_info, pickle_file)
+            # [REF-5619] Force pickle protocol = 2, because it is not known which py is used in external program.
+            # Requires more investigation, because in case of R program, protocol 3 is used, despite of
+            # program info shows py2 is used.
+            pickle.dump(comp_info, pickle_file, 2)
 
     def load_component_info(self, info_file_path=None):
         if not info_file_path:
