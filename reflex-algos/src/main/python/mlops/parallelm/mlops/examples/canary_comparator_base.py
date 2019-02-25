@@ -229,9 +229,9 @@ def canary_comparator(options, start_time, end_time, mode):
             gg2.x_title("Predictions")
             gg2.y_title("Normalized Frequency")
 
-            gg2.add_series(label="Main", x=[float(x) for x in row1['bin_edges']],
+            gg2.add_series(label="Main", x=row1['bin_edges'],
                            y=[y for y in row1['hist_values']])
-            gg2.add_series(label="Canary", x=[float(x) for x in row2['bin_edges']],
+            gg2.add_series(label="Canary", x=row2['bin_edges'],
                            y=[y for y in row2['hist_values']])
             mlops.set_stat(gg2)
 
