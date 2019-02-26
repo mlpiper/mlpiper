@@ -1,17 +1,16 @@
 from setuptools import setup, find_packages
+from parallelm.deputy import package_name, version
 
 
-name = "deputy"
-release = "1.0"
 desc = "Deputy program to run inside containers"
 lic = "ParallelM"
 
 required_python_pkgs = []
 
 setup(
-    name=name,
+    name=package_name,
     namespace_packages=['parallelm'],
-    version=release,
+    version=version,
     description=desc,
     license=lic,
     zip_safe=False,
