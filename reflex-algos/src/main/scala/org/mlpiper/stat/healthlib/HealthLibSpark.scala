@@ -26,8 +26,10 @@ class HealthLibSpark(enableCalculations: Boolean) extends HealthLib {
   private var dfOfDenseVector: DataFrame = _
 
   def setIncomingHealth(input: RDD[String]): Unit = {
-    incomingHealthStream = input
-    hasIncomingHealth = true
+    if (input.count() != 0) {
+      incomingHealthStream = input
+      hasIncomingHealth = true
+    }
   }
 
   def setContext(sc: SparkContext): Unit = {

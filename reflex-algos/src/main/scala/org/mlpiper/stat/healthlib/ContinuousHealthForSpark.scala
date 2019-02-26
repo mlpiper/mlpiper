@@ -33,7 +33,7 @@ class ContinuousHistogramForSpark(healthName: String) extends HealthComponentSpa
     /** Inference health generation depends on incoming health.
       * So don't call createHealthAndCompare if incoming health was not set. */
     if (contenderHistogram != null) {
-      createHealthAndCompare()
+      val _ = createHealthAndCompare()
     }
   }
 
