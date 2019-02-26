@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 
+from parallelm.mlcomp import normalized_package_name, shared_lib_rltv_dir
 from parallelm.mlpiper.component_scanner import ComponentScanner
 from parallelm.pipeline import json_fields
 from parallelm.common.base import Base

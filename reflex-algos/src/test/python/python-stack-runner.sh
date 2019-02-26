@@ -40,7 +40,7 @@ python="/usr/local/bin/python2"
 deputy_egg_path="dist/deputy-1.0-py2.7.egg"
 deputy_egg=$(basename $deputy_egg_path)
 
-mlcomp_egg_path="dist/mlcomp-1.0-py2.7.egg"
+mlcomp_egg_path="dist/ml_comp-1.1.2-py2.7.egg"
 mlops_egg_path="dist/parallelm-1.0.1-py2.7.egg"
 comp_egg="mcenter_components-0.1-py2.7.egg"
 

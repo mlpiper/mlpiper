@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
 import os
 import sys
+import shutil
 
-from parallelm.mlcomp import project_name, version
+from parallelm.mlcomp import project_name, normalized_package_name, shared_lib_rltv_dir, version
 
 # The directory containing this file
 ROOT = os.path.dirname(os.path.abspath(__file__))
