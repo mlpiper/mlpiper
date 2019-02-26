@@ -22,6 +22,7 @@ from parallelm.components import parameter
 from parallelm.common.mlcomp_exception import MLCompException
 from parallelm.components.connectable_component import ConnectableComponent
 from parallelm.components.restful.constants import SharedConstants, ComponentConstants, UwsgiConstants, NginxConstants
+from parallelm.components.restful.metric import Metric
 from parallelm.components.restful.uwsgi_broker import UwsgiBroker
 from parallelm.components.restful.nginx_broker import NginxBroker
 
@@ -86,7 +87,8 @@ class RESTfulComponent(ConnectableComponent):
             UwsgiConstants.MODEL_PATH_KEY: self._params[model_filepath_key],
             ComponentConstants.UWSGI_DISABLE_LOGGING_KEY:
                 parameter.str2bool(self._params.get(ComponentConstants.UWSGI_DISABLE_LOGGING_KEY,
-                                                    ComponentConstants.DEFAULT_UWSGI_DISABLE_LOGGING))
+                                                    ComponentConstants.DEFAULT_UWSGI_DISABLE_LOGGING)),
+            ComponentConstants.METRICS_KEY: Metric.metrics()
         }
         self._logger.debug("uwsgi_entry_point_conf: {}".format(uwsgi_entry_point_conf))
 
@@ -134,9 +136,6 @@ class RESTfulComponent(ConnectableComponent):
         :param model_path: an absolute file path to the model
         """
         pass
-
-    # def __del__(self):
-    #     self._on_exit()
 
     def _on_exit(self):
         cleanup_op = getattr(self, ComponentConstants.CLEANUP_CALLBACK_FUNC_NAME, None)

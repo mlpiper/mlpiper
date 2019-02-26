@@ -4,6 +4,7 @@ import os
 import socket
 
 from parallelm.components.restful.constants import StatsConstants
+from parallelm.components.restful.metric import Metric
 from parallelm.components.restful.uwsgi_stats_snapshot import UwsiStatsSnapshot
 
 mlops_loaded = False
@@ -29,6 +30,7 @@ class UwsgiStatistics(object):
 
         self._curr_stats_snapshot = None
         self._prev_stats_snapshot = None
+        self._prev_metrics_snapshot = None
 
     def report(self):
         raw_stats = self._read_raw_statistics()
@@ -49,6 +51,9 @@ class UwsgiStatistics(object):
 
             if self._curr_stats_snapshot.should_report_average_response_time(self._prev_stats_snapshot):
                 self._report_avg_response_time_metrics()
+
+            if self._curr_stats_snapshot.should_report_metrics(self._prev_stats_snapshot):
+                self._report_metrics()
         else:
             self._logger.info(self._curr_stats_snapshot)
 
@@ -101,3 +106,10 @@ class UwsgiStatistics(object):
         for col, rt in self._curr_stats_snapshot.avg_workers_response_time:
             tbl.add_row(col, rt)
         mlops.set_stat(tbl)
+
+    def _report_metrics(self):
+        self._logger.debug("Reporting metrics ...")
+        for name, value in self._curr_stats_snapshot.uwsgi_pm_metrics_per_window.items():
+            metric = Metric.metric_by_name(name)
+            if not metric.hidden:
+                mlops.set_stat(metric.title, value)

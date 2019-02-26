@@ -100,6 +100,8 @@ class UwsgiBroker(Base):
         cheaper_conf = UwsgiCheaperSubSystem.get_config()
         self._logger.info("Cheaper subsystem: {}".format(cheaper_conf))
 
+        metrics = entry_point_conf[ComponentConstants.METRICS_KEY]
+
         ini_content = WSGI_INI_CONTENT.format(restful_app_folder=self._target_path,
                                               pid_filename=UwsgiConstants.PID_FILENAME,
                                               sock_filename=shared_conf[SharedConstants.SOCK_FILENAME_KEY],
@@ -111,7 +113,9 @@ class UwsgiBroker(Base):
                                               workers=cheaper_conf[UwsgiCheaperSubSystem.WORKERS],
                                               cheaper=cheaper_conf[UwsgiCheaperSubSystem.CHEAPER],
                                               cheaper_initial=cheaper_conf[UwsgiCheaperSubSystem.CHEAPER_INITIAL],
-                                              cheaper_step=cheaper_conf[UwsgiCheaperSubSystem.CHEAPER_STEP])
+                                              cheaper_step=cheaper_conf[UwsgiCheaperSubSystem.CHEAPER_STEP],
+                                              enable_metrics="true" if metrics else "false",
+                                              metrics=self._get_metrics_configuration(metrics))
 
         ini_filepath = os.path.join(self._target_path, UwsgiConstants.INI_FILENAME)
         self._logger.info("Writing uWSGI ini file to: {}".format(ini_filepath))
@@ -120,6 +124,13 @@ class UwsgiBroker(Base):
             f.write(ini_content)
 
         return ini_filepath
+
+    def _get_metrics_configuration(self, metrics):
+        metrics_conf = ""
+        if metrics:
+            for index, metric_name in enumerate(metrics):
+                metrics_conf += ComponentConstants.METRIC_TEMPLATE.format(metric_name, index+1) + "\n"
+        return metrics_conf
 
     def _run(self, shared_conf, entry_point_conf, ini_filepath):
         uwsgi_start_cmd = UwsgiConstants.START_CMD.format(filepath=ini_filepath)

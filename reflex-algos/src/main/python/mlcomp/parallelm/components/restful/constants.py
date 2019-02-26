@@ -33,6 +33,9 @@ class ComponentConstants:
     UWSGI_DISABLE_LOGGING_KEY = 'uwsgi_disable_logging'
     DEFAULT_UWSGI_DISABLE_LOGGING = True
 
+    METRICS_KEY = 'metrics'
+    METRIC_TEMPLATE = 'metric = name={},type=counter,initial_value=0,oid=100.{}'
+
     # Specify the reporting interval as well as the time period that stats metrics are referred to
     STATS_REPORTING_INTERVAL_SEC = 'stats_reporting_interval_sec'
     DEFAULT_STATS_REPORTING_INTERVAL_SEC = 10

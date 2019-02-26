@@ -85,4 +85,11 @@ skip-atexit = false
 
 # skip atexit teardown (ignored by the master)
 skip-atexit-teardown = true
+
+# enable metrics subsystem
+enable-metrics = {enable_metrics}
+
+# oid prefix: 1.3.6.1.4.1.35156.17.3
+# metric = name=pm-counter1,type=counter,initial_value=0,oid=100.1
+{metrics}
 """
