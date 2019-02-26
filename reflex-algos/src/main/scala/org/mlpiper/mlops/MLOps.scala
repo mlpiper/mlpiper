@@ -145,10 +145,7 @@ object MLOps {
     val healthLib = new HealthLibSpark(true)
     healthLib.setContext(sparkContext)
     healthLib.setDfOfDenseVector(df)
-
-    if (histRDD.count() != 0) {
-      healthLib.setIncomingHealth(histRDD.rdd)
-    }
+    healthLib.setIncomingHealth(histRDD.rdd)
 
     val histStat = new ContinuousHistogramForSpark(HealthType.ContinuousHistogramHealth.toString)
     histStat.setModelId(modelId)
@@ -187,9 +184,7 @@ object MLOps {
     val healthLib = new HealthLibSpark(true)
     healthLib.setContext(sparkContext)
     healthLib.setDfOfDenseVector(df)
-    if (histRDD.count() != 0) {
-      healthLib.setIncomingHealth(histRDD.rdd)
-    }
+    healthLib.setIncomingHealth(histRDD.rdd)
 
     val histStat = new ContinuousHistogramForSpark(HealthType.ContinuousHistogramHealth.toString)
     histStat.enableAccumOutputOfHistograms = true
