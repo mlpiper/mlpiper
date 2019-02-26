@@ -16,6 +16,7 @@ from parallelm.pipeline import json_fields
 from parallelm.common.base import Base
 from parallelm.pipeline import java_mapping
 from parallelm.pipeline.executor import Executor
+from parallelm.pipeline.executor_config import ExecutorConfig
 
 
 class MLPiper(Base):
@@ -24,6 +25,7 @@ class MLPiper(Base):
     COMP_PKG_DIR = "comp_pkg"
     DIST_DIR = "mlpiper_dist"
     COMPONENTS_SETUP_PY = "mcenter_components_setup.py"
+    MLCOMP_JAR_FILENAME = normalized_package_name + ".jar"
 
     MLPIPER_SCRIPT = "mlpiper"
     DEPLOYMENT_PIPELINE = "pipeline.json"
@@ -266,7 +268,11 @@ class MLPiper(Base):
         if not os.path.exists(pipeline_file):
             raise Exception("Pipeline file not exists! path: {}".format(pipeline_file))
 
-        pipeline_runner = Executor().pipeline_file(open(pipeline_file)).use_color(self._use_color)
+        config = ExecutorConfig(pipeline=None,
+                                pipeline_file=open(pipeline_file),
+                                run_locally=self._options.spark_run_locally,
+                                mlcomp_jar=self._get_mlcomp_jar())
+        pipeline_runner = Executor(config)
 
         if not self._skip_mlpiper_deps:
             py_deps = pipeline_runner.all_py_component_dependencies()
@@ -275,3 +281,24 @@ class MLPiper(Base):
 
         pipeline_runner.go()
 
+    def _get_mlcomp_jar(self):
+        # current dir
+        potential_paths = [MLPiper.MLCOMP_JAR_FILENAME]
+
+        this_file_dir_path = os.path.dirname(os.path.abspath(__file__))
+
+        # execution from source tree
+        path = os.path.join(this_file_dir_path, "..", "..", "..", "..", "..", "..", "..", "reflex-common",
+                            "mlcomp", "target", MLPiper.MLCOMP_JAR_FILENAME)
+        potential_paths.append(path)
+
+        # execution from site-packages
+        path = os.path.join(this_file_dir_path, "..", "..", "..", "..", "..", shared_lib_rltv_dir,
+                            MLPiper.MLCOMP_JAR_FILENAME)
+        potential_paths.append(path)
+
+        for p in potential_paths:
+            if os.path.exists(p):
+                return p
+
+        raise Exception("Could not find '{}' path!".format(MLPiper.MLCOMP_JAR_FILENAME))

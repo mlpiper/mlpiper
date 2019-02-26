@@ -15,6 +15,21 @@ install_requires = ['ml-ops', 'termcolor', 'flask', 'psutil', 'py4j']
 if sys.version_info[0] < 3:
     install_requires.append('enum')
 
+
+def create_shared_dir():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    shared_dir = os.path.join(script_dir, shared_lib_rltv_dir)
+    if os.path.exists(shared_dir):
+        shutil.rmtree(shared_dir)
+    os.makedirs(shared_dir)
+
+    src_mlcomp_jar_filepath = os.path.join(shared_dir, "..", "..", "..", "..", "..", "..", "..", "reflex-common",
+                                           "mlcomp", "target", normalized_package_name + ".jar")
+    shutil.copy(src_mlcomp_jar_filepath, shared_dir)
+
+
+create_shared_dir()
+
 setup(
     name=project_name,
     namespace_packages=['parallelm'],
@@ -37,8 +52,8 @@ setup(
     zip_safe=False,
     include_package_data=True,
     package_data={'': ['*.json', '*.jar', '*.egg']},
-    packages=find_packages('.'),
-    # data_files=[('.', ['__main__.py', 'setup.py'])],
+    packages=find_packages(),
+    data_files=[(shared_lib_rltv_dir, os.listdir(os.path.join(ROOT, shared_lib_rltv_dir)))],
     scripts=["bin/mlpiper",
              "bin/mcenter_components_setup.py",
              "bin/create-egg.sh",
