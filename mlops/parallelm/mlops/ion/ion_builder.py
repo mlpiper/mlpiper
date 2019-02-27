@@ -19,6 +19,7 @@ class IONJsonConstants:
     PIPELINE_INSTANCES_TO_WFNODE_SECTION = "pipelineInstanceIdToWfNode"
     PIPELINE_NAME_TAG = "pipelineName"
     PIPELINE_ID_TAG = "pipelineId"
+    PIPELINE_TYPE = "pipelineType"
     PIPELINE_PROFILE_ID_TAG = "pipelineProfileId"
     PIPELINE_PATTERN_ID_TAG = "pipelinePatternId"
     PIPELINE_INSTANCE_ID_TAG = "pipelineInstanceId"

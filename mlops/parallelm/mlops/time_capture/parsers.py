@@ -7,6 +7,7 @@ from collections import OrderedDict
 from parallelm.mlops.time_capture.json_to_df import JsonToDf
 from parallelm.mlops.stats_category import StatGraphType
 from parallelm.mlops.time_capture.untar_timeline_capture import UntarTimelineCapture
+from parallelm.mlops.ion.ion_builder import IONBuilder, IONJsonConstants
 import shutil
 
 
@@ -178,12 +179,13 @@ class Parsers(UntarTimelineCapture):
         kd = json.loads(reader1)
         self._mlapp_id = kd["WorkflowID"]
         self._model_policy = kd["modelPolicy"]
-        self._nodes_number = len(kd["PipelinesInformation"])
-        self._nodes_id1 = [nodes["pipelineInstanceId"] for nodes in kd["PipelinesInformation"]]
-        self._nodes_id = [[nodes["pipelineInstanceId"], nodes["pipelineType"],
-                           nodes["pipelineName"]]  for nodes in kd["PipelinesInformation"]]
-        self._nodes_type = [nodes["pipelineType"] for nodes in kd["PipelinesInformation"]]
-        self._nodes_name = [nodes["pipelineName"] for nodes in kd["PipelinesInformation"]]
+        self._nodes_number = len(kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION])
+
+        self._nodes_id1 = [nodes[IONJsonConstants.PIPELINE_INSTANCE_ID_TAG] for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
+        self._nodes_id = [[nodes[IONJsonConstants.PIPELINE_INSTANCE_ID_TAG], nodes[IONJsonConstants.PIPELINE_TYPE],
+                           nodes[IONJsonConstants.PIPELINE_NAME_TAG]]  for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
+        self._nodes_type = [nodes[IONJsonConstants.PIPELINE_TYPE] for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
+        self._nodes_name = [nodes[IONJsonConstants.PIPELINE_NAME_TAG] for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
 
     def _name_stats_df(self, filename, df):
         """

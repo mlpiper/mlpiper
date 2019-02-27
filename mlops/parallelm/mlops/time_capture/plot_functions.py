@@ -29,18 +29,18 @@ class PlotFunctions:
         self._multigraph_df_file = mtc.get_multigraph_df_file()
         self._attribute_names_list = mtc.get_attribute_names_list()
 
-    def line_plot(self, name, df_name=None):
+    def line_plot(self, name, df_input=None):
         """
         Plotting of line graphs per bin per file name
 
         :param self:
         :param name: attribute name
-        :param df_name: attribute df optional
+        :param df_input: Input df optional
         :return:
         """
 
-        df = df_name
-        if df_name is None:
+        df = df_input
+        if df_input is None:
             df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
         node_info = self._mtc.get_nodes()
         if ("keys" in df.columns) and en_plt:
@@ -192,23 +192,7 @@ class PlotFunctions:
                 for name in name_list:
                     df = df_file[df_file['Name'] == name]
                     df = df.reset_index()
-                    num_graphs = df.shape[0]
-                    matrix_df = pd.DataFrame()
-                    col_num = 0
-                    header = []
-                    for location_index in range(0, num_graphs):
-                        matrix_loc = {}
-                        if df["ROW_NAME"].loc[location_index] == "HEADER":
-                            header = df["ROW_VALUE"].loc[location_index]
-                            col_num = len(header)
-                        else:
-                            matrix_loc["ROW_NAME"] = df["ROW_NAME"].loc[location_index]
-                            matrix_loc["datetime"] = df["datetime"].loc[location_index]
-                            for col_index in range(0, col_num):
-                                matrix_loc[str(header[col_index])] = \
-                                    (df["ROW_VALUE"].loc[location_index])[col_index]
-                            matrix_df = matrix_df.append(pd.Series(matrix_loc), ignore_index=True)
-
+                    matrix_df = self._format_df_matrix(df) # format the matrix dataframe
                     print('matrix for ' + str(name))
                     if en_tabulate:
                         print(tabulate(matrix_df, headers='keys', tablefmt='psql'))
@@ -219,42 +203,58 @@ class PlotFunctions:
 
     def get_matrix_df(self, name):
         """
-        getting the DF of a matrix according to the name:
+        getting the DF of a matrix according to the its name:
+        The matrix is identified by a list with it attribute name and pipeline name
 
         :param self:
         :return: matrix_df
         """
         matrix_df = pd.DataFrame()
-        for filename in self._file_names:
+        # Locate the specific matrix from the fines.
+        for filename in self._file_names: # go through the stat files
             try:
-                node_name = self.file_to_node(filename)
-                if (name[1] == node_name):
+                node_name = self.file_to_node(filename) # get the pipeline name of the file
+                if (name[1] == node_name): # check that the pipeline name fits the input
                     df_file = self._matrix_df_file[filename]
-                    name_list = df_file["Name"].unique()
-                    if name[0] in name_list:
-                        df = df_file[df_file['Name'] == name[0]]
+                    name_list = df_file["Name"].unique() # attribute names in the file
+                    if name[0] in name_list: # check if the input name is in the name list
+                        df = df_file[df_file['Name'] == name[0]] # get entries of the this attribute
                         df = df.reset_index()
-                        num_graphs = df.shape[0]
-                        col_num = 0
-                        header = []
-                        header_names = []
-                        for location_index in range(0, num_graphs):
-                            matrix_loc = {}
-                            if df["ROW_NAME"].loc[location_index] == "HEADER":
-                                header = df["ROW_VALUE"].loc[location_index]
-                                col_num = len(header)
-                            else:
-                                matrix_loc["ROW_NAME"] = df["ROW_NAME"].loc[location_index]
-                                matrix_loc["datetime"] = df["datetime"].loc[location_index]
-                                header_names = []
-                                for col_index in range(0, col_num):
-                                    matrix_loc[str(header[col_index])] = \
-                                        (df["ROW_VALUE"].loc[location_index])[col_index]
-                                    header_names.append(str(header[col_index]))
-                                matrix_df = matrix_df.append(pd.Series(matrix_loc), ignore_index=True)
-                        matrix_df = matrix_df[["ROW_NAME"] + header_names + ["datetime"]]
+                        matrix_df = self._format_df_matrix(df) # format the matrix dataframe
             except Exception:
                 pass
+        return matrix_df
+
+    def _format_df_matrix(self, df):
+        """
+        The function parses from the stat file the matrix data and format it in a dataframe
+        taing the header line and making it as column names and then align the data in the rows
+        into these columns.
+
+        :param df: Input raw matrix Dataframe
+        :return: matrix_df: Output formatted dataframe
+        """
+        matrix_df = pd.DataFrame()
+        num_rows = df.shape[0]
+        col_num = 0
+        header = []
+        header_names = []
+        for location_index in range(0, num_rows):
+            matrix_loc = {}
+            if df["ROW_NAME"].loc[location_index] == "HEADER": # Check for a header row
+                header = df["ROW_VALUE"].loc[location_index] # create the header of the DF
+                col_num = len(header)
+            else:
+                matrix_loc["ROW_NAME"] = df["ROW_NAME"].loc[location_index]
+                matrix_loc["datetime"] = df["datetime"].loc[location_index]
+                header_names = []
+                for col_index in range(0, col_num): # align the data in the rows into the header columns.
+                    matrix_loc[str(header[col_index])] = \
+                        (df["ROW_VALUE"].loc[location_index])[col_index]
+                    header_names.append(str(header[col_index]))
+                matrix_df = matrix_df.append(pd.Series(matrix_loc), ignore_index=True)
+        matrix_df = matrix_df[["ROW_NAME"] + header_names + ["datetime"]] # Order the columns
+        # so that rowname is first and datetime is last for nice printing
         return matrix_df
 
     def multigraph_plot(self):
