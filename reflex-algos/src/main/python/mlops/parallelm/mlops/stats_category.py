@@ -43,6 +43,7 @@ class StatGraphType:
     TABLE = "TABLE"
     OPAQUE = "OPAQUE"
     GENERAL_GRAPH = "GENERAL_GRAPH"
+    HTML = "HTML"
 
     # Note: the below types are not defined in ECO
     UNKNOWN = "UNKNOWN"

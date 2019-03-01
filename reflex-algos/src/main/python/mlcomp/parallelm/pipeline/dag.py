@@ -159,7 +159,8 @@ class Dag(Base):
             dag_node = DagNode(None, comp_desc, pipe_comp, self._ml_engine)
 
             if comp_desc[json_fields.COMPONENT_DESC_USER_STAND_ALONE]:
-                if dag_node.comp_language() == ComponentLanguage.PYTHON:
+                if dag_node.comp_language() == ComponentLanguage.PYTHON or \
+                   dag_node.comp_language() == ComponentLanguage.JUPYTER:
                     comp_runner = PythonStandaloneComponentRunner(self._ml_engine, dag_node)
                 elif dag_node.comp_language() == ComponentLanguage.JAVA:
                     comp_runner = JavaStandaloneComponentRunner(self._ml_engine, dag_node)
