@@ -107,7 +107,7 @@ class MCenterCli(object):
             print("Downloading mlapp: {} to {}".format(args.name, args.appdir))
             DirectoryFromMLAppBuilder(mclient, args.name, args.appdir).build()
 
-        parser = self._register_command('mlapp-download', help='download MLApp to a directory')
+        parser = self._register_command('mlapp-download', help='download MLApp to a directory', action=_mlapp_download)
         parser.add_argument('name', action='store', help='name of MLApp to download')
         parser.add_argument('appdir', action='store', help='directory to use for saving the MLApp to')
 
