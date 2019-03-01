@@ -14,7 +14,7 @@ class DagNode(Base):
         self._perm_visit = False  # Used by 'TopologicalSort'
 
     def __str__(self):
-        return "{}".format(self.pipe_id())
+        return "pipe id: {}\ncomp_desc: {}".format(self.pipe_id(), self.comp_desc())
 
     @property
     def component_runner(self):
