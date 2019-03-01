@@ -87,7 +87,7 @@ class DirectoryFromMLAppBuilder:
                 node_info[MLAppKeywords.NODE_PARENT] = [node_info[MLAppKeywords.NODE_PARENT]]
 
     def _init_mlapp_info(self):
-        self._mlapp_info[MLAppKeywords.VERSION] = MLAppVersions.V1
+        self._mlapp_info[MLAppKeywords.VERSION] = MLAppVersions.V2
         self._mlapp_info[MLAppKeywords.NAME] = self._mlapp_name
         self._copy_key_val(self._mlapp_info, self._profile_info,
                            MLAppKeywords.MODEL_POLICY, MLAppProfileKeywords.MODEL_POLICY)
