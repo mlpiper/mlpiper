@@ -6,7 +6,7 @@ import java.nio.file.{Files, Paths}
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponentFactory
 import org.junit.runner.RunWith
 import org.mlpiper.infrastructure._
-import org.mlpiper.infrastructure.factory.{ByClassComponentFactory, ComponentJSONSignatureParser, ReflexComponentFactory, TensorflowComponent}
+import org.mlpiper.infrastructure.factory.{ByClassComponentFactory, ComponentJSONSignatureParser, ReflexComponentFactory}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 import org.slf4j.LoggerFactory
@@ -1810,7 +1810,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers {
       s"""
          |{
          |  "name": "tt",
-         |  "engineType": "Tensorflow",
+         |  "engineType": "Python",
          |  "systemConfig" : {
          |                 "statsDBHost": "localhost",
          |                 "statsDBPort": 8086,
@@ -1845,7 +1845,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers {
     assert(res.nodeList.length == 1, "Expecting the number of nodes to be 1")
     val node = res.nodeList(0)
 
-    val tfComp = node.component.asInstanceOf[TensorflowComponent]
+    val tfComp = node.component.asInstanceOf[PythonSingleComponent]
 
     // Checking command line
     val cmdline = tfComp.buildCommandLine()
@@ -1897,7 +1897,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers {
       s"""
          |{
          |  "name": "tt",
-         |  "engineType": "Tensorflow",
+         |  "engineType": "Python",
          |  "systemConfig" : {
          |                 "statsDBHost": "localhost",
          |                 "statsDBPort": 8086,
@@ -1931,7 +1931,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers {
     assert(res.nodeList.length == 1, "Expecting the number of nodes to be 1")
     val node = res.nodeList(0)
 
-    val tfComp = node.component.asInstanceOf[TensorflowComponent]
+    val tfComp = node.component.asInstanceOf[PythonSingleComponent]
 
     // Checking isModelProduer
     val isModelProducer = tfComp.isModelProducer
@@ -1957,7 +1957,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers {
     val compJson =
       s"""
          |{
-         |    "engineType": "Tensorflow",
+         |    "engineType": "Python",
          |    "name": "MnistCnnLayers",
          |    "label": "MnistCNN",
          |    "program": "cnn_mnist.py",
@@ -2036,7 +2036,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers {
 
     val p = ComponentJSONSignatureParser
     val compMeta = p.parseSignature(compJson)
-    assert(compMeta.engineType == "Tensorflow")
+    assert(compMeta.engineType == "Python")
     assert(compMeta.arguments.length == 8)
   }
 

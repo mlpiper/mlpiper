@@ -9,10 +9,3 @@ class TensorflowComponent(componentMetadata: ComponentMetadata, componentDir: St
 
 }
 
-
-object TensorflowComponent {
-  def getAsTensorflowComponent(comp: ReflexPipelineComponent): TensorflowComponent = {
-    require(comp.engineType == ComputeEngineType.Tensorflow, "Must provide a component of type Tensorflow")
-    comp.asInstanceOf[TensorflowComponent]
-  }
-}

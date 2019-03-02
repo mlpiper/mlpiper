@@ -4,7 +4,7 @@ import java.nio.file.{Files, Path, Paths}
 
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponentFactory
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponentFactory
-import org.mlpiper.infrastructure.factory.{ReflexComponentFactory, TensorflowComponentFactory}
+import org.mlpiper.infrastructure.factory.{PythonComponentFactory,ReflexComponentFactory}
 import org.mlpiper.infrastructure.{ComputeEngineType, ReflexPipelineBuilder, ReflexPipelineDag}
 
 /**
@@ -26,7 +26,7 @@ object DagTestUtil {
     val currentDirectory = new java.io.File(".").getCanonicalPath
     val tfPath = resolveBaseDirPath(currentDirectory, componentsDir, ComputeEngineType.Tensorflow.toString)
 
-    ReflexComponentFactory.registerEngineFactory(ComputeEngineType.Tensorflow, TensorflowComponentFactory(testMode = true, tfPath.toString))
+    ReflexComponentFactory.registerEngineFactory(ComputeEngineType.Tensorflow, PythonComponentFactory(testMode = true, tfPath.toString))
   }
 
   def getComponentsDir: String = {

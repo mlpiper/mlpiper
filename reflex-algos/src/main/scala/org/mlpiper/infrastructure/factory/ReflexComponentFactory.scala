@@ -94,12 +94,6 @@ object ReflexComponentFactory {
           ComputeEngineType.PySpark,
           SparkPythonComponentFactory(testMode, sparkPythonDir))
       }
-      case ComputeEngineType.Tensorflow => {
-        val tfDir = Paths.get(externalComponentsDir, ComputeEngineType.Tensorflow.toString).toString
-        ReflexComponentFactory.registerEngineFactory(
-          ComputeEngineType.Tensorflow,
-          TensorflowComponentFactory(testMode, tfDir))
-      }
       case ComputeEngineType.Python => {
         val pythonDir = Paths.get(externalComponentsDir, ComputeEngineType.Python.toString).toString
         ReflexComponentFactory.registerEngineFactory(
@@ -124,11 +118,6 @@ object ReflexComponentFactory {
     val testMode = false
     registerEngineFactory(ComputeEngineType.FlinkStreaming, FlinkStreamingComponentFactory(testMode))
     registerEngineFactory(ComputeEngineType.SparkBatch, SparkBatchComponentFactory(testMode))
-
-    val tfDir = Paths.get(externalComponentsDir, ComputeEngineType.Tensorflow.toString).toString
-    ReflexComponentFactory.registerEngineFactory(
-      ComputeEngineType.Tensorflow,
-      TensorflowComponentFactory(testMode, tfDir))
 
     val sparkPythonDir = Paths.get(externalComponentsDir, ComputeEngineType.PySpark.toString).toString
     ReflexComponentFactory.registerEngineFactory(
