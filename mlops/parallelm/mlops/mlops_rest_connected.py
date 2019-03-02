@@ -3,8 +3,10 @@ Implementation of REST client interfaces when in connected or attached mode.
 """
 try:  # python3
     from urllib.parse import urlencode
+    from urllib.parse import quote as encoder
 except ImportError:  # python2
     from urllib import urlencode
+    from urllib import quote as encoder
 
 import requests
 import json
@@ -266,6 +268,55 @@ class MlOpsRestConnected(MlOpsRestHelper):
                         workflowNodeId=workflow_node_id, agentId=agent_id, pipelineId=pipeline_id, ionId=ion_id,
                         start=start_time, end=end_time)
         return self._get_url_request_response_as_json(url)
+
+    def post_event(self, pipeline_inst_id, event):
+        """
+        Post event using protobuf format
+        :param pipeline_inst_id:  pipeline instance identifier
+        :param event:             ReflexEvent based on protobuf
+        :return:                  Json response from agent
+        """
+        url = build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.EVENTS, pipeline_inst_id)
+        try:
+            payload = encoder(event)
+            headers = {"Content-Type": "application/json;charset=UTF-8"}
+            r = requests.post(url, data=payload, headers=headers, cookies=self._return_cookie())
+            if r.ok:
+                return r.json()
+            else:
+                raise MLOpsException('Call {} with payload {} failed text:[{}]'.format(url, event, r.text))
+        except requests.exceptions.ConnectionError as e:
+            self._error(e)
+            raise MLOpsException("Connection to MLOps agent [{}:{}] refused".format(self._mlops_server, self._mlops_port))
+        except Exception as e:
+            raise MLOpsException('Call ' + str(url) + ' failed with error ' + str(e))
+
+    def post_stat(self, pipeline_inst_id, stat):
+        """
+        Post stat to agent using json formatting
+        :param pipeline_inst_id: pipeline instance identifier
+        :param stat:             stat in json format
+        :return:                 Json response from agent
+        """
+        if pipeline_inst_id is None:
+            self._error("Missing pipeline instance id cannot post stat")
+            return
+
+        url = build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.STATS,
+                        pipeline_inst_id, statType="accumulator")
+        try:
+            payload = encoder(stat)
+            headers = {"Content-Type": "application/json;charset=UTF-8"}
+            r = requests.post(url, data=payload, headers=headers, cookies=self._return_cookie())
+            if r.ok:
+                return r.json()
+            else:
+                raise MLOpsException('Call {} with payload {} failed text:[{}]'.format(url, stat, r.text))
+        except requests.exceptions.ConnectionError as e:
+            self._error(e)
+            raise MLOpsException("Connection to MLOps agent [{}:{}] refused".format(self._mlops_server, self._mlops_port))
+        except Exception as e:
+            raise MLOpsException('Call ' + str(url) + ' failed with error ' + str(e))
 
     def url_get_model_stats(self, model_id):
         return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.MODEL_STATS, modelId=model_id)

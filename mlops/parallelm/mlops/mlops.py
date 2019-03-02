@@ -131,13 +131,15 @@ class MLOps(object):
         elif self._config.mlops_mode == MLOpsMode.ATTACH:
             # For now, support only python when attaching to an ION
             from parallelm.mlops.channels.mlops_python_channel import MLOpsPythonChannel
-            self._output_channel = MLOpsPythonChannel()
+            self._output_channel = MLOpsPythonChannel(self._mlops_ctx.rest_helper(),
+                                                      self._mlops_ctx.current_node().pipeline_instance_id)
         elif self._config.mlops_mode == MLOpsMode.AGENT:
             # In agent mode if the context is None, we use the python channel. Otherwise, use the pyspark channel.
             if ctx is None:
                 self._logger.info("output_channel = python")
                 from parallelm.mlops.channels.mlops_python_channel import MLOpsPythonChannel
-                self._output_channel = MLOpsPythonChannel()
+                self._output_channel = MLOpsPythonChannel(self._mlops_ctx.rest_helper(),
+                                                          self._mlops_ctx.current_node().pipeline_instance_id)
             else:
                 self._logger.info("output_channel = pyspark")
                 from parallelm.mlops.channels.mlops_pyspark_channel import MLOpsPySparkChannel
@@ -200,10 +202,10 @@ class MLOps(object):
         if self._config.mlops_mode == MLOpsMode.STAND_ALONE and connect_mlops is True:
             raise MLOpsException("Detected standalone mode with connect_mlops option == True")
 
-        self._init_output_channel(ctx)
         if self._mlops_ctx is None:
             self._mlops_ctx = MLOpsCtx(config=self._config, mode=self._config.mlops_mode)
 
+        self._init_output_channel(ctx)
         self._event_broker = EventBroker(self._mlops_ctx, self._output_channel)
         self._stats_helper = StatsHelper(self._output_channel)
         self._model_helper = ModelHelper(self._mlops_ctx.rest_helper(), self._mlops_ctx.ion(), self._stats_helper)
