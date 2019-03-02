@@ -33,7 +33,7 @@ class StatsHelper(BaseObj):
             raise MLOpsException("Type : {} is not yet supported by {}".
                                  format(type(data).__name__, Constants.OFFICIAL_NAME))
 
-    def set_stat(self, name, data, model_id, category, timestamp):
+    def set_stat(self, name, data, model_id, category, timestamp, pipeline_inst_id):
         # If it supports the stat_object API, return the object.
         if isinstance(name, MLOpsStatGetter):
             self._output_channel.stat_object(name.get_mlops_stat(model_id))
