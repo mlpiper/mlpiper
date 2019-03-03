@@ -9,6 +9,7 @@ __version__ = Constants.MLOPS_CURRENT_VERSION
 
 # For now until name change
 project_name = Constants.OFFICIAL_NAME
+symlink_name = "mlops"
 
 from .versions import Versions
 from .mlops import MLOps
