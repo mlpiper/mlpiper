@@ -8,6 +8,11 @@ SPHINXPROJ    = ParallelM
 SOURCEDIR     = doc-src
 BUILDDIR      = build
 
+MLOPSDISTDIR = ""
+
+MLOPS_EGG_PY2_SYMLINK = "mlops-py2.egg"
+MLOPS_EGG_PY3_SYMLINK = "mlops-py3.egg"
+
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
@@ -24,8 +29,22 @@ bdist:
 	python setup.py bdist
 
 egg:
+	rm -rf ./dist
 	python2 setup.py -q bdist_egg
 	python3 setup.py -q bdist_egg
+
+MLOPS_EGG_PY2 = $(shell realpath $(shell ls ./dist/*-py2.*.egg))
+MLOPS_EGG_PY3 = $(shell realpath $(shell ls ./dist/*-py3.*.egg))
+MLOPS_EGG_PY2_BASENAME = $(shell basename $(MLOPS_EGG_PY2))
+MLOPS_EGG_PY3_BASENAME = $(shell basename $(MLOPS_EGG_PY3))
+
+install_to: egg
+ifneq ($(MLOPSDISTDIR),"")
+	mkdir -p $(MLOPSDISTDIR)
+	cp -f $(MLOPS_EGG_PY2) $(MLOPS_EGG_PY3) $(MLOPSDISTDIR)
+	cd $(MLOPSDISTDIR); ln -sf $(MLOPS_EGG_PY2_BASENAME) $(MLOPS_EGG_PY2_SYMLINK); cd -
+	cd $(MLOPSDISTDIR); ln -sf $(MLOPS_EGG_PY3_BASENAME) $(MLOPS_EGG_PY3_SYMLINK); cd -
+endif
 
 wheel:
 	python2 setup.py sdist bdist_wheel
@@ -34,10 +53,6 @@ wheel:
 test: egg
 	env PYTHONPATH=./:tests/:${SPARK_HOME}/python python2 -m py.test tests/
 	env PYTHONPATH=./:tests/:${SPARK_HOME}/python python3 -m pytest tests/
-
-local: test
-	cp dist/parallelm-1.0.1-py2.7.egg ../../../../target/
-	cp dist/parallelm-1.0.1-py3.*.egg ../../../../target/
 
 cover: egg
 	env PYTHONPATH=./ coverage2 run -m py.test tests/
@@ -50,7 +65,7 @@ test_pyspark: egg
 		PM_REST_SERVER_WAIT_FOR_EXIT=0 \
 		${SPARK_SUBMIT} \
 				  --master spark://localhost:7077 \
-				  --py-files dist/parallelm-1.0.0-py2.7.egg \
+				  --py-files $(MLOPS_EGG_PY2) \
 				  --jars ../../../../target/ReflexAlgos-jar-with-dependencies.jar \
 				  examples/pi_calc.py
 
@@ -60,14 +75,14 @@ test_tf: egg
 		PM_MLOPS_FILE="/tmp/tf_mlops.channel" \
 		${SPARK_SUBMIT} \
 				  --master spark://localhost:7077 \
-				  --py-files dist/parallelm-1.0.0-py2.7.egg \
+				  --py-files $(MLOPS_EGG_PY2) \
 				  --jars ../../../../target/ReflexAlgos-jar-with-dependencies.jar \
 				  examples/pi_calc.py
 
 test_python: egg
 	env PM_MLOPS_MODE=python \
 		PM_MLOPS_FILE="/tmp/mlops.channel" \
-		PYTHONPATH=dist/parallelm-1.0.0-py2.7.egg \
+		PYTHONPATH=$(MLOPS_EGG_PY2) \
 		python2 examples/mlops_example_python.py
 	@echo "========"
 	cat /tmp/mlops.channel
@@ -76,7 +91,7 @@ test_non_pm: egg
 	env PM_MLOPS_FILE="/tmp/mlops.csv"\
 	${SPARK_SUBMIT} \
 				  --master spark://localhost:7077 \
-				  --py-files dist/parallelm-1.0.0-py2.7.egg \
+				  --py-files $(MLOPS_EGG_PY2) \
 				  --jars ../../../../target/ReflexAlgos-jar-with-dependencies.jar \
 				  examples/pi_calc.py
 

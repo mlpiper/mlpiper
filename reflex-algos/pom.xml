@@ -378,28 +378,15 @@
 
                         <executions>
                             <execution>
-                                <id>package-python2.7-egg-mlops</id>
+                                <id>package-py2_py3-mlops-eggs</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
                                     <workingDirectory>${project.basedir}/src/main/python/mlops</workingDirectory>
-                                    <executable>python2</executable>
-                                    <commandlineArgs>setup.py bdist_egg --dist-dir ${project.build.directory}
-                                    </commandlineArgs>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>package-python3-egg-mlops</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <workingDirectory>${project.basedir}/src/main/python/mlops</workingDirectory>
-                                    <executable>python3</executable>
-                                    <commandlineArgs>setup.py bdist_egg --dist-dir ${project.build.directory}
+                                    <executable>make</executable>
+                                    <commandlineArgs>install_to MLOPSDISTDIR=${project.build.directory}
                                     </commandlineArgs>
                                 </configuration>
                             </execution>
