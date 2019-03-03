@@ -2,7 +2,7 @@ package org.mlpiper.stat.algos.pca
 
 import breeze.linalg.{DenseVector => BreezeDenseVector}
 import com.parallelmachines.reflex.common.InfoType._
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats._
 import org.mlpiper.utils.ParsingUtils
 
 case class ExplainedVarianceStat(explainedVariance: BreezeDenseVector[Double])

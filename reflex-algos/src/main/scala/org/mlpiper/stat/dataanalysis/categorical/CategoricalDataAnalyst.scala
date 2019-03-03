@@ -2,8 +2,8 @@ package org.mlpiper.stat.dataanalysis.categorical
 
 import breeze.linalg.{DenseMatrix, DenseVector}
 import com.parallelmachines.reflex.common.InfoType.InfoType
-import org.apache.flink.streaming.scala.examples.common.stats.StatNames.CategoricalDataAnalysisResultStat
-import org.apache.flink.streaming.scala.examples.common.stats.{AccumData, StatInfo, StatPolicy}
+import org.mlpiper.stats.StatNames.CategoricalDataAnalysisResultStat
+import org.mlpiper.stats.{AccumData, StatInfo, StatPolicy}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.mlpiper.datastructures.NamedVector

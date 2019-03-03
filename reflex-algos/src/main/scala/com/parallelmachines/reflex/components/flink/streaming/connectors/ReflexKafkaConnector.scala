@@ -2,11 +2,7 @@ package com.parallelmachines.reflex.components.flink.streaming.connectors
 
 import java.util.Properties
 
-import org.apache.flink.api.scala._
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer09
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
-import org.apache.flink.streaming.util.serialization.SimpleStringSchema
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
 
 import scala.collection.mutable.ArrayBuffer
@@ -60,17 +56,6 @@ class ReflexKafkaConnector extends FlinkStreamingComponent {
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String):
   ArrayBuffer[DataWrapperBase] = {
-
-    val properties = new Properties()
-    properties.setProperty("bootstrap.servers", s"$kafkaHost:$kafkaPort")
-    // only required for Kafka 0.8
-    properties.setProperty("zookeeper.connect", s"$kafkaHost:2181")
-    properties.setProperty("group.id", "test")
-
-
-    val textStream: DataStream[String] = env.addSource(
-      new FlinkKafkaConsumer09[String](kafkaTopic, new SimpleStringSchema, properties))
-
-    ArrayBuffer(new DataWrapper(textStream))
+    ArrayBuffer(new DataWrapper())
   }
 }

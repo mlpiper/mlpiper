@@ -1,6 +1,6 @@
 package org.mlpiper.stat.histogram.continuous
 
-import org.apache.flink.streaming.scala.examples.common.stats.BarGraphFormat
+import org.mlpiper.stats.BarGraphFormat
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Json
 import org.mlpiper.utils.ParsingUtils

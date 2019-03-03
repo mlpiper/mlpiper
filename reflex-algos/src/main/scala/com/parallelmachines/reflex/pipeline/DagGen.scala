@@ -7,11 +7,10 @@ import java.nio.file.{Files, Paths}
 import com.parallelmachines.reflex.common.constants.ReflexAlgosConstants
 import com.parallelmachines.reflex.common.util.StringOps
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponentFactory
+import com.parallelmachines.reflex.components.flink.streaming.StreamExecutionEnvironment
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponentFactory
 import com.parallelmachines.reflex.factory.{ReflexComponentFactory, SparkPythonComponentFactory, TensorflowComponentFactory}
 import com.parallelmachines.reflex.pipeline.spark.stats.SystemStatsListener
-import org.apache.flink.api.common.JobExecutionResult
-import org.apache.flink.streaming.api.scala._
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
 import org.mlpiper.mlops.MLOpsEnvVariables
@@ -21,6 +20,7 @@ import org.slf4j.LoggerFactory
 import scala.reflect.runtime.universe._
 import scala.util.control.NonFatal
 import scala.util.parsing.json._
+import scopt.OptionParser
 
 /**
   * Main ReflexAlgos object - parsing command line arguments and running/validating dag or producing
@@ -32,7 +32,7 @@ object DagGen {
   val dagVersion = "1.0.0"
   var jsonFile: String = ""
 
-  var jobExecutionResult: Option[JobExecutionResult] = None
+  var jobExecutionResult: Option[String] = None
 
   private val logger = LoggerFactory.getLogger(getClass)
 
@@ -360,7 +360,7 @@ object DagGen {
 
       reflexPipe.pipeInfo.engineType match {
         case ComputeEngineType.FlinkStreaming =>
-          val env = StreamExecutionEnvironment.getExecutionEnvironment
+          val env = StreamExecutionEnvironment()
           if (config.parallelism.isDefined) {
             env.setParallelism(config.parallelism.get)
           }

@@ -1,10 +1,8 @@
 package com.parallelmachines.reflex.test.components
 
 import breeze.linalg.{DenseVector => BreezeDenseVector}
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
-import org.apache.flink.streaming.api.datastream.{DataStream, _}
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 
 import scala.reflect.runtime.universe._
 import scala.collection.mutable.ArrayBuffer
@@ -33,7 +31,6 @@ class TestVectorToString extends FlinkStreamingComponent {
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String):
   ArrayBuffer[DataWrapperBase] = {
-    val dsOutput = dsArr(0).data[DataStream[BreezeDenseVector[Double]]]
-    ArrayBuffer(new DataWrapper(dsOutput))
+    ArrayBuffer[DataWrapperBase]()
   }
 }

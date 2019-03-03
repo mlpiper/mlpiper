@@ -4,7 +4,7 @@ import java.io.File
 import java.nio.file.{Files, Paths}
 import java.util.NoSuchElementException
 
-import com.parallelmachines.reflex.components.flink.streaming.algorithms.ModelBehaviorType
+import com.parallelmachines.reflex.components.spark.batch.algorithms.ModelBehaviorType
 import com.parallelmachines.reflex.pipeline.ComputeEngineType.ComputeEngineType
 import com.parallelmachines.reflex.pipeline.{ComputeEngineType, Language}
 import org.mlpiper.utils.FileUtil

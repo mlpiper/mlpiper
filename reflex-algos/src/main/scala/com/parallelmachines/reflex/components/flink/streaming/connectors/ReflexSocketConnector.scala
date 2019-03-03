@@ -1,9 +1,9 @@
 package com.parallelmachines.reflex.components.flink.streaming.connectors
 
 import com.parallelmachines.reflex.components.ComponentAttribute
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
+
 import scala.reflect.runtime.universe._
 import scala.collection.mutable.ArrayBuffer
 
@@ -34,11 +34,6 @@ class ReflexSocketConnector extends FlinkStreamingComponent {
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String):
   ArrayBuffer[DataWrapperBase] = {
-    val hostValue = hostArg.value
-    val portValue = portArg.value
-
-    val text = env.socketTextStream(hostValue, portValue)
-
-    ArrayBuffer(new DataWrapper(text))
+    ArrayBuffer[DataWrapperBase]()
   }
 }

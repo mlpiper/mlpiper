@@ -4,7 +4,7 @@ import com.parallelmachines.reflex.common.InfoType.InfoType
 import com.parallelmachines.reflex.common._
 import com.parallelmachines.reflex.pipeline.DataFrameUtils
 import com.parallelmachines.reflex.pipeline.spark.stats.SystemStatsListener
-import org.apache.flink.streaming.scala.examples.common.stats.{AccumData, _}
+import org.mlpiper.stats.{AccumData, _}
 import org.apache.spark.api.java.{JavaRDD, JavaSparkContext}
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.types.StructType

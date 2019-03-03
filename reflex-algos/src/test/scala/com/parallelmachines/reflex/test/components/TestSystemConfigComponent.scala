@@ -1,9 +1,8 @@
 package com.parallelmachines.reflex.test.components
 
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.ComponentAttribute
 import com.parallelmachines.reflex.pipeline._
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -30,6 +29,6 @@ class TestSystemConfigComponent extends FlinkStreamingComponent {
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase],
                            errPrefixStr: String): ArrayBuffer[DataWrapperBase] = {
-    return ArrayBuffer[DataWrapperBase]()
+    ArrayBuffer[DataWrapperBase]()
   }
 }

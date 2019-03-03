@@ -435,59 +435,6 @@ class ReflexPipelineBuilder {
   }
 
   /**
-    * Look for algorithm component in the pipeline, duplicate prediction output
-    * and append histogram producer to the duplicated output.
-    * Output result to Event Sink.
-    */
-  private def addCanaryComponents(testMode: Boolean = false): Unit = {
-    var canaryLabel = ""
-    if (pipeInfo.systemConfig.canaryConfig.isEmpty) {
-      return
-    }
-
-    /* Look for algorithm component.
-     * And find Prediction output in this component. */
-
-    val algoList = pipeInfo.getComponentsByProperties(ComponentsGroups.algorithms, isSource = false)
-    require(algoList.length < 2, s"More than one algorithm components found in pipeline: $algoList")
-
-    if (algoList.isEmpty) {
-      return
-    }
-    val algoComponent = algoList.head
-
-    /* Check that only one label is provided in canaryConfig and fetch this label*/
-    if (pipeInfo.systemConfig.canaryConfig.isDefined) {
-      val canaryConfig = pipeInfo.systemConfig.canaryConfig.get
-      require(canaryConfig.canaryLabel1.isDefined ^ canaryConfig.canaryLabel2.isDefined,
-        s"Only one canary label is expected in pipeline ${pipeInfo.name}")
-      canaryLabel = canaryConfig.canaryLabel1.getOrElse("") + canaryConfig.canaryLabel2.getOrElse("")
-    }
-
-    var predictionOutputIdx: Int = 0
-    val compInstance = ReflexComponentFactory(pipeInfo.engineType, algoComponent.`type`, null)
-    for (i <- compInstance.outputTypes.indices) {
-      if (compInstance.outputTypes(i).tag.tpe <:< typeTag[Prediction].tpe) {
-        predictionOutputIdx = i
-      }
-    }
-
-    val parentConnectedToAlgoComponentsList = pipeInfo.pipe.flatMap(_.parents).filter(_.parent == algoComponent.id).filter(_.output == predictionOutputIdx)
-    require(parentConnectedToAlgoComponentsList.size == 1, s"Only one component should be connected to ${algoComponent.`type`}, output: $predictionOutputIdx")
-
-    /* Duplicate PredictionOutput of algorithm and connect Histogram producer and Null to it */
-    pipeInfo.addComponent(Component("TwoDup", pipeInfo.getMaxId + 1, MandatoryComponentsPerEngine.TwoDup.toString, ListBuffer[Parent](Parent(algoComponent.id, predictionOutputIdx, Some(0), None, None)), None))
-    parentConnectedToAlgoComponentsList.head.parent = pipeInfo.getMaxId
-    parentConnectedToAlgoComponentsList.head.output = 0
-    pipeInfo.addComponent(Component("Histogram Producer", pipeInfo.getMaxId + 1, "CanaryHistogramProducerForPredictions", ListBuffer[Parent](Parent(pipeInfo.getMaxId, 1, Some(0), None, None)), None))
-    if (testMode) {
-      pipeInfo.addComponent(Component("EventSocketSink", pipeInfo.getMaxId + 1, "EventSocketSink", ListBuffer[Parent](Parent(pipeInfo.getMaxId, 0, Some(0), Some(ReflexEvent.EventType.CanaryMessage.toString()), Some(canaryLabel))), None))
-    } else {
-      pipeInfo.addComponent(Component("ReflexNullConnector", pipeInfo.getMaxId + 1, "ReflexNullConnector", ListBuffer[Parent](Parent(pipeInfo.getMaxId, 0, Some(0), Some(ReflexEvent.EventType.CanaryMessage.toString()), Some(canaryLabel))), None))
-    }
-  }
-
-  /**
     * Build pipeline form a JSON string
     *
     * @param jsonStr string to parse
@@ -564,9 +511,6 @@ class ReflexPipelineBuilder {
     // Resolve defaults
     addDefaultComponents()
 
-    if (pipeInfo.engineType == ComputeEngineType.FlinkStreaming) {
-      addCanaryComponents(testMode)
-    }
     mergeSinkSingletons()
     mergeSourceSingletons()
 

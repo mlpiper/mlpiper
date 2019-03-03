@@ -1,7 +1,7 @@
 package org.mlpiper.stat.histogram.categorical
 
 import com.parallelmachines.reflex.common.InfoType._
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats._
 import org.mlpiper.utils.ParsingUtils
 
 import scala.collection.mutable

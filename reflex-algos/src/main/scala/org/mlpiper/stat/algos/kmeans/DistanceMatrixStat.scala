@@ -1,7 +1,7 @@
 package org.mlpiper.stat.algos.kmeans
 
 import breeze.linalg.{DenseMatrix, DenseVector}
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats._
 import com.parallelmachines.reflex.common.InfoType._
 import org.mlpiper.utils.ParsingUtils
 

@@ -3,8 +3,7 @@ package com.parallelmachines.reflex.pipeline
 import scala.collection.mutable
 
 /**
-  * CollectedData is used by tests and ReflexCollectConnector component
-  * to provide convenient way for output comparisons.
+  * CollectedData is used by tests to provide convenient way for output comparisons.
   */
 object CollectedData {
   private var collectedData = mutable.Map[String, Iterator[Any]]()

@@ -1,10 +1,9 @@
 package com.parallelmachines.reflex.test.components
 
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
-import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.flink.streaming.connectors.{EventSocketSource, ReflexNullConnector, ReflexNullSourceConnector}
+import com.parallelmachines.reflex.components.spark.batch.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.mlpiper.datastructures.PredictionOutput
 
 import scala.collection.mutable.ArrayBuffer

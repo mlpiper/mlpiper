@@ -1,20 +1,18 @@
 package org.mlpiper.stat.algos
 
-import org.apache.flink.streaming.scala.examples.common.stats.{StatInfo, StatNames, StatPolicy}
-import org.apache.flink.streaming.scala.examples.flink.utils.functions.performance.{PerformanceMetricsHash, PrintIntervalPerformanceMetrics}
+import org.mlpiper.stats.{StatInfo, StatNames, StatPolicy}
+import org.mlpiper.performance.{PerformanceMetricsHash, PerformanceMetricsStats}
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.classification._
 import org.apache.spark.ml.clustering.KMeansModel
 import org.apache.spark.ml.feature.{IndexToString, StringIndexerModel}
 import org.apache.spark.ml.{PipelineModel, PredictionModel}
 import org.apache.spark.sql.DataFrame
-import org.mlpiper.parameters.performance.PerformanceMetrics
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable
 
-class SparkMLPredictionStatsForSpark
-  extends PerformanceMetrics[SparkMLPredictionStatsForSpark] with PrintIntervalPerformanceMetrics {
+class SparkMLPredictionStatsForSpark extends PerformanceMetricsStats {
   var predictionDF: DataFrame = _
   var labelColName = ""
   var predictionColName = ""
@@ -145,7 +143,7 @@ class SparkMLPredictionStatsForSpark
     }
   }
 
-  override protected def storeMetrics(): Option[PerformanceMetricsHash] = {
+  override def storeMetrics(): Option[PerformanceMetricsHash] = {
 
     val perfHash = PerformanceMetricsHash(mutable.HashMap[StatInfo, Any](
       StatInfo(StatNames.Count, StatPolicy.SUM) -> this.predictionDF.count
@@ -154,4 +152,5 @@ class SparkMLPredictionStatsForSpark
     Some(perfHash)
   }
 
+  override protected def printTrigger():Boolean = true
 }

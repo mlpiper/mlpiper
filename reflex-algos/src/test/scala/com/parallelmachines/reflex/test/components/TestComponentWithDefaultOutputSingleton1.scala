@@ -1,10 +1,9 @@
 package com.parallelmachines.reflex.test.components
 
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.flink.streaming.connectors.EventSocketSink
 import com.parallelmachines.reflex.pipeline.{ComponentsGroups, ConnectionGroups}
 import com.parallelmachines.reflex.pipeline._
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -38,6 +37,6 @@ class TestComponentWithDefaultOutputSingleton1 extends FlinkStreamingComponent {
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase],
                            errPrefixStr: String): ArrayBuffer[DataWrapperBase] = {
-    return ArrayBuffer(new DataWrapper(dsArr(0).data[DataStream[String]]))
+    return ArrayBuffer[DataWrapperBase](dsArr(0))
   }
 }

@@ -2,8 +2,6 @@ package org.mlpiper.utils
 
 import breeze.linalg.{DenseMatrix, DenseVector}
 import com.parallelmachines.reflex.pipeline.DataFrameUtils
-import org.apache.flink.streaming.api.scala.{DataStream, _}
-import org.apache.flink.streaming.scala.examples.flink.utils.functions.window.SubtaskWindowBatch
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
@@ -121,14 +119,5 @@ object GenericNamedMatrixUtils {
         .mapPartitions(x => if (x.nonEmpty) Iterator(iteratorOfNamedVectorToNamedMatrix(x)) else Iterator.empty)
 
     reflexNamedMatrix
-  }
-
-  /** Method provides functionality to convert DataStream of NamedVector to DataStream of Named Vector which contains Matrix on each Partition with given window. */
-  def createReflexNamedMatrix(dataStreamOfNamedVector: DataStream[NamedVector], windowingSize: Long)
-  : DataStream[NamedMatrix] = {
-    // creating denseMatrix on each subtask
-    val streamOfIterableNamedVectors = SubtaskWindowBatch.countBatch(dataStreamOfNamedVector, windowingSize)
-
-    streamOfIterableNamedVectors.map(eachRNV => iteratorOfNamedVectorToNamedMatrix(eachRNV.toIterator))
   }
 }

@@ -1,7 +1,7 @@
 package org.mlpiper.stat.algos.pca
 
 import breeze.linalg.{DenseVector => BreezeDenseVector}
-import org.apache.flink.streaming.scala.examples.common.stats.GlobalAccumulator
+import org.mlpiper.stats.GlobalAccumulator
 
 /**
   * class is responsible for providing functionality to generate and update distance matrix stat of centroid for Spark.

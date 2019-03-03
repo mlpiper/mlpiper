@@ -1,7 +1,7 @@
 package com.parallelmachines.reflex.test.common
 
 import breeze.linalg.DenseMatrix
-import org.apache.flink.streaming.test.exampleScalaPrograms.clustering.ComparatorUtils
+import com.parallelmachines.reflex.test.common.ComparatorUtils
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.junit.runner.RunWith
 import org.mlpiper.stat.algos.ClassificationEvaluation

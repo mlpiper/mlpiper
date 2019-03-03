@@ -1,9 +1,7 @@
 package org.mlpiper.stat.histogram.continuous
 
 import com.parallelmachines.reflex.common.InfoType
-import org.apache.flink.streaming.api.scala.{DataStream, _}
-import org.apache.flink.streaming.scala.examples.common.stats._
-import org.apache.flink.streaming.scala.examples.flink.utils.PrependElementID
+import org.mlpiper.stats._
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Json
 import org.mlpiper.stat.healthlib.HealthType
@@ -25,13 +23,6 @@ object PredictionHistogram {
   val infoName: String = HealthType.PredictionHistogramHealth.toString
 
   val idAndFeaturedHistDivider = "-"
-
-  def generateIDedFeaturedHist(featuredHistogram: DataStream[mutable.Map[String, Histogram]]): DataStream[PredictionHistogram] = {
-    featuredHistogram
-      .countWindowAll(1)
-      .apply(new PrependElementID[mutable.Map[String, Histogram]])
-      .map(x => PredictionHistogram(ID = x.elementID, featuredHist = x.element))
-  }
 
   def toIDedFeatureHistogramJSON(idedFeaturedHistogram: PredictionHistogram): String = {
     val customMap = mutable.Map[String, String](ID -> idedFeaturedHistogram.ID.toString)

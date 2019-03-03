@@ -2,7 +2,7 @@ package org.mlpiper.stat.algos
 
 import com.parallelmachines.reflex.common.InfoType
 import com.parallelmachines.reflex.common.enums.OpType
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats._
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.stat.Statistics
 import org.apache.spark.rdd.RDD
