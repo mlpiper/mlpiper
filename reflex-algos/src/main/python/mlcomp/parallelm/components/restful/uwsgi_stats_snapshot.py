@@ -10,6 +10,7 @@ class UwsiStatsSnapshot(object):
         self._sorted_worker_stats = None
         self._avg_rt = None
         self._uwsgi_pm_metrics = None
+        self._uwsgi_pm_metrics_accumulation = {}
         self._uwsgi_pm_metrics_per_window = None
         self._metrics_execution_order = []
         self._extract_relevant_stats(prev_stats_snapshot)
@@ -47,7 +48,7 @@ class UwsiStatsSnapshot(object):
             # metric is dependant on a metric that depends on others. Using the topological
             # mechanism we can also allow more then one reference in a single metric definition.
             self._metrics_execution_order = TopologicalSort(Metric.metrics(), "metric_name",
-                                                            "related_metric").sort()
+                                                            "related_metric_meta").sort()
 
         self._uwsgi_pm_metrics_per_window = {}
 
@@ -62,7 +63,9 @@ class UwsiStatsSnapshot(object):
                 self._calculate_metric_value(metric_value, metric_meta, self.total_requests_diff,
                                              self.uwsgi_pm_metrics_per_window)
             else:
-                self._calculate_metric_value(metric_value, metric_meta, self.total_requests, self._uwsgi_pm_metrics)
+                self._calculate_metric_value(metric_value, metric_meta, self.total_requests,
+                                             self._uwsgi_pm_metrics)
+                self._uwsgi_pm_metrics_accumulation[metric_name] = self._uwsgi_pm_metrics[metric_name]
 
     def _extract_relevant_raw_metrics(self, raw_metrics):
         uwsgi_pm_metrics = {}
@@ -79,7 +82,11 @@ class UwsiStatsSnapshot(object):
     def _calculate_metric_value(self, metric_value, metric_meta, total_requests, related_metrics):
         metric_name = metric_meta.metric_name
 
-        if metric_meta.metric_relation == MetricRelation.AVG_PER_REQUEST:
+        if metric_meta.metric_relation == MetricRelation.BAR_GRAPH:
+            # A graph bar is only a place holder for other metrics. It does not have a value by itself.
+            pass
+
+        elif metric_meta.metric_relation == MetricRelation.AVG_PER_REQUEST:
             if total_requests:
                 metric_value /= total_requests
 
@@ -124,6 +131,10 @@ class UwsiStatsSnapshot(object):
         return self._uwsgi_pm_metrics[name]
 
     @property
+    def uwsgi_pm_metrics_accumulation(self):
+        return self._uwsgi_pm_metrics_accumulation
+
+    @property
     def uwsgi_pm_metrics_per_window(self):
         return self._uwsgi_pm_metrics_per_window
 
@@ -136,6 +147,10 @@ class UwsiStatsSnapshot(object):
     def should_report_worker_status(self, stats_snapshot):
         return stats_snapshot is None or (self.sorted_worker_stats != stats_snapshot.sorted_worker_stats)
 
-    def should_report_metrics(self, metrics_snapshot):
+    def should_report_metrics_accumulation(self, metrics_snapshot):
+        return metrics_snapshot is None or \
+               (self.uwsgi_pm_metrics_accumulation != metrics_snapshot.uwsgi_pm_metrics_accumulation)
+
+    def should_report_metrics_per_time_window(self, metrics_snapshot):
         return metrics_snapshot is None or \
                (self.uwsgi_pm_metrics_per_window != metrics_snapshot.uwsgi_pm_metrics_per_window)

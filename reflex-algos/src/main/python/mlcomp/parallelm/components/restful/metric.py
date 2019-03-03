@@ -1,4 +1,6 @@
 import logging
+import six
+
 from parallelm.common.base import Base
 from parallelm.common.mlcomp_exception import MLCompException
 
@@ -20,6 +22,7 @@ class MetricRelation:
     DIVIDE_BY = 2
     MULTIPLY_BY = 3
     SUM_OF = 4
+    BAR_GRAPH = 5
 
 
 class Metric(Base):
@@ -38,23 +41,40 @@ class Metric(Base):
         self._metric_type = metric_type
         self._value_type = value_type
         self._metric_relation = metric_relation
-        self._related_metric = related_metric if isinstance(related_metric, list) else [related_metric]
+        self._metric_already_displayed = False
 
         if not self._hidden and not self._title:
             raise MLCompException("A metric can be seen in the UI only if 'title' is provided! name: {}"
                                   .format(name))
 
-        if self._related_metric[0] and self._related_metric[0].metric_type != metric_type:
-            raise MLCompException("Error in metrics relation! Given metric cannot relate to other metric of "
-                                  "different type!" + " mentric: {}, type: {}, related-metric: {}, type: {}"
-                                  .format(name, metric_type, self._related_metric[0].metric_name,
-                                          self._related_metric[0].metric_type))
+        if self.metric_relation == MetricRelation.BAR_GRAPH:
+            if not isinstance(related_metric, list):
+                raise MLCompException("Bar graph metric should be provided with a list of metrics tuples. "
+                                      "Each tuple should contain the related metric and its bar name! "
+                                      "name: {}, related_metrics: {}".format(self.name, self.related_metric))
+
+            self._related_metric = []
+            for m in related_metric:
+                self.add_related_metric(m)
+        else:
+            self._related_metric = related_metric if isinstance(related_metric, list) else [related_metric]
+
+            if self._related_metric[0] and self._related_metric[0].metric_type != metric_type:
+                raise MLCompException("Error in metrics relation! Given metric cannot relate to other metric of "
+                                      "different type!" + " mentric: {}, type: {}, related-metric: {}, type: {}"
+                                      .format(name, metric_type, self._related_metric[0].metric_name,
+                                              self._related_metric[0].metric_type))
 
         if name in Metric._metrics:
             raise MLCompException("Metric has already been defined! name: {}".name)
 
         self._logger.info("Add new uwsgi metric ... {}".format(self._metric_name))
         Metric._metrics[self._metric_name] = self
+
+    def __str__(self):
+        return "name: {}, title: {}, hidden: {}, metric-type: {}, value-type: {}, metric-relation: {}, " \
+               "related_metric: {}".format(self.name, self.title, self.hidden, self.metric_type, self.value_type,
+                                           self.metric_relation, self.related_metric)
 
     @staticmethod
     def metrics():
@@ -91,6 +111,39 @@ class Metric(Base):
     @property
     def related_metric(self):
         return self._related_metric
+
+    @property
+    def related_metric_meta(self):
+        if isinstance(self.related_metric[0], tuple):
+            return [metric_meta for metric_meta, _ in self.related_metric]
+        else:
+            return self.related_metric
+
+    @property
+    def metric_already_displayed(self):
+        return self._metric_already_displayed
+
+    @metric_already_displayed.setter
+    def metric_already_displayed(self, value):
+        self._metric_already_displayed = value
+
+    def add_related_metric(self, bar_graph_metric):
+        if self.metric_relation != MetricRelation.BAR_GRAPH:
+            raise MLCompException("Related metric can be added only to bar graph!")
+
+        if not isinstance(bar_graph_metric, tuple) or len(bar_graph_metric) != 2:
+            raise MLCompException("Related metric information should be a tuple of the metric itself and a"
+                                  "bar column label! related_metric: {}".format(bar_graph_metric))
+
+        if not isinstance(bar_graph_metric[0], Metric):
+            raise MLCompException("First element in related bar graph metric should be a Metric! "
+                                  "provided: {}".format(bar_graph_metric[0]))
+
+        if not isinstance(bar_graph_metric[1], six.string_types):
+            raise MLCompException("Second element in related bar graph metric should be a string"
+                                  "provided: {}".format(bar_graph_metric[1]))
+
+        self._related_metric.append(bar_graph_metric)
 
     def get(self):
         value = 0

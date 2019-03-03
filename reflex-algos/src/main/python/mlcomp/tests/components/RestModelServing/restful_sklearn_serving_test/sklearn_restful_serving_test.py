@@ -30,6 +30,26 @@ class SklearnRESTfulServingTest(RESTfulComponent):
         self._params = {}
         self._verbose = self._logger.isEnabledFor(logging.DEBUG)
 
+        self._metric1 = None
+        self._metric2 = None
+        self._metric3 = None
+        self._metric4 = None
+
+        self.info_json = {
+            "sample_keyword": SklearnRESTfulServingTest.JSON_KEY_NAME,
+            "python": "{}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]),
+            "numpy": np.version.version,
+            "sklearn": sklearn.__version__,
+        }
+
+    def configure(self, params):
+        """
+        @brief      It is called in within the 'deputy' context
+        """
+        self._logger.info("Configure component with input params, name: {}, params: {}"
+                          .format(self.name(), params))
+        self._params = params
+
         self._metric1 = Metric(
             "requests.per.win.time",
             hidden=True,
@@ -50,12 +70,16 @@ class SklearnRESTfulServingTest(RESTfulComponent):
             metric_relation=MetricRelation.DIVIDE_BY,
             related_metric=self._metric1)
 
-        self.info_json = {
-            "sample_keyword": SklearnRESTfulServingTest.JSON_KEY_NAME,
-            "python": "{}.{}.{}".format(sys.version_info[0], sys.version_info[1], sys.version_info[2]),
-            "numpy": np.version.version,
-            "sklearn": sklearn.__version__,
-        }
+        self._metric4 = Metric(
+            name="classification",
+            title="Prediction Distribution",
+            metric_type=MetricType.COUNTER_PER_TIME_WINDOW,
+            metric_relation=MetricRelation.BAR_GRAPH,
+            related_metric=[
+                (self._metric2, "metric2"),
+                (self._metric3, "metric3")
+            ]
+        )
 
     def load_model_callback(self, model_path, stream, version):
         self._logger.info(sys.version_info)
@@ -162,7 +186,7 @@ class SklearnRESTfulServingTest(RESTfulComponent):
 
             # The values in the graphs are supposed to be the same
             self._metric2.increase(confident_num)
-            self._metric3.increase(confident_num)
+            self._metric3.increase(confident_num * 2)
             return 200, {"response": "ok"}
         except Exception as ex:
             return 404, {"message": str(ex)}

@@ -4,13 +4,14 @@ import os
 import socket
 
 from parallelm.components.restful.constants import StatsConstants
-from parallelm.components.restful.metric import Metric
+from parallelm.components.restful.metric import Metric, MetricRelation
 from parallelm.components.restful.uwsgi_stats_snapshot import UwsiStatsSnapshot
 
 mlops_loaded = False
 try:
     from parallelm.mlops import mlops
     from parallelm.mlops.stats_category import StatCategory
+    from parallelm.mlops.stats.bar_graph import BarGraph
     from parallelm.mlops.stats.multi_line_graph import MultiLineGraph
     from parallelm.mlops.stats.table import Table
     from parallelm.mlops.predefined_stats import PredefinedStats
@@ -52,8 +53,11 @@ class UwsgiStatistics(object):
             if self._curr_stats_snapshot.should_report_average_response_time(self._prev_stats_snapshot):
                 self._report_avg_response_time_metrics()
 
-            if self._curr_stats_snapshot.should_report_metrics(self._prev_stats_snapshot):
-                self._report_metrics()
+            if self._curr_stats_snapshot.should_report_metrics_accumulation(self._prev_stats_snapshot):
+                self._report_metrics_accumulation()
+
+            if self._curr_stats_snapshot.should_report_metrics_per_time_window(self._prev_stats_snapshot):
+                self._report_metrics_per_time_window()
         else:
             self._logger.info(self._curr_stats_snapshot)
 
@@ -107,9 +111,32 @@ class UwsgiStatistics(object):
             tbl.add_row(col, rt)
         mlops.set_stat(tbl)
 
-    def _report_metrics(self):
-        self._logger.debug("Reporting metrics ...")
-        for name, value in self._curr_stats_snapshot.uwsgi_pm_metrics_per_window.items():
-            metric = Metric.metric_by_name(name)
-            if not metric.hidden:
-                mlops.set_stat(metric.title, value)
+    def _report_metrics_accumulation(self):
+        self._logger.debug("Reporting metrics accumulation ...")
+        self._report_metrics_collection(self._curr_stats_snapshot.uwsgi_pm_metrics_accumulation)
+
+    def _report_metrics_per_time_window(self):
+        self._logger.debug("Reporting metrics per time window ...")
+        self._report_metrics_collection(self._curr_stats_snapshot.uwsgi_pm_metrics_per_window)
+
+    def _report_metrics_collection(self, metrics):
+        for name, value in metrics.items():
+            metric_meta = Metric.metric_by_name(name)
+            self._logger.debug("Reporting metrics ... {}".format(metric_meta))
+            if not metric_meta.hidden:
+                if metric_meta.metric_relation == MetricRelation.BAR_GRAPH:
+                    self._report_bar_graph_metric(metric_meta, metrics)
+                else:
+                    mlops.set_stat(metric_meta.title, value)
+
+    def _report_bar_graph_metric(self, metric_meta, metrics):
+        cols = []
+        data = []
+        for related_m, bar_name in metric_meta.related_metric:
+            cols.append(bar_name)
+            data.append(metrics[related_m.metric_name])
+
+        if not all(v == 0 for v in data) or not metric_meta.metric_already_displayed:
+            metric_meta.metric_already_displayed = True
+            mlt = BarGraph().name(metric_meta.title).cols(cols).data(data)
+            mlops.set_stat(mlt)
