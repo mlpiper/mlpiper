@@ -2,7 +2,7 @@ package org.mlpiper.stat.algos
 
 import breeze.linalg.{DenseMatrix, DenseVector, sum}
 import com.parallelmachines.reflex.common.InfoType._
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats._
 import org.apache.spark.mllib.evaluation.MulticlassMetrics
 import org.apache.spark.mllib.linalg.Matrix
 import org.apache.spark.rdd.RDD

@@ -1,7 +1,7 @@
 package org.mlpiper.stat.histogram.continuous
 
 import breeze.linalg.DenseVector
-import org.apache.flink.streaming.scala.examples.common.stats.GraphFormat
+import org.mlpiper.stats.GraphFormat
 import org.mlpiper.stat.healthlib.{HealthConfEnum, HealthConfigurations}
 
 import scala.collection.mutable

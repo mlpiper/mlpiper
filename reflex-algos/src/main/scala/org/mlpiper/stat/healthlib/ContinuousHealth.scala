@@ -1,7 +1,7 @@
 package org.mlpiper.stat.healthlib
 
 import com.parallelmachines.reflex.common.InfoType.InfoType
-import org.apache.flink.streaming.scala.examples.common.stats.GlobalAccumulator
+import org.mlpiper.stats.GlobalAccumulator
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.mlpiper.datastructures.NamedMatrix

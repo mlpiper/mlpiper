@@ -1,8 +1,6 @@
 package com.parallelmachines.reflex.components.flink.streaming
 
 import com.parallelmachines.reflex.pipeline._
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-
 import scala.reflect.runtime.universe._
 import scala.collection.mutable.ArrayBuffer
 

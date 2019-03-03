@@ -1,6 +1,5 @@
 package com.parallelmachines.reflex.components.spark.batch.algorithms
 
-import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
 import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
 import org.apache.spark.SparkContext

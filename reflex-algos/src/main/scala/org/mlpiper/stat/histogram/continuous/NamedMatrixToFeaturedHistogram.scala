@@ -2,7 +2,7 @@ package org.mlpiper.stat.histogram.continuous
 
 import breeze.linalg.DenseVector
 import com.parallelmachines.reflex.common.InfoType.InfoType
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats._
 import org.mlpiper.datastructures.NamedMatrix
 import org.slf4j.LoggerFactory
 

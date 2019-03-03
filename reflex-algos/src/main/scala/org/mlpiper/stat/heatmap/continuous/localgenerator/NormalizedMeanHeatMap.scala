@@ -2,33 +2,11 @@ package org.mlpiper.stat.heatmap.continuous.localgenerator
 
 import breeze.linalg.DenseVector
 import breeze.stats.meanAndVariance
-import org.apache.flink.api.common.functions.RichFlatMapFunction
-import org.apache.flink.util.Collector
 import org.mlpiper.datastructures.NamedVector
 import org.mlpiper.stat.heatmap.continuous.HeatMapValues
 import org.mlpiper.utils.GenericNamedMatrixUtils
 
 import scala.collection.mutable
-
-/**
-  * Compute HeatMap by using "local-by-norm-mean" methodology on mini-batch of NamedVectors
-  *
-  * Class is responsible for Performing a [[RichFlatMapFunction]] on [[NamedVector]]s and outputs [[org.mlpiper.stat.heatmap.continuous.HeatMapValues]]s.
-  * Primary task of the class is to provide flatMap function on datastream of iterable.
-  * flatMap will scale the values of each feature in range of [0,1] by using Min-Max-Scaling functionality and then find average of it.
-  */
-class NormalizedMeanHeatMap
-  extends RichFlatMapFunction[Iterable[NamedVector], HeatMapValues] {
-
-  /**
-    * Method will scale the values of each feature in range of [0,1] by using Min-Max-Scaling functionality and then find average of it.
-    */
-  override def flatMap(value: Iterable[NamedVector],
-                       out: Collector[HeatMapValues]): Unit = {
-    val heatMapValues = NormalizedMeanHeatMapHelper.generateHeatMap(value)
-    out.collect(heatMapValues)
-  }
-}
 
 object NormalizedMeanHeatMapHelper extends HeatMapHelper {
   /** Method is API to generate HeatMapValues from Iterable which can be used by any engine - spark, flink */

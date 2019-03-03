@@ -1,13 +1,7 @@
 package com.parallelmachines.reflex.components.flink.streaming.parsers
 
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
-import org.apache.flink.api.scala._
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import org.mlpiper.parameters.common.ArgumentParameterTool
-import org.mlpiper.parameters.ml.Attributes
-import org.mlpiper.parameters.parsing._
-import org.apache.flink.streaming.scala.examples.flink.utils.functions.conversion.StringToIndexedLabeledVectorFlatMap
 import org.mlpiper.datastructures.LabeledVector
 import org.mlpiper.utils.ParameterIndices
 
@@ -19,7 +13,6 @@ class ReflexStringToLabeledVectorComponent extends FlinkStreamingComponent {
   var sep: String = _
   var labelIndex: Option[Int] = None
   var timestampIndex: Option[Int] = None
-  var indices: ParameterIndices = _
 
   override val isSource = false
   override val group = ComponentsGroups.dataParsers
@@ -42,39 +35,8 @@ class ReflexStringToLabeledVectorComponent extends FlinkStreamingComponent {
   override val inputTypes: ConnectionList = ConnectionList(input)
   override var outputTypes: ConnectionList = ConnectionList(output)
 
-  var params = new ArgumentParameterTool("String to LabeledVector Component")
-  params.add(Attributes)
-  params.add(DataSeparator)
-  params.add(LabelIndex)
-  params.add(TimestampIndex)
-  params.add(IndicesRange)
-
-  override lazy val paramInfo = s"""[${params.toJson}]"""
-
-  override def configure(paramMap: Map[String, Any]): Unit = {
-    params.initializeParameters(paramMap)
-
-    sep = s"${Separator(params.get(DataSeparator))}"
-    labelIndex = params.getOption(LabelIndex)
-    timestampIndex = params.getOption(TimestampIndex)
-    attributes = params.get(Attributes)
-
-    val indicesRange = params.getOption(IndicesRange)
-    if (indicesRange.isDefined) {
-      indices = new ParameterIndices(indicesRange.get)
-    } else {
-      indices = new ParameterIndices(attributes)
-    }
-  }
-
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String):
   ArrayBuffer[DataWrapperBase] = {
-    val dsInput = dsArr(0).data[DataStream[String]]
-
-    val flatMapFunction = new StringToIndexedLabeledVectorFlatMap(
-      attributes, sep, indices, labelIndex, timestampIndex)
-
-    val dsOutput = dsInput.flatMap(flatMapFunction)
-    ArrayBuffer(new DataWrapper(dsOutput))
+    ArrayBuffer[DataWrapperBase]()
   }
 }

@@ -1,7 +1,6 @@
 package com.parallelmachines.reflex.test.reflexpipeline
 
 import com.parallelmachines.reflex.pipeline.ComponentConnection
-import org.apache.flink.streaming.api.scala.DataStream
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
@@ -47,15 +46,6 @@ class ComponentConnectionTest extends FlatSpec {
     val b1 = ComponentConnection(typeTag[List[BB]])
     assert(b1.canConnectTo(a1), "Failed to connect List[B] to List[A] - even when B is subclass of A")
     assert(!a1.canConnectTo(b1), "Connection List[A] -> List[B] should fail")
-  }
-
-  "DataStream collection with inherited inner type" should "be valid" in {
-    val a1 = ComponentConnection(typeTag[DataStream[AA]])
-    val b1 = ComponentConnection(typeTag[DataStream[BB]])
-    // Currently this test is failing due to the DataStream no being able to get T+
-    // This test is here to detect a change in this
-    assert(!b1.canConnectTo(a1), "Was able to do DataStream[B] to DataStream[A] - when B is subclass of A - DataStream changed implementation")
-    assert(!a1.canConnectTo(b1), "Connection DataStream[A] -> DataStream[B] should fail")
   }
 
   "Basic connection of 2 different types" should "not be possible" in {

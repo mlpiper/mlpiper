@@ -1,7 +1,7 @@
 package com.parallelmachines.reflex.components.spark.batch.dummy
 
-import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
+import com.parallelmachines.reflex.components.spark.batch.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.components.spark.batch.connectors.ReflexNullConnector
 import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
 import org.apache.spark.SparkContext

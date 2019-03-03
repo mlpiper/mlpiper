@@ -1,10 +1,7 @@
 package com.parallelmachines.reflex.components.flink.streaming.connectors
 
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.pipeline.{ConnectionGroups, ConnectionList, _}
-import org.apache.flink.streaming.api.functions.source.RichSourceFunction
-import org.apache.flink.streaming.api.functions.source.SourceFunction.SourceContext
-import org.apache.flink.streaming.api.scala.{StreamExecutionEnvironment, _}
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -34,19 +31,7 @@ class ReflexNullSourceConnector extends FlinkStreamingComponent {
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String):
   ArrayBuffer[DataWrapperBase] = {
-
-    val emptyStream = new RichSourceFunction[Any] {
-      override def run(ctx: SourceContext[Any]): Unit = {
-        ctx.close()
-      }
-
-      override def cancel(): Unit = {
-        /* Do nothing. */
-      }
-    }
-
-    val emptySourceStream = env.addSource(emptyStream)
-    ArrayBuffer(new DataWrapper(emptySourceStream))
+    ArrayBuffer[DataWrapperBase]()
   }
 }
 

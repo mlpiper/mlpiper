@@ -2,8 +2,7 @@ package org.mlpiper.stat.histogram.categorical
 
 import breeze.linalg.DenseVector
 import com.parallelmachines.reflex.common.InfoType.InfoType
-import org.apache.flink.api.common.functions.RichMapFunction
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats._
 import org.mlpiper.datastructures.NamedMatrix
 import org.slf4j.LoggerFactory
 
@@ -86,26 +85,3 @@ object NamedMatrixToFeaturedHistogram {
   }
 }
 
-/**
-  * Compute histogram on DataStream of NamedVector which contains Matrix Representation.
-  * Functionality is responsible for creating histogram for categorical dataset.
-  *
-  * functionality works in following way.
-  *
-  *
-  * <br> 1. Iterates over each Array of columnEntries where each columnEntry represents Vector
-  * <br> 2. Generating histogram for vector from column Entry
-  * <br> 3. Output map of featureID and histogram.
-  *
-  */
-class NamedMatrixToFeaturedHistogram
-  extends RichMapFunction[NamedMatrix, mutable.Map[String, Histogram]] {
-
-  override def map(namedMatrixRep: NamedMatrix)
-  : mutable.Map[String, Histogram] = {
-    val featuredHistogram: mutable.Map[String, Histogram] =
-      NamedMatrixToFeaturedHistogram(namedMatrixRep = namedMatrixRep)
-
-    featuredHistogram
-  }
-}

@@ -55,8 +55,13 @@ class ByClassComponentFactory(val engineType: ComputeEngineType.Value,
         throw new Exception(s"Component '${compClass.getCanonicalName}' already registered for '${engineType}' engine. Registered component: '${compInfo.canonicalName}'")
       }
     }
-    components += ComponentInfo(compClass.getPackage.getName, compClass.getCanonicalName, compClass.getSimpleName,
-      classAvail = true, comp.getInfo, componentMetadata = None)
+    components += ComponentInfo(packageName = compClass.getPackage.getName,
+      canonicalName = compClass.getCanonicalName,
+      typeName = compClass.getSimpleName,
+      classAvail = true,
+      signature = comp.getInfo,
+      componentMetadata = None,
+      metadataFilename = None)
   }
 
   override def getComponentInfo(compTypeName: String): ComponentInfo = {

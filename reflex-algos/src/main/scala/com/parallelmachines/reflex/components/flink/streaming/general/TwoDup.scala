@@ -1,7 +1,6 @@
 package com.parallelmachines.reflex.components.flink.streaming.general
 
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
 
 import scala.collection.mutable.ArrayBuffer
@@ -46,10 +45,6 @@ class TwoDup extends FlinkStreamingComponent {
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String):
   ArrayBuffer[DataWrapperBase] = {
-    val dsInput = dsArr(0).data[DataStream[Any]]
-    ArrayBuffer(
-      new DataWrapper(dsInput),
-      new DataWrapper(dsInput)
-    )
+    ArrayBuffer[DataWrapperBase]()
   }
 }
