@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -x
+#!/usr/bin/env bash
 
 script_name=$(basename ${BASH_SOURCE[0]})
 script_dir=$(realpath $(dirname ${BASH_SOURCE[0]}))
