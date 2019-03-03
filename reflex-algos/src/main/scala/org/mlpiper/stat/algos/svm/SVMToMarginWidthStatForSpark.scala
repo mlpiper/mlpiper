@@ -1,6 +1,6 @@
 package org.mlpiper.stat.algos.svm
 
-import org.apache.flink.streaming.scala.examples.common.stats.GlobalAccumulator
+import org.mlpiper.stats.GlobalAccumulator
 
 class SVMToMarginWidthStatForSpark(weights: org.apache.spark.mllib.linalg.Vector,
                                    sparkContext: org.apache.spark.SparkContext) {

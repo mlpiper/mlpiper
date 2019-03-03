@@ -1,7 +1,6 @@
 package org.mlpiper.stat.healthlib
 
 import breeze.linalg.DenseVector
-import org.apache.flink.streaming.api.scala.DataStream
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
@@ -27,15 +26,6 @@ trait HealthComponent extends Serializable {
   def getModelId(): Option[String] = {
     modelId
   }
-}
-
-/**
-  * HealthComponentFlink is a base class for new Flink Health Components.
-  *
-  * Defines Flink specific data types setters
-  * */
-trait HealthComponentFlink extends HealthComponent {
-  def setIncomingHealthStream(input: DataStream[String]): Unit
 }
 
 /**

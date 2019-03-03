@@ -1,7 +1,7 @@
 package com.parallelmachines.reflex.components.spark.batch.algorithms
 
 import com.parallelmachines.reflex.common.InfoType.InfoType
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats._
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.ml.clustering.KMeansModel

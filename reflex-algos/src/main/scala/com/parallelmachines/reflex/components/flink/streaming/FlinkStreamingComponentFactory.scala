@@ -18,9 +18,11 @@ class FlinkStreamingComponentFactory(classList: mutable.MutableList[Class[_]])
 
 object FlinkStreamingComponentFactory {
   private val flinkStreamingComponents = mutable.MutableList[Class[_]](
+  )
+
+  private val testFlinkStreamingComponents = mutable.MutableList[Class[_]](
     // Input
     classOf[flink.streaming.connectors.ReflexSocketConnector],
-    classOf[flink.streaming.connectors.ReflexFileConnector],
     classOf[flink.streaming.connectors.ReflexKafkaConnector],
     classOf[flink.streaming.connectors.ReflexNullSourceConnector],
 
@@ -29,8 +31,6 @@ object FlinkStreamingComponentFactory {
     classOf[flink.streaming.connectors.EventSocketSource],
     classOf[flink.streaming.connectors.EventSocketTwoSource],
     classOf[flink.streaming.connectors.EventSocketSink],
-    classOf[flink.streaming.connectors.ReflexSocketSink],
-    classOf[flink.streaming.connectors.ReflexFileSink],
 
     // Flow control
     classOf[flink.streaming.general.TwoDup],
@@ -38,12 +38,7 @@ object FlinkStreamingComponentFactory {
 
     // Parsing
     classOf[flink.streaming.parsers.ReflexStringToBreezeVectorComponent],
-    classOf[flink.streaming.parsers.ReflexStringToLabeledVectorComponent]
-  )
-
-  private val testFlinkStreamingComponents = mutable.MutableList[Class[_]](
-    classOf[flink.streaming.connectors.ReflexStdoutConnector],
-    classOf[flink.streaming.connectors.ReflexCollectConnector],
+    classOf[flink.streaming.parsers.ReflexStringToLabeledVectorComponent],
     classOf[flink.streaming.dummy.TestArgsComponent],
     classOf[flink.streaming.dummy.TestComponentWithDefaultInput],
     classOf[flink.streaming.dummy.TestComponentWithThreeDefaultInputs],

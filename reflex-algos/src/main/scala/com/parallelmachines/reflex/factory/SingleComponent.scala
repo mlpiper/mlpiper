@@ -2,7 +2,7 @@ package com.parallelmachines.reflex.factory
 
 import java.nio.file.Paths
 
-import com.parallelmachines.reflex.components.flink.streaming.algorithms.ModelBehaviorType
+import com.parallelmachines.reflex.components.spark.batch.algorithms.ModelBehaviorType
 import com.parallelmachines.reflex.pipeline._
 
 import scala.collection.mutable.ArrayBuffer

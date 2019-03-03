@@ -1,23 +1,6 @@
 package org.mlpiper.stat.histogram.categorical
 
-import org.apache.flink.api.common.functions.ReduceFunction
-
 import scala.collection.mutable
-
-/**
-  * class is responsible for providing reduce functionality to combine featured histograms
-  */
-class CombineFeaturedHistograms
-  extends ReduceFunction[mutable.Map[String, Histogram]] {
-
-  override def reduce(map1OfFeatureHist: mutable.Map[String, Histogram],
-                      map2OfFeatureHist: mutable.Map[String, Histogram])
-  : mutable.Map[String, Histogram] = {
-    val combinedFeatureIDAndHist = CombineFeaturedHistograms.combineTwoFeaturedHistograms(map1OfFeatureHist = map1OfFeatureHist, map2OfFeatureHist = map2OfFeatureHist)
-
-    combinedFeatureIDAndHist
-  }
-}
 
 object CombineFeaturedHistograms {
   def combineTwoFeaturedHistograms(map1OfFeatureHist: mutable.Map[String, Histogram],

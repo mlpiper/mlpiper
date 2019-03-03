@@ -1,7 +1,7 @@
 package org.mlpiper.stat.algos
 
 import com.parallelmachines.reflex.common.InfoType._
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats._
 import org.apache.spark.mllib.evaluation.RegressionMetrics
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame

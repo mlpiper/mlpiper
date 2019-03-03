@@ -7,14 +7,14 @@ import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComp
 import com.parallelmachines.reflex.factory.{ByClassComponentFactory, ComponentJSONSignatureParser, ReflexComponentFactory, TensorflowComponent}
 import com.parallelmachines.reflex.pipeline.{Component, ReflexPipelineJsonParser, _}
 import org.junit.runner.RunWith
-import org.scalatest.FlatSpec
+import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.junit.JUnitRunner
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
 
 @RunWith(classOf[JUnitRunner])
-class ReflexPipelineTest extends FlatSpec {
+class ReflexPipelineTest extends FlatSpec with Matchers{
 
   private val logger = LoggerFactory.getLogger(getClass)
 
@@ -29,6 +29,23 @@ class ReflexPipelineTest extends FlatSpec {
     }
   }
 
+  "Empty DagGen args" should "throw an exception" in {
+    val args = Array[String]()
+    intercept[Exception] {
+      DagGen.main(args)
+    }
+  }
+
+  "Components json generation" should "be valid end to end" in {
+    val componentsFile = java.io.File.createTempFile("components", ".json")
+    componentsFile.deleteOnExit()
+
+    val componentsDir = DagTestUtil.getComponentsDir
+
+    val args = Array[String]("--comp-desc", s"${componentsFile.getAbsolutePath}", "--external-comp", s"$componentsDir")
+    noException should be thrownBy DagGen.main(args)
+    assert(componentsFile.length() != 0)
+  }
   "Good Pipeline 1" should "be valid" in {
 
     val json1 =

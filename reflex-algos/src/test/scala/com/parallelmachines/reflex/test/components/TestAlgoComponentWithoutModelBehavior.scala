@@ -2,11 +2,10 @@ package com.parallelmachines.reflex.test.components
 
 import breeze.linalg.DenseVector
 import com.parallelmachines.reflex.components.ComponentAttribute
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.flink.streaming.connectors.{ReflexNullConnector, ReflexNullSourceConnector}
 import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment, _}
-import org.apache.flink.streaming.scala.examples.flink.utils.functions.performance.PerformanceMetricsHash
+import org.mlpiper.performance.PerformanceMetricsHash
 import org.mlpiper.datastructures.PredictionOutput
 
 import scala.collection.mutable.ArrayBuffer
@@ -66,13 +65,6 @@ class TestAlgoComponentWithoutModelBehavior extends FlinkStreamingComponent {
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase],
                            errPrefixStr: String): ArrayBuffer[DataWrapperBase] = {
 
-    var predictionOutput: DataStream[PredictionOutput] = null
-    if (addPredictionOutput.value) {
-      predictionOutput = dsArr(0).data[DataStream[DenseVector[Double]]].map(x => new PredictionOutput(Some(x(0)), x, None))
-    } else {
-      predictionOutput = dsArr(0).data[DataStream[PredictionOutput]]
-    }
-
-    return ArrayBuffer[DataWrapperBase](dsArr(0), DataWrapper(predictionOutput), dsArr(0))
+    return ArrayBuffer[DataWrapperBase](dsArr(0), dsArr(0), dsArr(0))
   }
 }

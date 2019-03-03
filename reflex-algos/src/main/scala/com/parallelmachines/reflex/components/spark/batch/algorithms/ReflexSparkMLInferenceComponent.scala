@@ -9,7 +9,6 @@ import java.io.{ByteArrayInputStream, File}
 import java.nio.file.Files
 
 import com.parallelmachines.reflex.common.ExtractArchives
-import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.components.spark.batch.connectors.{ModelTypeString, ReflexNullConnector, RestDataSource}
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
 import com.parallelmachines.reflex.components.{ComponentAttribute, EnablePerformanceComponentAttribute, EnableValidationComponentAttribute, LabelColComponentAttribute}

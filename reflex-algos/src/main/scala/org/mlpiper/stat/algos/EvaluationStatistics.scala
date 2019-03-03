@@ -2,8 +2,8 @@ package org.mlpiper.stat.algos
 
 import breeze.linalg.DenseMatrix
 import com.parallelmachines.reflex.common.InfoType
-import org.apache.flink.streaming.scala.examples.common.stats.StatNames._
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats.StatNames._
+import org.mlpiper.stats._
 import org.mlpiper.utils.ParsingUtils
 
 import scala.collection.mutable

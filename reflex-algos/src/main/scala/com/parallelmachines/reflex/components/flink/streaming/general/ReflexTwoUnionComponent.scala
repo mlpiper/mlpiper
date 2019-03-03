@@ -1,9 +1,7 @@
 package com.parallelmachines.reflex.components.flink.streaming.general
 
-import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
-import org.slf4j.LoggerFactory
 
 import scala.reflect.runtime.universe._
 import scala.collection.mutable.ArrayBuffer
@@ -55,17 +53,6 @@ class ReflexTwoUnionComponent extends FlinkStreamingComponent {
 
     override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String):
     ArrayBuffer[DataWrapperBase] = {
-
-        if (dsArr.length != 2) {
-            throw new Exception("Input to union operator should be of len 2 - obtained len: " + dsArr.length)
-        }
-
-        val dsStringA = dsArr(0).data[DataStream[Any]]
-        val dsStringB = dsArr(1).data[DataStream[Any]]
-
-        logger.info("materialize - len of input: " + dsArr.length)
-        val ds2 = dsStringA.union(dsStringB)
-
-        ArrayBuffer(new DataWrapper(ds2))
+        ArrayBuffer[DataWrapperBase]()
     }
 }

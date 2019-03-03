@@ -1,6 +1,6 @@
 package org.mlpiper.stat.histogram.categorical
 
-import org.apache.flink.streaming.scala.examples.common.stats.GraphFormat
+import org.mlpiper.stats.GraphFormat
 
 /**
   * class represents Histogram of Doubles for categorical values

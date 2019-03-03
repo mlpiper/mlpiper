@@ -2,8 +2,8 @@ package org.mlpiper.stat.dataanalysis.continuous
 
 import breeze.linalg.{DenseMatrix, DenseVector}
 import com.parallelmachines.reflex.common.InfoType.InfoType
-import org.apache.flink.streaming.scala.examples.common.stats.StatNames.ContinuousDataAnalysisResultStat
-import org.apache.flink.streaming.scala.examples.common.stats._
+import org.mlpiper.stats.StatNames.ContinuousDataAnalysisResultStat
+import org.mlpiper.stats._
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.mlpiper.datastructures.NamedVector

@@ -1,6 +1,6 @@
 package org.mlpiper.stat.healthlib
 
-import org.apache.flink.streaming.scala.examples.common.stats.AccumulatorInfoJsonHeaders
+import org.mlpiper.stats.AccumulatorInfoJsonHeaders
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Json
 import org.slf4j.LoggerFactory
