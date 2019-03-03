@@ -1,4 +1,4 @@
-package com.parallelmachines.reflex.common.mlobject
+package com.parallelmachines.reflex.common
 
 import com.parallelmachines.reflex.common.enums.ModelFormat
 import org.apache.spark.ml.PipelineModel

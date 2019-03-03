@@ -1,7 +1,6 @@
 package com.parallelmachines.reflex.components.spark.batch.connectors
 
-
-import com.parallelmachines.reflex.common.mlobject.SparkMLModel
+import com.parallelmachines.reflex.common.SparkMLModel
 import com.parallelmachines.reflex.components.ComponentAttribute
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
 import com.parallelmachines.reflex.pipeline.{ComponentsGroups, ConnectionGroups, _}

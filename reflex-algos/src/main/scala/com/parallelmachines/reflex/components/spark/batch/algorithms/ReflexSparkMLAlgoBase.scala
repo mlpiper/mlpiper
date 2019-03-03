@@ -3,8 +3,7 @@ package com.parallelmachines.reflex.components.spark.batch.algorithms
 import java.io.File
 import java.nio.file.Files
 
-import com.parallelmachines.reflex.common.mlobject.SparkMLModel
-import com.parallelmachines.reflex.common.{FeatureImportance, _}
+import com.parallelmachines.reflex.common.{FeatureImportance, SparkMLModel, _}
 import com.parallelmachines.reflex.components.flink.streaming.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.components.spark.batch.algorithms.MlMethod.MlMethodType
 import com.parallelmachines.reflex.components.spark.batch.connectors.{ReflexNullConnector, ReflexNullSourceConnector}
