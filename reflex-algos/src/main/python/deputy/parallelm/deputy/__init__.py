@@ -1,3 +1,4 @@
 
 version = "1.0"
-package_name = "deputy"
+project_name = "deputy"
+symlink_name = "deputy"
