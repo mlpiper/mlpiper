@@ -47,7 +47,7 @@ class MLOpsDevel(MLOps):
         ci = ConfigInfo()
         ci.token = token
         ci.zk_host = None
-        ci.mlops_port = Constants.MLOPS_DEFAULT_PORT
+        ci.mlops_port = str(mlops_port)  # Constants.MLOPS_DEFAULT_PORT
         ci.mlops_server = mlops_server
         ci.ion_id = ion_id
         ci.mlops_mode = MLOpsMode.ATTACH
@@ -55,6 +55,7 @@ class MLOpsDevel(MLOps):
 
         # TODO: for now assume node "0" - allow providing the node id or just become any node
         ci.ion_node_id = "0"
+        ci.pipeline_id = "0"
 
         self._logger.info("MLOps configuration:\n{}".format(ci))
         ci.set_env()
