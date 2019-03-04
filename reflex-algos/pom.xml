@@ -433,15 +433,15 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>package-python2.7-egg-deputy</id>
+                                <id>package-py2_py3-deputy-eggs</id>
                                 <phase>package</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
                                     <workingDirectory>${project.basedir}/src/main/python/deputy</workingDirectory>
-                                    <executable>python2</executable>
-                                    <commandlineArgs>setup.py bdist_egg --dist-dir ${project.build.directory}
+                                    <executable>make</executable>
+                                    <commandlineArgs>install_to DEPUTYDISTDIR=${project.build.directory}
                                     </commandlineArgs>
                                 </configuration>
                             </execution>
