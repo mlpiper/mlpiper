@@ -3,8 +3,10 @@ import ast
 import json
 import pickle
 import binascii
+from collections import OrderedDict
 
-from parallelm.mlops.constants import Constants, HistogramType
+
+from parallelm.mlops.constants import Constants, HistogramType, MatrixType
 from parallelm.mlops.stats_category import StatGraphType
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.constants import DataframeColNames
@@ -106,7 +108,18 @@ class DataFrameHelper(object):
                     if len(data) == 0:
                         data[columns[0]] = [value[0]]
                         data[DataframeColNames.OPAQUE_DATA] = [opq_data]
-                    else:
+                elif graph_type == StatGraphType.MATRIX:
+                    temp_values = json.loads(value[1], object_pairs_hook=OrderedDict)
+                    for k in temp_values.keys():
+                        temp_bar_values = {}
+                        temp_bar_values[MatrixType.ROW_NAME] = k
+                        temp_bar_values[MatrixType.VALUES] = list(temp_values[k].values())
+                        temp_bar_values[MatrixType.COLUMNS] = list(temp_values[k].keys())
+                        data.update(DataFrameHelper._update_data_dict(data, temp_bar_values, value[0], columns[0]))
+                elif graph_type == StatGraphType.GENERAL_GRAPH:
+                    temp_values = ast.literal_eval(value[1])
+                    data.update(DataFrameHelper._update_data_dict(data, temp_values, value[0], columns[0]))
+                else:
                         data[columns[0]].append(value[0])
                         data[DataframeColNames.OPAQUE_DATA].append(opq_data)
 

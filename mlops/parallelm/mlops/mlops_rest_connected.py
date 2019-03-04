@@ -169,6 +169,13 @@ class MlOpsRestConnected(MlOpsRestHelper):
         except Exception as e:
             raise MLOpsException('Call ' + str(url) + ' failed with error ' + str(e))
 
+    def url_login(self):
+        """
+        Create the REST request for the login
+        :return: the URL for the REST request
+        """
+        return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.LOGIN)
+
     def url_get_groups(self):
         """
         Create the REST request for the groups list
