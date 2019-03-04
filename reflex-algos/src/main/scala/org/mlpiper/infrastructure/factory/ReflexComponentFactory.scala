@@ -94,10 +94,10 @@ object ReflexComponentFactory {
           ComputeEngineType.PySpark,
           SparkPythonComponentFactory(testMode, sparkPythonDir))
       }
-      case ComputeEngineType.Python => {
-        val pythonDir = Paths.get(externalComponentsDir, ComputeEngineType.Python.toString).toString
+      case ComputeEngineType.Generic => {
+        val pythonDir = Paths.get(externalComponentsDir, ComputeEngineType.Generic.toString).toString
         ReflexComponentFactory.registerEngineFactory(
-          ComputeEngineType.Python,
+          ComputeEngineType.Generic,
           SparkPythonComponentFactory(testMode, pythonDir))
       }
       case ComputeEngineType.RestModelServing => {
@@ -124,9 +124,9 @@ object ReflexComponentFactory {
       ComputeEngineType.PySpark,
       SparkPythonComponentFactory(testMode, sparkPythonDir))
 
-    val pythonDir = Paths.get(externalComponentsDir, ComputeEngineType.Python.toString).toString
+    val pythonDir = Paths.get(externalComponentsDir, ComputeEngineType.Generic.toString).toString
     ReflexComponentFactory.registerEngineFactory(
-      ComputeEngineType.Python,
+      ComputeEngineType.Generic,
       PythonComponentFactory(testMode, pythonDir))
 
     val restModelServingDir = Paths.get(externalComponentsDir, ComputeEngineType.RestModelServing.toString).toString

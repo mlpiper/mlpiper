@@ -135,7 +135,7 @@ object ExternalDirComponentUtil {
     val engineType: ComputeEngineType = ComputeEngineType.withName(compMeta.engineType)
     engineType match {
 
-      case ComputeEngineType.Python =>
+      case ComputeEngineType.Generic =>
         val language = validateLanguage(compMeta, Language.Python)
 
         language match {

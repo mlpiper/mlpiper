@@ -10,7 +10,7 @@ class PythonSingleComponent(componentMetadata: ComponentMetadata, componentDir: 
 
 object PythonSingleComponent {
   def getAsPythonSingleComponent(comp: ReflexPipelineComponent): PythonSingleComponent = {
-    require(comp.engineType == ComputeEngineType.Python, "Must provide a component of type PythonComponent")
+    require(comp.engineType == ComputeEngineType.Generic, "Must provide a component of type PythonComponent")
     comp.asInstanceOf[PythonSingleComponent]
   }
 }
