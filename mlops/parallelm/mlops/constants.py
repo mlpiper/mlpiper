@@ -82,6 +82,14 @@ class HistogramType:
     TIMESTAMP_COLUMN = "time"
     HISTOGRAM_BIN_IDENTIFIER = " to "
 
+class MatrixType:
+    """
+    Constants used for matrix parsing
+    """
+    COLUMNS = "columns"
+    VALUES = "values"
+    ROW_NAME = "row_name"
+
 
 class PyHealth:
     MAXIMUM_CATEGORY_UNIQUE_VALUE_REQ = 25
