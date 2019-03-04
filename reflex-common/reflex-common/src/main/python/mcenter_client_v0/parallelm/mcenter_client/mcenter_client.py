@@ -1643,6 +1643,41 @@ class MCenterClient:
         r = self.delete(url, timeout=60)
         return r
 
+    def get_action_log(self, object_list=None, action_list=None, success=None, user_list=None, start_time=None, end_time=None):
+        """
+        Return the action log entries based on given search criteria
+        :param object_list: List of objects to query eg. ['MLApp', 'Model']
+        :param action_list: List of actions to query eg. ['Stop', 'Launch', 'Upload']
+        :param success: Only query successful or failed actions.  If None both are queried (eg. success=False)
+        :param user_list: List of users whose actions should be queried
+        :param start_time, end_time: Time range to query for actions (Default: 0 to current time)
+        :returns List of actions satisfying the query criteria
+        """
+        tuple_list = []
+        if start_time is None:
+            start_time = 0
+        if end_time is None:
+            end_time = int(time.time() * 1000)
+
+        tuple_list.append(('start', start_time))
+        tuple_list.append(('end', end_time))
+        if object_list:
+            for object in object_list:
+                tuple_list.append(('actionObject', object))
+        if action_list:
+            for action in action_list:
+                tuple_list.append(('action', action))
+        if success is not None:
+            tuple_list.append(('success', success))
+        if user_list:
+            for username in user_list:
+                tuple_list.append(('username', username))
+
+        url = self._build_url('actionLog') + "?"
+        url += urlencode(tuple_list)
+        r = self.get(url)
+        return r
+
     @staticmethod
     def _get_filename_from_cd(cd):
         """

@@ -24,6 +24,7 @@ from parallelm.mcenter_cli.upload_mlapp import upload_mlapp
 from parallelm.mcenter_cli.upload_mlapp_v2 import upload_mlapp_v2
 from parallelm.mcenter_cli.delete_mlapp import MLAppDeleteHelper
 from parallelm.mcenter_cli.list_mlapp import list_mlapp
+from parallelm.mcenter_cli.list_actions import list_actions
 from parallelm.mlapp_directory.directory_from_mlapp_builder import DirectoryFromMLAppBuilder
 from parallelm.mcenter_cli.upload_component import upload_component
 from parallelm.mcenter_cli.execution_environment import ee_download, ee_upload
@@ -44,6 +45,7 @@ class MCenterCli(object):
             {prog_name} --server localhost mlapp-load /opt/mlapps/regression-prod-v32 
             {prog_name} mlapp-download my-ml-app  /opt/mlapps/my-ml-app-new
             {prog_name} mlapp-delete my-ml-app
+            {prog_name} get-action-log --object=MLApp,Model --action=Stop,Upload --username=admin,MLOPSUser --status=success
             '''.format(prog_name=prog_name)
         self._argv_0 = sys.argv[0]
 
@@ -52,6 +54,7 @@ class MCenterCli(object):
         self._add_ee_commands()
         self._add_component_commands()
         self._add_model_commands()
+        self._add_action_log_commands()
 
         self._parse_args()
         self._general_actions()
@@ -166,6 +169,13 @@ class MCenterCli(object):
         model_upload_parser.add_argument('file', action='store', help='Model file to upload')
         model_upload_parser.add_argument('name', action='store', help="Model name to use")
         model_upload_parser.add_argument('format', action='store', help="Model format to use")
+
+    def _add_action_log_commands(self):
+        action_log_parser = self._register_command('get-action-log', help='Get Action log for MCenter', action=list_actions)
+        action_log_parser.add_argument('--object', action='store', help='List of Objects for which to get actions')
+        action_log_parser.add_argument('--action', action='store', help='List of actions to query')
+        action_log_parser.add_argument('--username', action='store', help='List of User, whose actions should be queried')
+        action_log_parser.add_argument('--status', choices=['both', 'success', 'failed'], help='Show actions with particular staus')
 
     def _parse_args(self):
         if len(sys.argv) == 1:
