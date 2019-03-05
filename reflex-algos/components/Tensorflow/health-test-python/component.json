@@ -1,5 +1,5 @@
 {
-  "engineType": "Tensorflow",
+  "engineType": "Generic",
   "language": "Python",
   "name": "health-test-python",
   "label": "health-test-python",

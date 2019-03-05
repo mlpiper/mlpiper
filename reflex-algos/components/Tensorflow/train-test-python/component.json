@@ -1,5 +1,5 @@
 {
-  "engineType": "Tensorflow",
+  "engineType": "Generic",
   "language": "Python",
   "name": "train-test-python",
   "label": "train-test-python",

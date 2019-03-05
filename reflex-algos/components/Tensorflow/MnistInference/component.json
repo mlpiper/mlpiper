@@ -1,5 +1,5 @@
 {
-  "engineType": "Tensorflow",
+  "engineType": "Generic",
   "name": "MnistInference",
   "label": "MNist Inference",
   "program": "mnist_inference.py",

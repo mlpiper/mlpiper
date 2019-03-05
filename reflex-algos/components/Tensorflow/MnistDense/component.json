@@ -1,5 +1,5 @@
 {
-    "engineType": "Tensorflow",
+    "engineType": "Generic",
     "name": "MnistDense",
     "label": "MNist Dense",
     "program": "mnist_saved_model.py",

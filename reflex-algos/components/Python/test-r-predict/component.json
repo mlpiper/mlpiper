@@ -1,5 +1,5 @@
 {
-  "engineType": "Python",
+  "engineType": "Generic",
   "language": "R",
   "name": "test-r-predict",
   "label": "Python R connector",

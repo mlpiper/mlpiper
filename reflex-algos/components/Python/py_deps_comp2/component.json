@@ -1,5 +1,5 @@
 {
-  "engineType": "Python",
+  "engineType": "Generic",
   "language": "Python",
   "name": "py_deps_comp2",
   "label": "Comp-2",

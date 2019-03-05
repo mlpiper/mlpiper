@@ -1,5 +1,5 @@
 {
-  "engineType": "Python",
+  "engineType": "Generic",
   "language": "R",
   "name": "r_deps_comp3",
   "label": "Comp-3 (R)",

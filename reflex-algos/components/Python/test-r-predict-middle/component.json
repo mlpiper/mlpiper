@@ -1,5 +1,5 @@
 {
-  "engineType": "Python",
+  "engineType": "Generic",
   "language": "R",
   "userStandalone": false,
   "name": "test-r-predict-middle",
