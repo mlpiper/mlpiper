@@ -33,9 +33,9 @@ class NginxBroker(Base):
             self._logger.info("Stopping 'nginx' service ...")
             try:
                 subprocess.check_output(NginxConstants.STOP_CMD)
-            except subprocess.CalledProcessError as ex:
-                self._logger.info("'nginx' service stopping issue! output: {}, return-code: {}"
-                                  .format(ex.output, ex.returncode))
+            except:
+                # Should catch any exception in order to avoid masking of other important errors in the system
+                pass
 
     def _verify_dependencies(self):
         util.verify_tool_installation(NginxConstants.VER_CMD, NginxConstants.DEV_AGAINST_VERSION, self._logger)
