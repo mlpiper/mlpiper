@@ -1150,7 +1150,7 @@ class MCenterClient:
         r = self.get(url)
         return r
 
-    def get_l3_v2_view(self, w_id, wf_node_id, agent_id, pipeline_id):
+    def get_l3_v2_view(self, w_id, wf_node_id, agent_id, pipeline_id, start=None, end=None):
         """
         Example: http://localhost:7092/api/views/l3/v2?workflowNodeId=0&agentId=d68cd143-0d63-47ea-9346-597a1977ba55&pipelineId=6eb951ed-d7ff-4bbe-8034-94aeba0b511e&workflowInstanceId=2d61daba-f783-4293-a62b-c105a19acd4d&start=1518021475243&end=1518043075243
         Returns L3 v2 view details
@@ -1159,7 +1159,9 @@ class MCenterClient:
                               workflowNodeId=wf_node_id,
                               agentId=agent_id,
                               pipelineId=pipeline_id,
-                              workflowInstanceId=w_id)
+                              workflowInstanceId=w_id,
+                              start=start,
+                              end=end)
         r = self.get(url)
         return r
 

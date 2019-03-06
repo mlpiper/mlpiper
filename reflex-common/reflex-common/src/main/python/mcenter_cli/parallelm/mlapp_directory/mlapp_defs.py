@@ -46,6 +46,7 @@ class MLAppProfileKeywords:
 
     NODE_PIPELINE_EE_TUPLE = "pipelineEETuple"
     PIPELINE_EE_TUPLE_PIPELINE_PROFILE_ID = "pipelineProfileId"
+    PIPELINE_EE_TUPLE_EE_ENV = "executionEnvironment"
 
     NODE_PARENT_MCENTER = "-98$7.65#43^21"
 

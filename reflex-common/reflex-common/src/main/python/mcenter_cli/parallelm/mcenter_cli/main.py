@@ -81,10 +81,23 @@ class MCenterCli(object):
 
         self._register_command('mlapp-list', help='list existing MLApps in MCenter', action=list_mlapp)
 
+        def _mlapp_info(mclient, args):
+            all_profiles =  mclient.list_ion_profiles()
+            mlapp_info = list(filter(lambda x: x["name"] == args.name, all_profiles))
+            if len(mlapp_info) == 0:
+                raise Exception("Could not find mlapp with name: {}".format(args.name))
+            if len(mlapp_info) > 1:
+                raise Exception("Found {} mlapps with the same name".format(len(mlapp_info)))
+            mlapp_info = mlapp_info[0]
+            pprint.pprint(mlapp_info)
+
+        parser = self._register_command('mlapp-info', help="provide info about MLapp", action=_mlapp_info)
+        parser.add_argument('name', action='store', help='name of MLApp to query for info')
+
         def _mlapp_upload(mclient, args):
             print("Uploading mlapp from {}".format(args.appdir))
             if args.mlapp_version == MLAppVersions.V2:
-                upload_mlapp_v2(mclient=mclient, mlapp_dir=args.appdir, force=args.force)
+                upload_mlapp_v2(mclient=mclient, mlapp_dir=args.appdir, force=args.force, ee=args.ee)
             elif args.mlapp_version == MLAppVersions.V1:
                 upload_mlapp(mclient, args.appdir)
 
@@ -95,6 +108,8 @@ class MCenterCli(object):
                             help='provide the version of the MLApp format to load')
         parser.add_argument('--force', action='store_true',
                              help='force loading of MLApp, if MLApp already exists remove it first')
+        parser.add_argument('--ee', action='store',
+                            help='use the given ee (Execution Environment) when creating the MLApp')
 
         def _mlapp_delete(mclient, args):
             print("Deleting MLApp: {}".format(args.name))
