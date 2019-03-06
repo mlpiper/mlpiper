@@ -11,6 +11,7 @@ from parallelm.mlapp_directory.mlapp_defs import MLAppPatternKeywords, MLAppKeyw
     GroupKeywords, ModelsKeywords, MLAppDirBuilderDefs, MLAppVersions, PipelineKeywords, ComponentDescriptionKeywords
 from parallelm.mlapp_directory.component_description_helper import ComponentsDescriptionHelper
 from parallelm.mlapp_directory.pipeline_json_helper import PipelineJSONHelper
+from parallelm.mcenter_cli.execution_environment import ee_get_json
 
 # TODO: support uploading components if components directory is provided.
 # TODO: use JSON schema validation
@@ -35,6 +36,8 @@ class MLAppFromDirectoryBuilder(object):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._mclient = mclient
         self._mlapp_dir = mlapp_dir
+        self._ee = None
+        self._ee_json = None
         self._mlapp_info = None
         self._components_desc_helper = ComponentsDescriptionHelper(self._mclient.get_components())
         self._node_to_id = {}
@@ -54,6 +57,12 @@ class MLAppFromDirectoryBuilder(object):
         self._fix_node_children_and_parents()
         self._fix_models()
         self._fix_pipelines_json()
+
+    def set_ee(self, ee):
+        self._ee = ee
+        if self._ee is not None:
+            self._ee_json = ee_get_json(self._mclient, self._ee)
+        return self
 
     def _get_mlapp_nodes(self):
         return self._mlapp_info[MLAppKeywords.NODES]
@@ -433,6 +442,10 @@ class MLAppFromDirectoryBuilder(object):
             pipeline_ee_info = {
                 MLAppProfileKeywords.PIPELINE_EE_TUPLE_PIPELINE_PROFILE_ID: mlapp_node_info[MLAppKeywords.PIPELINE_PROFILE_ID]
             }
+
+            if self._ee:
+                pipeline_ee_info[MLAppProfileKeywords.PIPELINE_EE_TUPLE_EE_ENV] = self._ee_json
+
             profile_node_info[MLAppProfileKeywords.NODE_PIPELINE_EE_TUPLE] = pipeline_ee_info
 
         self._logger.info("MLApp profile {}".format(pprint.pformat(profile_info)))

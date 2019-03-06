@@ -11,9 +11,9 @@ def _is_mlapp_exists(mclient, mlapp_name):
         return False
 
 
-def upload_mlapp_v2(mclient, mlapp_dir, force):
+def upload_mlapp_v2(mclient, mlapp_dir, force, ee=None):
 
-    builder = MLAppFromDirectoryBuilder(mclient, mlapp_dir)
+    builder = MLAppFromDirectoryBuilder(mclient, mlapp_dir).set_ee(ee)
     mlapp_name = builder.get_mlapp_name()
 
     if _is_mlapp_exists(mclient, mlapp_name):

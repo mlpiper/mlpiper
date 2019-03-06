@@ -19,6 +19,17 @@ def del_if_exists(d, field):
         del(d[field])
 
 
+def ee_get_json(mclient, ee_name):
+    all_ees = mclient.ee_list()
+    ee = list(filter(lambda x: x["name"] == ee_name, all_ees))
+    if len(ee) > 1:
+        raise Exception("More then one EE with the same name!!!!")
+
+    if len(ee) == 0:
+        raise Exception("Could not find any EE with name: {} ".format(ee_name))
+    return ee[0]
+
+
 def ee_download(mclient, args):
     all_ees = mclient.ee_list()
     ee = list(filter(lambda x: x["name"] == args.name, all_ees))
