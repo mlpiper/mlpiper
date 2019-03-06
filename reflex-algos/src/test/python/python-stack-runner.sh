@@ -37,11 +37,11 @@ deputy_dir=$python_dir/deputy
 
 python="/usr/local/bin/python2"
 
-deputy_egg_path="dist/deputy-1.0-py2.7.egg"
+deputy_egg_path=$(realpath $(ls ./dist/deputy-*py2.*.egg))
 deputy_egg=$(basename $deputy_egg_path)
 
-mlcomp_egg_path="dist/ml_comp-1.1.4-py2.7.egg"
-mlops_egg_path="dist/parallelm-1.0.1-py2.7.egg"
+mlcomp_egg_path=$(realpath $(ls ../mlcomp/dist/mlcomp-*py2*.egg))
+mlops_egg_path=$(realpath $(ls ../mlops/dist/mlops-*py2*.egg))
 comp_egg="mcenter_components-0.1-py2.7.egg"
 
 echo "Script dir:       $script_dir"
