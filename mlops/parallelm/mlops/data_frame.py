@@ -116,18 +116,18 @@ class DataFrameHelper(object):
                         data.update(DataFrameHelper._update_data_dict(data, temp_bar_values, value[0], columns[0]))
                 elif graph_type == StatGraphType.GENERAL_GRAPH:
                     temp_values = ast.literal_eval(value[1])
-                    temp_values_expand = temp_values.copy()
-                    for k, v in temp_values.items():
-                        if k ==GeneralType.YSERIES:
-                            for series_index, series_el in enumerate(v):
-                                for k_ser, v_ser in series_el.items():
-                                    if(k_ser == GeneralType.DATA):
-                                        temp_values_expand[GeneralType.YSERIES + str(series_index)] = v_ser
-                                    if(k_ser == GeneralType.LABEL):
-                                        temp_values_expand[GeneralType.YSERIES + str(series_index) + "_" + GeneralType.LABEL] = v_ser
-                    del temp_values_expand[GeneralType.YSERIES]
+                    #temp_values_expand = temp_values.copy()
+                    #for k, v in temp_values.items():
+                    #    if k ==GeneralType.YSERIES:
+                    #        for series_index, series_el in enumerate(v):
+                    #            for k_ser, v_ser in series_el.items():
+                    #                if(k_ser == GeneralType.DATA):
+                    #                    temp_values_expand[GeneralType.YSERIES + str(series_index)] = v_ser
+                    #                if(k_ser == GeneralType.LABEL):
+                    #                    temp_values_expand[GeneralType.YSERIES + str(series_index) + "_" + GeneralType.LABEL] = v_ser
+                    #del temp_values_expand[GeneralType.YSERIES]
 
-                    data.update(DataFrameHelper._update_data_dict(data, temp_values_expand, value[0], columns[0]))
+                    data.update(DataFrameHelper._update_data_dict(data, temp_values, value[0], columns[0]))
                 else:
                         data[columns[0]].append(value[0])
                         data[DataframeColNames.OPAQUE_DATA].append(opq_data)
