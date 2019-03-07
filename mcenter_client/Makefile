@@ -1,6 +1,6 @@
 DISTDIR := dist
 
-SOURCE_YAML_DIR := ../../../rest-apis
+SOURCE_YAML_DIR := ../reflex-common/reflex-common/src/rest-apis
 SOURCE_YAML := MCenterRestApi.yaml
 
 FLAT_JSON := build/MCenterRestApi-flat.json
