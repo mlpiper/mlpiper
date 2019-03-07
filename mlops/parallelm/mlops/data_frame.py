@@ -4,7 +4,7 @@ import json
 import pickle
 import binascii
 
-from parallelm.mlops.constants import Constants, HistogramType
+from parallelm.mlops.constants import Constants, HistogramType, MatrixType, GeneralType
 from parallelm.mlops.stats_category import StatGraphType
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.constants import DataframeColNames
@@ -106,7 +106,29 @@ class DataFrameHelper(object):
                     if len(data) == 0:
                         data[columns[0]] = [value[0]]
                         data[DataframeColNames.OPAQUE_DATA] = [opq_data]
-                    else:
+                elif graph_type == StatGraphType.MATRIX:
+                    temp_values = ast.literal_eval(value[1])
+                    for k, v in temp_values.items():
+                        temp_bar_values = {}
+                        temp_bar_values[MatrixType.MATRIX_ROW_NAME] = k
+                        temp_bar_values[MatrixType.MATRIX_VALUES] = v.values()
+                        temp_bar_values[MatrixType.MATRIX_COLUMN] = v.keys()
+                        data.update(DataFrameHelper._update_data_dict(data, temp_bar_values, value[0], columns[0]))
+                elif graph_type == StatGraphType.GENERAL_GRAPH:
+                    temp_values = ast.literal_eval(value[1])
+                    temp_values_expand = temp_values.copy()
+                    for k, v in temp_values.items():
+                        if k ==GeneralType.YSERIES:
+                            for series_index, series_el in enumerate(v):
+                                for k_ser, v_ser in series_el.items():
+                                    if(k_ser == GeneralType.DATA):
+                                        temp_values_expand[GeneralType.YSERIES + str(series_index)] = v_ser
+                                    if(k_ser == GeneralType.LABEL):
+                                        temp_values_expand[GeneralType.YSERIES + str(series_index) + "_" + GeneralType.LABEL] = v_ser
+                    del temp_values_expand[GeneralType.YSERIES]
+
+                    data.update(DataFrameHelper._update_data_dict(data, temp_values_expand, value[0], columns[0]))
+                else:
                         data[columns[0]].append(value[0])
                         data[DataframeColNames.OPAQUE_DATA].append(opq_data)
 
