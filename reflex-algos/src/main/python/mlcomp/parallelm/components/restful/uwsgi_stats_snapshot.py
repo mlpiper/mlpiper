@@ -147,10 +147,10 @@ class UwsiStatsSnapshot(object):
     def should_report_worker_status(self, stats_snapshot):
         return stats_snapshot is None or (self.sorted_worker_stats != stats_snapshot.sorted_worker_stats)
 
-    def should_report_metrics_accumulation(self, metrics_snapshot):
-        return metrics_snapshot is None or \
-               (self.uwsgi_pm_metrics_accumulation != metrics_snapshot.uwsgi_pm_metrics_accumulation)
+    def should_report_metrics_accumulation(self, stats_snapshot):
+        return stats_snapshot is None or \
+               (self.uwsgi_pm_metrics_accumulation != stats_snapshot.uwsgi_pm_metrics_accumulation)
 
-    def should_report_metrics_per_time_window(self, metrics_snapshot):
-        return metrics_snapshot is None or \
-               (self.uwsgi_pm_metrics_per_window != metrics_snapshot.uwsgi_pm_metrics_per_window)
+    def should_report_metrics_per_time_window(self, stats_snapshot):
+        return stats_snapshot is None or \
+               (self.uwsgi_pm_metrics_per_window != stats_snapshot.uwsgi_pm_metrics_per_window)

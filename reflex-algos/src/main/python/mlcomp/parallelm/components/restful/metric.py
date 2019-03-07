@@ -37,7 +37,7 @@ class Metric(Base):
 
         self._metric_name = name + Metric.NAME_SUFFIX
         self._title = title
-        self._hidden=hidden
+        self._hidden = hidden
         self._metric_type = metric_type
         self._value_type = value_type
         self._metric_relation = metric_relation
@@ -193,7 +193,7 @@ class Metric(Base):
 
     def decrease(self, delta=1):
         """
-        increase the metric's value by the given delta
+        decrease the metric's value by the given delta
         """
         if uwsgi_loaded:
             if self._value_type == float:
