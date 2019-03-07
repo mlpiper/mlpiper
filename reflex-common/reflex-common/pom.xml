@@ -240,7 +240,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<workingDirectory>${project.basedir}/src/main/python/mcenter_client_v0</workingDirectory>
+							<workingDirectory>${project.basedir}/../../mcenter_client_v0</workingDirectory>
 							<executable>make</executable>
 							<commandlineArgs>pkgs DISTDIR=${project.build.directory}</commandlineArgs>
 						</configuration>
@@ -253,7 +253,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<workingDirectory>${project.basedir}/src/main/python/mcenter_cli</workingDirectory>
+							<workingDirectory>${project.basedir}/../../mcenter_cli</workingDirectory>
 							<executable>make</executable>
 							<commandlineArgs>pkgs DISTDIR=${project.build.directory}</commandlineArgs>
 						</configuration>
