@@ -1,5 +1,5 @@
 {
-    "name": "Simple MCenter runner test",
+    "name": "Simple MLPiper runner test",
     "engineType": "Python",
     "pipe": [
         {

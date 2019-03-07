@@ -1,6 +1,6 @@
 # README
 
-The `mlcomp` module is designed to process and execute 'MCenter' complex pipelines,
+The `mlcomp` module is designed to process and execute complex pipelines,
 which consists of one or more component chained together such that output of a
 previous component becomes the input to the next component. Each pipeline has a
 particular purpose, such as to train a model or generate inferences.
