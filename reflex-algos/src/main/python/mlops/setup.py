@@ -1,10 +1,10 @@
 import os
 from setuptools import setup, find_packages
 
-from parallelm.mlops.constants import Constants
-
 import protobuf_dep
 protobuf_dep.copy_protobuf_sources()
+
+from parallelm.mlops.constants import Constants
 
 # This import should be placed after the copying of protobuf python sources
 
