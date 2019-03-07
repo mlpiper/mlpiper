@@ -439,9 +439,9 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <workingDirectory>${project.basedir}/src/main/python/deputy</workingDirectory>
+                                    <workingDirectory>${project.basedir}/../deputy</workingDirectory>
                                     <executable>make</executable>
-                                    <commandlineArgs>install_to DEPUTYDISTDIR=${project.build.directory}
+                                    <commandlineArgs>install_to DISTDIR=${project.build.directory}
                                     </commandlineArgs>
                                 </configuration>
                             </execution>

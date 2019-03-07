@@ -1,5 +1,5 @@
 
-DEPUTYDISTDIR = ""
+DISTDIR = ""
 
 DEPUTY_EGG_PY2_SYMLINK = "deputy-py2.egg"
 DEPUTY_EGG_PY3_SYMLINK = "deputy-py3.egg"
@@ -15,11 +15,11 @@ egg:
 	python3 setup.py bdist_egg
 
 install_to: egg
-ifneq ($(DEPUTYDISTDIR),"")
-	mkdir -p $(DEPUTYDISTDIR)
-	cp -f $(DEPUTY_EGG_PY2) $(DEPUTY_EGG_PY3) $(DEPUTYDISTDIR)
-	cd $(DEPUTYDISTDIR); ln -sf $(DEPUTY_EGG_PY2_BASENAME) $(DEPUTY_EGG_PY2_SYMLINK); cd -
-	cd $(DEPUTYDISTDIR); ln -sf $(DEPUTY_EGG_PY3_BASENAME) $(DEPUTY_EGG_PY3_SYMLINK); cd -
+ifneq ($(DISTDIR),"")
+	mkdir -p $(DISTDIR)
+	cp -f $(DEPUTY_EGG_PY2) $(DEPUTY_EGG_PY3) $(DISTDIR)
+	cd $(DISTDIR); ln -sf $(DEPUTY_EGG_PY2_BASENAME) $(DEPUTY_EGG_PY2_SYMLINK); cd -
+	cd $(DISTDIR); ln -sf $(DEPUTY_EGG_PY3_BASENAME) $(DEPUTY_EGG_PY3_SYMLINK); cd -
 endif
 
 
