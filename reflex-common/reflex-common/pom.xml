@@ -266,7 +266,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<workingDirectory>${project.basedir}/src/main/python/mcenter_client</workingDirectory>
+							<workingDirectory>${project.basedir}/../../mcenter_client</workingDirectory>
 							<executable>make</executable>
 							<commandlineArgs>wheel2 DISTDIR=${project.build.directory}</commandlineArgs>
 						</configuration>
@@ -279,7 +279,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<workingDirectory>${project.basedir}/src/main/python/mcenter_client</workingDirectory>
+							<workingDirectory>${project.basedir}/../../mcenter_client</workingDirectory>
 							<executable>make</executable>
 							<commandlineArgs>wheel3 DISTDIR=${project.build.directory}</commandlineArgs>
 						</configuration>
@@ -292,7 +292,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<workingDirectory>${project.basedir}/src/main/python/mcenter_client</workingDirectory>
+							<workingDirectory>${project.basedir}/../../mcenter_client</workingDirectory>
 							<executable>make</executable>
 							<commandlineArgs>html DISTDIR=${project.build.directory}</commandlineArgs>
 						</configuration>
@@ -304,7 +304,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<workingDirectory>${project.basedir}/src/main/python/mcenter_client</workingDirectory>
+							<workingDirectory>${project.basedir}/../../mcenter_client</workingDirectory>
 							<executable>make</executable>
 							<commandlineArgs>test</commandlineArgs>
 							<skip>${skipTests}</skip>
@@ -317,7 +317,7 @@
 							<goal>exec</goal>
 						</goals>
 						<configuration>
-							<workingDirectory>${project.basedir}/src/main/python/mcenter_client</workingDirectory>
+							<workingDirectory>${project.basedir}/../../mcenter_client</workingDirectory>
 							<executable>make</executable>
 							<commandlineArgs>clean</commandlineArgs>
 						</configuration>
