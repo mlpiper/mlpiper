@@ -48,8 +48,7 @@ ifneq ($(DISTDIR),"")
 endif
 
 wheel:
-	python2 setup.py sdist bdist_wheel
-	python3 setup.py sdist bdist_wheel
+	python setup.py sdist bdist_wheel --universal
 
 test: egg
 	env PYTHONPATH=./:tests/:${SPARK_HOME}/python python2 -m py.test tests/

@@ -3,7 +3,6 @@
 import glob
 import sys
 import os
-import platform
 import subprocess
 
 
@@ -25,8 +24,7 @@ def main():
 
     files = os.listdir(dist_dir)
     print(files)
-    python_version = platform.python_version_tuple()
-    potential_wheels = glob.glob(os.path.join(dist_dir, "*-py{}*.whl".format(python_version[0])))
+    potential_wheels = glob.glob(os.path.join(dist_dir, "*-py2.py3*.whl"))
     if not potential_wheels:
         raise Exception("Wheel file not exist in: {}".format(dist_dir))
 

@@ -28,8 +28,7 @@ endif
 
 
 wheel:
-	python2 setup.py sdist bdist_wheel
-	python3 setup.py sdist bdist_wheel
+	python setup.py sdist bdist_wheel --universal
 
 # Creating 2 eggs one for python components, second for pyspark components
 python_comps_egg:
