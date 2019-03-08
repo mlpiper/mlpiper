@@ -134,7 +134,7 @@ class Executor(Base):
             if mlops_loaded:
                 mlops.init(self._ml_engine.context)
 
-        elif engine_type == EngineType.PYTHON or engine_type == EngineType.GENERIC:
+        elif engine_type == EngineType.GENERIC:
             from parallelm.ml_engine.python_engine import PythonEngine
 
             self._logger.info("Using python engine")
