@@ -22,11 +22,6 @@ object DagTestUtil {
     ReflexComponentFactory.init()
     ReflexComponentFactory.registerEngineFactory(ComputeEngineType.FlinkStreaming, FlinkStreamingComponentFactory(true))
     ReflexComponentFactory.registerEngineFactory(ComputeEngineType.SparkBatch, SparkBatchComponentFactory(true))
-
-    val currentDirectory = new java.io.File(".").getCanonicalPath
-    val tfPath = resolveBaseDirPath(currentDirectory, componentsDir, ComputeEngineType.Tensorflow.toString)
-
-    ReflexComponentFactory.registerEngineFactory(ComputeEngineType.Tensorflow, PythonComponentFactory(testMode = true, tfPath.toString))
   }
 
   def getComponentsDir: String = {

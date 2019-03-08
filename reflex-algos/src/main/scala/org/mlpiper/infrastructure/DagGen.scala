@@ -10,7 +10,7 @@ import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingCom
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponentFactory
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
-import org.mlpiper.infrastructure.factory.{ReflexComponentFactory, SparkPythonComponentFactory, TensorflowComponentFactory}
+import org.mlpiper.infrastructure.factory.{ReflexComponentFactory, SparkPythonComponentFactory}
 import org.mlpiper.mlops.MLOpsEnvVariables
 import org.mlpiper.stats.SystemStatsListener
 import org.mlpiper.utils.FileUtil
@@ -327,12 +327,6 @@ object DagGen {
 
       // Emitting the component description to file or stdout
       if (config.componentDescriptionFile != "") {
-        // Tensflow components will be registered only during the build phase of the reflex repo.
-        val tfDir = Paths.get(externalComponentsDir, ComputeEngineType.Tensorflow.toString).toString
-        ReflexComponentFactory.registerEngineFactory(
-          ComputeEngineType.Tensorflow,
-          TensorflowComponentFactory(config.testMode, tfDir))
-
         val sparkPythonDir = Paths.get(externalComponentsDir, ComputeEngineType.PySpark.toString).toString
         ReflexComponentFactory.registerEngineFactory(
           ComputeEngineType.PySpark,
@@ -373,8 +367,6 @@ object DagGen {
           /** This init is not really required, but helps to detect if rest host/port env vars were provided. */
           MLOpsEnvVariables.init
           executeSparkBatchPipeline(reflexPipe, config)
-        case ComputeEngineType.Tensorflow =>
-          throw new Exception(s"Engine type ${reflexPipe.pipeInfo.engineType} is not runnable through this code")
         case _ =>
           throw new Exception(s"Engine type ${reflexPipe.pipeInfo.engineType} is not supported yet")
       }
