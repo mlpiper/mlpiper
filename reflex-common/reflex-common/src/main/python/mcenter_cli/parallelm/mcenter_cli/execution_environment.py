@@ -21,9 +21,9 @@ def del_if_exists(d, field):
 
 def ee_get_json(mclient, ee_name):
     all_ees = mclient.ee_list()
-    ee = list(filter(lambda x: x["name"] == ee_name, all_ees))
+    ee = [x for x in all_ees if x["name" == ee_name]]
     if len(ee) > 1:
-        raise Exception("More then one EE with the same name!!!!")
+        raise Exception("More than one EE with the same name!")
 
     if len(ee) == 0:
         raise Exception("Could not find any EE with name: {} ".format(ee_name))
@@ -32,9 +32,9 @@ def ee_get_json(mclient, ee_name):
 
 def ee_download(mclient, args):
     all_ees = mclient.ee_list()
-    ee = list(filter(lambda x: x["name"] == args.name, all_ees))
+    ee = [x for x in all_ees if x["name"] == args.name]
     if len(ee) > 1:
-        raise Exception("More then one EE with the same name!!!!")
+        raise Exception("More then one EE with the same name!")
 
     if len(ee) == 0:
         print("Could not find EE: {} ".format(args.name))
@@ -80,7 +80,7 @@ def ee_upload(mclient, args):
 
     agent = list(filter(lambda x: x["host"] == agent_name, agents))
     if len(agent) == 0:
-        raise Exception("Could not find agent {} in MCenteer".format(agent_name))
+        raise Exception("Could not find agent {} in MCenter".format(agent_name))
     if len(agent) > 1:
         raise Exception("There are more then one agent with name: {}".format(agent_name))
 
