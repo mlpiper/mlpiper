@@ -1,0 +1,9 @@
+*.pyc
+.idea/
+dry_code.iml
+examples_dst
+build
+dist
+drycode.egg-info
+
+
