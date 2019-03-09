@@ -1,12 +1,12 @@
 import glob
 import json
 import os
-import pprint
 from tempfile import mkstemp, mkdtemp
 import shutil
 import subprocess
 import sys
 
+from constants import COMPONENTS_PATH
 
 simple_pipeline = {
     "name": "Simple MLPiper runner test",
@@ -127,7 +127,7 @@ class TestMLPiper:
         self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
         os.rmdir(self._deployment_dir)
 
-        comp_dir = os.path.join(os.path.dirname(__file__), "../../../../../components/Python")
+        comp_dir = os.path.join(os.path.dirname(__file__), COMPONENTS_PATH)
 
         cmd = "{} {} -r {} -f {} --deployment-dir {}".format(TestMLPiper.mlpiper_script, cmdline_action, comp_dir,
                                                              TestMLPiper.pipeline_tmp_file, self._deployment_dir)
@@ -152,7 +152,7 @@ class TestMLPiper:
         self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
         os.rmdir(self._deployment_dir)
 
-        comp_dir = os.path.join(os.path.dirname(__file__), "../../../../../components/Python")
+        comp_dir = os.path.join(os.path.dirname(__file__), COMPONENTS_PATH)
 
         fd, input_model = mkstemp(prefix='test_mlpiper_pipeline_input_model_', dir='/tmp')
         os.write(fd, json.dumps("Model ZZZ!").encode())

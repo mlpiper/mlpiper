@@ -3,7 +3,7 @@
 
 
 component_dir=$(dirname $0)
-component_dir=$component_dir/../../../../../components
+component_dir=$component_dir/../../reflex-algos/components
 component_dir=$(realpath $component_dir)
 
 echo "Component Dir: $component_dir"

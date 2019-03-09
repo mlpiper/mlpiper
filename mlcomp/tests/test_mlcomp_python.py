@@ -12,6 +12,7 @@ from parallelm.pipeline.executor_config import ExecutorConfig
 
 import parallelm.pipeline.json_fields as json_fields
 
+from constants import REFLEXCOMMON_PATH
 
 class TestPythonEngine:
 
@@ -30,7 +31,7 @@ class TestPythonEngine:
         dirname = os.path.dirname(__file__)
 
         # Need to move this code to a helper module which will info about the structure of the code
-        reflex_common = os.path.join(dirname, "../../../../../../reflex-common")
+        reflex_common = os.path.join(dirname, REFLEXCOMMON_PATH)
         mlcomp_jar = os.path.join(reflex_common, "mlcomp", "target", "mlcomp.jar")
         if not os.path.exists(mlcomp_jar):
             raise Exception("File: {} does not exists".format(mlcomp_jar))

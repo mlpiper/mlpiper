@@ -7,7 +7,7 @@ import shutil
 def copy_protobuf_sources():
     curr_scirpt_dir = os.path.dirname(os.path.abspath(__file__))
     src_protobuf_dir = os.path.join(curr_scirpt_dir,
-                                    '../../../../../reflex-common/reflex-common/target/generated-sources/protobuf')
+                                    '../reflex-common/reflex-common/target/generated-sources/protobuf')
     dst_protobuf_dir = os.path.join(curr_scirpt_dir, 'parallelm/protobuf')
 
     if not os.path.isdir(src_protobuf_dir):
