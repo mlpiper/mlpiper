@@ -8,7 +8,7 @@ SPHINXPROJ    = ParallelM
 SOURCEDIR     = doc-src
 BUILDDIR      = build
 
-MLOPSDISTDIR = ""
+DISTDIR = ""
 
 MLOPS_EGG_PY2_SYMLINK = "mlops-py2.egg"
 MLOPS_EGG_PY3_SYMLINK = "mlops-py3.egg"
@@ -37,13 +37,14 @@ MLOPS_EGG_PY2 = $(shell realpath $(shell ls ./dist/*-py2.*.egg))
 MLOPS_EGG_PY3 = $(shell realpath $(shell ls ./dist/*-py3.*.egg))
 MLOPS_EGG_PY2_BASENAME = $(shell basename $(MLOPS_EGG_PY2))
 MLOPS_EGG_PY3_BASENAME = $(shell basename $(MLOPS_EGG_PY3))
+SPARK_JARS = "../reflex-algos/target/ReflexAlgos-jar-with-dependencies.jar"
 
 install_to: egg
-ifneq ($(MLOPSDISTDIR),"")
-	mkdir -p $(MLOPSDISTDIR)
-	cp -f $(MLOPS_EGG_PY2) $(MLOPS_EGG_PY3) $(MLOPSDISTDIR)
-	cd $(MLOPSDISTDIR); ln -sf $(MLOPS_EGG_PY2_BASENAME) $(MLOPS_EGG_PY2_SYMLINK); cd -
-	cd $(MLOPSDISTDIR); ln -sf $(MLOPS_EGG_PY3_BASENAME) $(MLOPS_EGG_PY3_SYMLINK); cd -
+ifneq ($(DISTDIR),"")
+	mkdir -p $(DISTDIR)
+	cp -f $(MLOPS_EGG_PY2) $(MLOPS_EGG_PY3) $(DISTDIR)
+	cd $(DISTDIR); ln -sf $(MLOPS_EGG_PY2_BASENAME) $(MLOPS_EGG_PY2_SYMLINK); cd -
+	cd $(DISTDIR); ln -sf $(MLOPS_EGG_PY3_BASENAME) $(MLOPS_EGG_PY3_SYMLINK); cd -
 endif
 
 wheel:
@@ -66,7 +67,7 @@ test_pyspark: egg
 		${SPARK_SUBMIT} \
 				  --master spark://localhost:7077 \
 				  --py-files $(MLOPS_EGG_PY2) \
-				  --jars ../../../../target/ReflexAlgos-jar-with-dependencies.jar \
+				  --jars $(SPARK_JARS) \
 				  examples/pi_calc.py
 
 test_tf: egg
@@ -76,7 +77,7 @@ test_tf: egg
 		${SPARK_SUBMIT} \
 				  --master spark://localhost:7077 \
 				  --py-files $(MLOPS_EGG_PY2) \
-				  --jars ../../../../target/ReflexAlgos-jar-with-dependencies.jar \
+				  --jars $(SPARK_JARS)) \
 				  examples/pi_calc.py
 
 test_python: egg
@@ -92,7 +93,7 @@ test_non_pm: egg
 	${SPARK_SUBMIT} \
 				  --master spark://localhost:7077 \
 				  --py-files $(MLOPS_EGG_PY2) \
-				  --jars ../../../../target/ReflexAlgos-jar-with-dependencies.jar \
+				  --jars $(SPARK_JARS) \
 				  examples/pi_calc.py
 
 install: wheel

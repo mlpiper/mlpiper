@@ -384,9 +384,9 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <workingDirectory>${project.basedir}/src/main/python/mlops</workingDirectory>
+                                    <workingDirectory>${project.basedir}/../mlops</workingDirectory>
                                     <executable>make</executable>
-                                    <commandlineArgs>install_to MLOPSDISTDIR=${project.build.directory}
+                                    <commandlineArgs>install_to DISTDIR=${project.build.directory}
                                     </commandlineArgs>
                                 </configuration>
                             </execution>
@@ -397,7 +397,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <workingDirectory>${project.basedir}/src/main/python/mlops</workingDirectory>
+                                    <workingDirectory>${project.basedir}/../mlops</workingDirectory>
                                     <environmentVariables>
                                         <PYTHONPATH>./:$PYTHONPATH</PYTHONPATH>
                                     </environmentVariables>
@@ -412,7 +412,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <workingDirectory>${project.basedir}/src/main/python/mlops</workingDirectory>
+                                    <workingDirectory>${project.basedir}/../mlops</workingDirectory>
                                     <executable>env</executable>
                                     <commandlineArgs>PYTHONPATH=./ sphinx-build -b html doc-src
                                         ${project.build.directory}/docs/mlops
@@ -426,9 +426,9 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <workingDirectory>${project.basedir}/src/main/python/mlcomp</workingDirectory>
+                                    <workingDirectory>${project.basedir}/../mlcomp</workingDirectory>
                                     <executable>make</executable>
-                                    <commandlineArgs>install_to MLCOMPDISTDIR=${project.build.directory}
+                                    <commandlineArgs>install_to DISTDIR=${project.build.directory}
                                     </commandlineArgs>
                                 </configuration>
                             </execution>

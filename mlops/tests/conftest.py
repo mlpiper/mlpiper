@@ -101,7 +101,7 @@ def spark_session(request):
     spark = SparkSession \
         .builder \
         .master("local[*]") \
-        .config("spark.jars", "../../../../target/ReflexAlgos-jar-with-dependencies.jar") \
+        .config("spark.jars", "../reflex-algos/target/ReflexAlgos-jar-with-dependencies.jar") \
         .appName("PyTest.PySparkUnitTests") \
         .getOrCreate()
     sc = spark.sparkContext
