@@ -1,6 +1,6 @@
 # It make sense also to move all the component documentation to be done via python sphinx
 
-MLCOMPDISTDIR = ""
+DISTDIR = ""
 
 MLCOMP_EGG_PY2_SYMLINK = "mlcomp-py2.egg"
 MLCOMP_EGG_PY3_SYMLINK = "mlcomp-py3.egg"
@@ -19,11 +19,11 @@ MLCOMP_EGG_PY2_BASENAME = $(shell basename $(MLCOMP_EGG_PY2))
 MLCOMP_EGG_PY3_BASENAME = $(shell basename $(MLCOMP_EGG_PY3))
 
 install_to: egg
-ifneq ($(MLCOMPDISTDIR),"")
-	mkdir -p $(MLCOMPDISTDIR)
-	cp -f $(MLCOMP_EGG_PY2) $(MLCOMP_EGG_PY3) $(MLCOMPDISTDIR)
-	cd $(MLCOMPDISTDIR); ln -sf $(MLCOMP_EGG_PY2_BASENAME) $(MLCOMP_EGG_PY2_SYMLINK); cd -
-	cd $(MLCOMPDISTDIR); ln -sf $(MLCOMP_EGG_PY3_BASENAME) $(MLCOMP_EGG_PY3_SYMLINK); cd -
+ifneq ($(DISTDIR),"")
+	mkdir -p $(DISTDIR)
+	cp -f $(MLCOMP_EGG_PY2) $(MLCOMP_EGG_PY3) $(DISTDIR)
+	cd $(DISTDIR); ln -sf $(MLCOMP_EGG_PY2_BASENAME) $(MLCOMP_EGG_PY2_SYMLINK); cd -
+	cd $(DISTDIR); ln -sf $(MLCOMP_EGG_PY3_BASENAME) $(MLCOMP_EGG_PY3_SYMLINK); cd -
 endif
 
 
@@ -39,7 +39,7 @@ python_comps_egg:
 	cd /tmp/; for file in mcenter_components-*; do mv -v $$file python_$${file}; done; cd -
 
 pyspark_comps_egg:
-	./bin/create-components-egg.sh --components-dir ../../../../components/PySpark/ --dst-dir /tmp/
+	./bin/create-components-egg.sh --components-dir ../reflex-algos/components/PySpark/ --dst-dir /tmp/
 	cd /tmp/; for file in mcenter_components-*; do mv -v $$file pyspark_$${file}; done; cd -
 
 comp_eggs: python_comps_egg pyspark_comps_egg
@@ -53,7 +53,7 @@ MLOPS_EGG_PY2 = $(shell realpath $(shell ls ../mlops/dist/*-py2.*.egg))
 MLOPS_EGG_PY3 = $(shell realpath $(shell ls ../mlops/dist/*-py3.*.egg))
 COMP_EGG_PY2 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py2.*.egg))
 COMP_EGG_PY3 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py3.*.egg))
-SPARK_JARS = "../../../../target/ReflexAlgos-jar-with-dependencies.jar"
+SPARK_JARS = "../reflex-algos/target/ReflexAlgos-jar-with-dependencies.jar"
 
 test: egg mlops_egg comp_eggs
 	# Running the tests with the python egg
