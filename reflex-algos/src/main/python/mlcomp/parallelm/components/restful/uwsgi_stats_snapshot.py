@@ -152,5 +152,8 @@ class UwsiStatsSnapshot(object):
                (self.uwsgi_pm_metrics_accumulation != stats_snapshot.uwsgi_pm_metrics_accumulation)
 
     def should_report_metrics_per_time_window(self, stats_snapshot):
+        if self.uwsgi_pm_metrics_per_window is None:
+            return False
+
         return stats_snapshot is None or \
                (self.uwsgi_pm_metrics_per_window != stats_snapshot.uwsgi_pm_metrics_per_window)
