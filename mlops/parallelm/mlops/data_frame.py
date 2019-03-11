@@ -3,6 +3,8 @@ import ast
 import json
 import pickle
 import binascii
+from collections import OrderedDict
+
 
 from parallelm.mlops.constants import Constants, HistogramType, MatrixType, GeneralType
 from parallelm.mlops.stats_category import StatGraphType
@@ -107,26 +109,15 @@ class DataFrameHelper(object):
                         data[columns[0]] = [value[0]]
                         data[DataframeColNames.OPAQUE_DATA] = [opq_data]
                 elif graph_type == StatGraphType.MATRIX:
-                    temp_values = ast.literal_eval(value[1])
-                    for k, v in temp_values.items():
+                    temp_values = json.loads(value[1], object_pairs_hook=OrderedDict)
+                    for k in temp_values.keys():
                         temp_bar_values = {}
                         temp_bar_values[MatrixType.MATRIX_ROW_NAME] = k
-                        temp_bar_values[MatrixType.MATRIX_VALUES] = v.values()
-                        temp_bar_values[MatrixType.MATRIX_COLUMN] = v.keys()
+                        temp_bar_values[MatrixType.MATRIX_VALUES] = list(temp_values[k].values())
+                        temp_bar_values[MatrixType.MATRIX_COLUMN] = list(temp_values[k].keys())
                         data.update(DataFrameHelper._update_data_dict(data, temp_bar_values, value[0], columns[0]))
                 elif graph_type == StatGraphType.GENERAL_GRAPH:
                     temp_values = ast.literal_eval(value[1])
-                    #temp_values_expand = temp_values.copy()
-                    #for k, v in temp_values.items():
-                    #    if k ==GeneralType.YSERIES:
-                    #        for series_index, series_el in enumerate(v):
-                    #            for k_ser, v_ser in series_el.items():
-                    #                if(k_ser == GeneralType.DATA):
-                    #                    temp_values_expand[GeneralType.YSERIES + str(series_index)] = v_ser
-                    #                if(k_ser == GeneralType.LABEL):
-                    #                    temp_values_expand[GeneralType.YSERIES + str(series_index) + "_" + GeneralType.LABEL] = v_ser
-                    #del temp_values_expand[GeneralType.YSERIES]
-
                     data.update(DataFrameHelper._update_data_dict(data, temp_values, value[0], columns[0]))
                 else:
                         data[columns[0]].append(value[0])

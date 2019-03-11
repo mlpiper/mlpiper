@@ -184,6 +184,80 @@ def test_data_frame_accuracy():
 
     _check_data_frames(categorical_data, categorical_json, True)
 
+
+    # Matrix
+    matrix_data = {"time": ["2018-02-08T18:27:28.262Z", "2018-01-08T18:27:28.262Z"],
+                           "matrix_row_name": ["1", "2"], "matrix_values": [[22,21], [23,24]], "matrix_columns": [["l1","l2"], ["l1","l2"]]}
+
+    matrix_json = {
+        "graphType": "MATRIX",
+        "values": [
+            {
+                "name": "stat",
+                "columns": [
+                    "time",
+                    "value"
+                ],
+                "values": [
+                    [
+                        "2018-02-08T18:27:28.262Z",
+                        "{\"1\": {\"l1\": 22, \"l2\": 21}}"
+                    ],
+                    [
+                        "2018-01-08T18:27:28.262Z",
+                        "{\"2\": {\"l1\": 23, \"l2\": 24}}"
+                    ]
+                ]
+            }
+        ]
+    }
+    _check_data_frames(matrix_data, matrix_json, True)
+
+    # MultiGraph
+    multi_data = {"time": ["2018-02-08T18:27:28.262Z", "2018-01-08T18:27:28.262Z"],
+                  "x_annotation": [[], []], "x_axis_tick_postfix": ["", ""],
+                  "x_axis_type": ["Continuous", "Continuous"], "x_series": [[0,1,2,3], [0,1,2,3]],
+                  "x_title": ["x_axis", "x_axis"], "y_title": ["y_axis", "y_axis"],
+                  "y_annotation": [[], []],
+                  "y_series": [[{"data": [0,1,2,3], "label":"yGraph1" }, {"data": [4,5,6,7],"label":"yGraph2"}],
+                               [{"data": [10,11,12,13], "label":"yGraph1" }, {"data": [14,15,16,17],"label":"yGraph2"}]
+                               ]}
+
+    multi_json = {
+        "graphType": "GENERAL_GRAPH",
+        "values": [
+            {
+                "name": "stat",
+                "columns": [
+                    "time",
+                    "value"
+                ],
+                "values": [
+                    [
+                        "2018-02-08T18:27:28.262Z",
+                        "{\"x_title\": \"x_axis\", \"y_title\": \"y_axis\","
+                        " \"x_axis_type\": \"Continuous\", \"x_axis_tick_postfix\": \"\","
+                        " \"x_series\": [0, 1, 2, 3],"
+                        " \"y_series\": [{\"data\": [0,1,2,3], \"label\": \"yGraph1\"},"
+                        " {\"data\": [4,5,6,7], \"label\": \"yGraph2\"}],"
+                        " \"x_annotation\": [], \"y_annotation\": []}"
+                    ],
+                    [
+                        "2018-01-08T18:27:28.262Z",
+                        "{\"x_title\": \"x_axis\", \"y_title\": \"y_axis\","
+                        " \"x_axis_type\": \"Continuous\", \"x_axis_tick_postfix\": \"\","
+                        " \"x_series\": [0, 1, 2, 3],"
+                        " \"y_series\": [{\"data\": [10,11,12,13], \"label\": \"yGraph1\"},"
+                        " {\"data\": [14,15,16,17], \"label\": \"yGraph2\"}],"
+                        " \"x_annotation\": [], \"y_annotation\": []}"
+                    ]
+                ]
+            }
+        ]
+    }
+    _check_data_frames(multi_data, multi_json, True)
+
+
     # Negative tests
     _check_data_frames(linegraph_data, multilinegraph_json, False)
 
