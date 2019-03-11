@@ -268,22 +268,6 @@
                             </configLocation>
                         </configuration>
                     </plugin>
-                    <plugin>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>src/main/python/mlops/parallelm</directory>
-                                    <includes>
-                                        <include>**/protobuf</include>
-                                    </includes>
-                                    <followSymlinks>false</followSymlinks>
-                                </fileset>
-                            </filesets>
-                        </configuration>
-                    </plugin>
-
 
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -340,6 +324,22 @@
 
                         </executions>
                     </plugin>
+
+		    <plugin>
+			    <artifactId>maven-clean-plugin</artifactId>
+			    <version>3.1.0</version>
+			    <configuration>
+				    <filesets>
+					    <fileset>
+						    <directory>src/main/python/mlops/parallelm/protobuf</directory>
+						    <includes>
+							    <include>**/**</include>
+						    </includes>
+						    <followSymlinks>false</followSymlinks>
+					    </fileset>
+				    </filesets>
+			    </configuration>
+		    </plugin>
 
                     <!-- Generating the python mlops package -->
                     <plugin>
