@@ -1,9 +1,9 @@
 package com.parallelmachines.reflex.test.reflexpipeline
 
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchPipelineInfo
-import com.parallelmachines.reflex.pipeline.DataFrameUtils
 import org.apache.spark.sql.SparkSession
 import org.junit.runner.RunWith
+import org.mlpiper.utils.DataFrameUtils
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 

@@ -5,7 +5,6 @@ import java.io.File
 import breeze.linalg.{DenseMatrix, DenseVector}
 import com.parallelmachines.reflex.common.DirectoryPack
 import com.parallelmachines.reflex.common.enums.OpType
-import com.parallelmachines.reflex.pipeline.DataFrameUtils
 import org.apache.commons.codec.binary.Base64
 import org.apache.commons.io.FileUtils
 import org.apache.spark.sql.Row

@@ -2,13 +2,12 @@ package com.parallelmachines.reflex.test.common
 
 import breeze.linalg.DenseVector
 import com.parallelmachines.reflex.common.enums.OpType
-import com.parallelmachines.reflex.pipeline.DataFrameUtils
 import com.parallelmachines.reflex.test.common.ComparatorUtils
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 import org.apache.spark.sql.{Row, SparkSession}
 import org.junit.runner.RunWith
 import org.mlpiper.datastructures.{ColumnEntry, NamedVector}
-import org.mlpiper.utils.{GenericConstants, GenericNamedMatrixUtils, ParsingUtils}
+import org.mlpiper.utils.{DataFrameUtils, GenericConstants, GenericNamedMatrixUtils, ParsingUtils}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 

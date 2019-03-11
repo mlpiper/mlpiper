@@ -3,8 +3,8 @@ package com.parallelmachines.reflex.test.reflexpipeline
 import com.google.protobuf.ByteString
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent.EventType
-import com.parallelmachines.reflex.pipeline._
 import org.junit.runner.RunWith
+import org.mlpiper.infrastructure.{Base64Wrapper, DagGen}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 

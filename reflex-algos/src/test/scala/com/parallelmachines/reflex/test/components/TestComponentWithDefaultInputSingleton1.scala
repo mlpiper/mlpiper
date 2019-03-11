@@ -1,11 +1,10 @@
 package com.parallelmachines.reflex.test.components
 
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent.EventType
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
-import com.parallelmachines.reflex.components.flink.streaming.StreamExecutionEnvironment
 import com.parallelmachines.reflex.components.flink.streaming.connectors.{EventSocketSource, ReflexNullConnector}
-import com.parallelmachines.reflex.pipeline.{ComponentsGroups, ConnectionGroups}
-import com.parallelmachines.reflex.pipeline._
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
+import org.mlpiper.infrastructure
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -25,7 +24,7 @@ class TestComponentWithDefaultInputSingleton1 extends FlinkStreamingComponent {
     description = "Input",
     group = ConnectionGroups.OTHER)
 
-  val output = ComponentConnection(
+  val output = infrastructure.ComponentConnection(
     tag = typeTag[Any],
     defaultComponentClass = Some(classOf[ReflexNullConnector]),
     label = "Output",

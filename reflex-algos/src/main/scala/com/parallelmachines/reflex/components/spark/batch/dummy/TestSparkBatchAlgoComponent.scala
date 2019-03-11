@@ -3,9 +3,9 @@ package com.parallelmachines.reflex.components.spark.batch.dummy
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
 import com.parallelmachines.reflex.components.spark.batch.algorithms.{ModelBehavior, ModelBehaviorType}
 import com.parallelmachines.reflex.components.spark.batch.connectors.ReflexNullConnector
-import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

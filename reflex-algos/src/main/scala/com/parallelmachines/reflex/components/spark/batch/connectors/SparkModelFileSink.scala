@@ -1,10 +1,10 @@
 package com.parallelmachines.reflex.components.spark.batch.connectors
 
-import com.parallelmachines.reflex.common.SparkMLModel
 import com.parallelmachines.reflex.components.ComponentAttribute
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
-import com.parallelmachines.reflex.pipeline.{ComponentsGroups, ConnectionGroups, _}
 import org.apache.spark.SparkContext
+import org.mlpiper.datastructures.SparkMLModel
+import org.mlpiper.infrastructure._
 import org.mlpiper.sparkutils.SparkMLPipelineModelHelper
 
 import scala.collection.mutable.ArrayBuffer

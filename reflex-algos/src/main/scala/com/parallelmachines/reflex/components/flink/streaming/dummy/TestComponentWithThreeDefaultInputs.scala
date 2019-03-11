@@ -1,7 +1,7 @@
 package com.parallelmachines.reflex.components.flink.streaming.dummy
 
 import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
-import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -40,6 +40,6 @@ class TestComponentWithThreeDefaultInputs extends FlinkStreamingComponent {
   override lazy val paramInfo: String = s"""[]""".stripMargin
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String): ArrayBuffer[DataWrapperBase] = {
-    return ArrayBuffer[DataWrapperBase]()
+    ArrayBuffer[DataWrapperBase]()
   }
 }

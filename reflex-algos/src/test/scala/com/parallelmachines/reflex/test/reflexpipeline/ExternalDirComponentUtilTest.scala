@@ -2,12 +2,12 @@ package com.parallelmachines.reflex.test.reflexpipeline
 
 import java.nio.file.Paths
 
-import org.scalatest.FlatSpec
 import org.junit.runner.RunWith
+import org.mlpiper.infrastructure.ComputeEngineType
+import org.mlpiper.infrastructure.factory.ExternalDirComponentUtil
+import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
 import org.slf4j.LoggerFactory
-import com.parallelmachines.reflex.factory.ExternalDirComponentUtil
-import com.parallelmachines.reflex.pipeline.ComputeEngineType
 
 @RunWith(classOf[JUnitRunner])
 class ExternalDirComponentUtilTest extends FlatSpec {

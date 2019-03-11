@@ -1,8 +1,8 @@
 package com.parallelmachines.reflex.components.spark.batch
 
 import com.parallelmachines.reflex.components.spark
-import com.parallelmachines.reflex.factory.ByClassComponentFactory
-import com.parallelmachines.reflex.pipeline.ComputeEngineType
+import org.mlpiper.infrastructure.ComputeEngineType
+import org.mlpiper.infrastructure.factory.ByClassComponentFactory
 
 import scala.collection.mutable
 

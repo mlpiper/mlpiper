@@ -1,7 +1,7 @@
 package com.parallelmachines.reflex.test.reflexpipeline
 
-import com.parallelmachines.reflex.pipeline.ComponentConnection
 import org.junit.runner.RunWith
+import org.mlpiper.infrastructure.ComponentConnection
 import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
 

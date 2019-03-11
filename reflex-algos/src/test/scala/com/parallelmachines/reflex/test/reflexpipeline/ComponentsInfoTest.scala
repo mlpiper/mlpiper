@@ -2,13 +2,13 @@ package com.parallelmachines.reflex.test.reflexpipeline
 
 import com.parallelmachines.reflex.components._
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponentFactory
-import com.parallelmachines.reflex.factory.{ByClassComponentFactory, ReflexComponentFactory}
-import com.parallelmachines.reflex.pipeline.{ComputeEngineType, DagGen}
 import org.json4s.DefaultFormats
 import org.json4s.JsonAST.JValue
 import org.json4s.jackson.JsonMethods._
 import org.junit.runner.RunWith
 import org.junit.{After, Before, Test}
+import org.mlpiper.infrastructure.factory.{ByClassComponentFactory, ReflexComponentFactory}
+import org.mlpiper.infrastructure.{ComputeEngineType, DagGen}
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 

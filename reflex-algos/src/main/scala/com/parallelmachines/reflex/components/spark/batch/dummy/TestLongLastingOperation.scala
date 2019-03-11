@@ -1,10 +1,10 @@
 package com.parallelmachines.reflex.components.spark.batch.dummy
 
+import com.parallelmachines.reflex.components.ComponentAttribute
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
-import com.parallelmachines.reflex.components.{ComponentAttribute, ComponentAttributePack}
-import com.parallelmachines.reflex.pipeline._
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

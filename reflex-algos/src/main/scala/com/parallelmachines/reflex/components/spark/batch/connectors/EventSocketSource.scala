@@ -3,9 +3,9 @@ package com.parallelmachines.reflex.components.spark.batch.connectors
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent
 import com.parallelmachines.reflex.components.ComponentAttribute
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
-import com.parallelmachines.reflex.output.SocketSourceSingleton
-import com.parallelmachines.reflex.pipeline.{ComponentsGroups, _}
+import org.mlpiper.output.SocketSourceSingleton
 import org.apache.spark.SparkContext
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
@@ -79,13 +79,14 @@ class EventSocketSource extends SparkBatchComponent {
       if (obj != null) {
         receivedEvents += obj
         logger.debug("Got something on socket !!!")
+
         /** After model is received, wait 2 sec for Health Events */
         if (obj.eventType == ReflexEvent.EventType.Model) {
           logger.debug("Got model message")
           try {
             t.schedule(task, 2000L)
           } catch {
-            /** This will be thrown when try to schedule task twice.*/
+            /** This will be thrown when try to schedule task twice. */
             case _: java.lang.IllegalStateException =>
           }
         }
@@ -102,13 +103,13 @@ class EventSocketSource extends SparkBatchComponent {
         * So data will not be extracted from the object, and it will be just forwarded.
         */
       if (eventTypeInfo.forwardEvent) {
-        retArray += new DataWrapper(env.parallelize(filteredEventList))
+        retArray += DataWrapper(env.parallelize(filteredEventList))
       } else if (ModelStringByte) {
         // take only last
-        retArray += new DataWrapper(env.parallelize(filteredEventList.map(event => new String(event.data.toByteArray))))
-      } else{
+        retArray += DataWrapper(env.parallelize(filteredEventList.map(event => new String(event.data.toByteArray))))
+      } else {
         // take only last
-        retArray += new DataWrapper(env.parallelize(filteredEventList.map(event => event.data.toByteArray)))
+        retArray += DataWrapper(env.parallelize(filteredEventList.map(event => event.data.toByteArray)))
       }
     }
     retArray

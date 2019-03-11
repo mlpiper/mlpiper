@@ -1,7 +1,7 @@
 package com.parallelmachines.reflex.components.spark.batch.connectors
 
-import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
 import com.parallelmachines.reflex.components.ComponentAttribute
+import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
 import org.apache.spark.sql.DataFrame
 
 trait DFSinkCommon extends SparkBatchComponent {

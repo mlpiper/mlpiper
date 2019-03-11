@@ -1,16 +1,15 @@
 package com.parallelmachines.reflex.components.spark.batch.parsers
 
-import com.parallelmachines.reflex.common.SnowFlakeCommon
 import com.parallelmachines.reflex.components.ComponentAttribute
-import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
-import com.parallelmachines.reflex.pipeline._
+import com.parallelmachines.reflex.components.spark.batch.SparkBatchPipelineInfo
+import com.parallelmachines.reflex.components.spark.batch.connectors.SnowFlakeCommon
+import net.snowflake.spark.snowflake.Utils.SNOWFLAKE_SOURCE_NAME
 import org.apache.spark.SparkContext
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
-import net.snowflake.spark.snowflake.Utils.SNOWFLAKE_SOURCE_NAME
-import org.apache.spark.sql.DataFrame
 
 class SnowFlakeToDF extends SnowFlakeCommon {
 

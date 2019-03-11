@@ -1,13 +1,12 @@
 package com.parallelmachines.reflex.components.spark.batch.dummy
 
 import breeze.linalg.DenseVector
-import com.parallelmachines.reflex.common._
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
 import com.parallelmachines.reflex.components.spark.batch.connectors.EventSocketSource
-import com.parallelmachines.reflex.pipeline._
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
+import org.mlpiper.infrastructure._
 import org.mlpiper.stat.healthlib.{HealthComponentSpark, HealthLibSpark}
 
 import scala.collection.mutable.ArrayBuffer

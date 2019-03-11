@@ -1,11 +1,11 @@
 package com.parallelmachines.reflex.test.components
 
-import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.flink.streaming.connectors.{ReflexNullConnector, ReflexNullSourceConnector}
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.spark.batch.algorithms.{ModelBehavior, ModelBehaviorType}
-import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
-import org.mlpiper.performance.PerformanceMetricsHash
 import org.mlpiper.datastructures.PredictionOutput
+import org.mlpiper.infrastructure._
+import org.mlpiper.performance.PerformanceMetricsHash
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -55,6 +55,6 @@ class TestAlgoComponent extends FlinkStreamingComponent with ModelBehavior {
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase],
                            errPrefixStr: String): ArrayBuffer[DataWrapperBase] = {
 
-    return ArrayBuffer[DataWrapperBase](dsArr(0), dsArr(0), dsArr(0))
+    ArrayBuffer[DataWrapperBase](dsArr(0), dsArr(0), dsArr(0))
   }
 }

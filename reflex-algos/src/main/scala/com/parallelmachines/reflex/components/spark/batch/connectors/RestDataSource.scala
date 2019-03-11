@@ -1,12 +1,12 @@
 package com.parallelmachines.reflex.components.spark.batch.connectors
 
-import org.mlpiper.mlops.MLOpsEnvVariables
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent
-import org.mlpiper.mlobject.Model
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
-import com.parallelmachines.reflex.pipeline.{ComponentsGroups, _}
-import com.parallelmachines.reflex.web.RestApis
+import org.mlpiper.infrastructure.rest.RestApis
 import org.apache.spark.SparkContext
+import org.mlpiper.infrastructure.{ComponentsGroups, ConnectionList, DataWrapper, DataWrapperBase}
+import org.mlpiper.mlobject.Model
+import org.mlpiper.mlops.MLOpsEnvVariables
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer

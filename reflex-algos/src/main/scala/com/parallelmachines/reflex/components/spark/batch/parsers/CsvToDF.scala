@@ -1,13 +1,13 @@
 package com.parallelmachines.reflex.components.spark.batch.parsers
 
-import com.parallelmachines.reflex.components.{ComponentAttribute, SeparatorComponentAttribute}
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
-import com.parallelmachines.reflex.pipeline._
+import com.parallelmachines.reflex.components.{ComponentAttribute, SeparatorComponentAttribute}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
+import org.mlpiper.infrastructure._
+import org.mlpiper.utils.DataFrameUtils
 
 import scala.collection.mutable.ArrayBuffer
-import scala.io.Source
 import scala.reflect.runtime.universe._
 
 class CsvToDF extends SparkBatchComponent {

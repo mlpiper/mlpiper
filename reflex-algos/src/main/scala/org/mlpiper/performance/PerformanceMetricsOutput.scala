@@ -17,8 +17,8 @@
  */
 package org.mlpiper.performance
 
+import org.mlpiper.datastructures.DefinedTwoTuple
 import org.mlpiper.stats.StatInfo
-import org.mlpiper.common.DefinedTwoTuple
 
 import scala.collection.mutable
 

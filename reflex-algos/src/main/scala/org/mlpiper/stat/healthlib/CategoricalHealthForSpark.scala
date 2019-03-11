@@ -3,7 +3,6 @@ package org.mlpiper.stat.healthlib
 import breeze.linalg.DenseVector
 import com.parallelmachines.reflex.common.enums.OpType
 import com.parallelmachines.reflex.common.InfoType
-import com.parallelmachines.reflex.pipeline.DataFrameUtils
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.rdd.RDD
@@ -12,7 +11,7 @@ import org.mlpiper.datastructures.NamedVector
 import org.mlpiper.stat.dataanalysis.categorical.CategoricalDataAnalyst
 import org.mlpiper.stat.histogram.HistogramComparatorTypes
 import org.mlpiper.stat.histogram.categorical.{Histogram, HistogramFormatting, HistogramWrapper => CategoricalHistogramWrapper}
-import org.mlpiper.utils.{GenericNamedMatrixUtils, ParsingUtils}
+import org.mlpiper.utils.{DataFrameUtils, GenericNamedMatrixUtils, ParsingUtils}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable

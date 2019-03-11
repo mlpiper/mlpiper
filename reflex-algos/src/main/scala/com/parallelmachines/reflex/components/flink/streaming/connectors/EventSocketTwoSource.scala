@@ -1,9 +1,8 @@
 package com.parallelmachines.reflex.components.flink.streaming.connectors
 
 import com.parallelmachines.reflex.components.flink.streaming.StreamExecutionEnvironment
-import com.parallelmachines.reflex.pipeline.{CanaryConfig, DataWrapperBase}
+import org.mlpiper.infrastructure.{CanaryConfig, DataWrapperBase}
 
-import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 /**

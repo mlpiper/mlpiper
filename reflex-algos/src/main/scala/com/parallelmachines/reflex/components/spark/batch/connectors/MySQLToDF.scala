@@ -3,9 +3,9 @@ package com.parallelmachines.reflex.components.spark.batch.connectors
 import com.parallelmachines.reflex.components.ComponentAttribute.ComponentAttribute
 import com.parallelmachines.reflex.components._
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
-import com.parallelmachines.reflex.pipeline._
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -26,7 +26,7 @@ class MySQLToDF extends SparkBatchComponent {
 
   override val inputTypes: ConnectionList = ConnectionList.empty()
   override var outputTypes: ConnectionList = ConnectionList(output)
-  
+
   val sqlHostName: ComponentAttribute[String] = SQLHostNameComponentAttribute()
   val sqlPort: ComponentAttribute[Int] = SQLHostPortComponentAttribute()
   val sqlDatabase: ComponentAttribute[String] = SQLDataBaseNameComponentAttribute()

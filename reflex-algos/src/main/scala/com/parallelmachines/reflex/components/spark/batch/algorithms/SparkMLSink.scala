@@ -1,9 +1,9 @@
 package com.parallelmachines.reflex.components.spark.batch.algorithms
 
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
-import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.DataFrame
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

@@ -1,9 +1,7 @@
 package com.parallelmachines.reflex.components.flink.streaming.connectors
 
-import java.util.Properties
-
 import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
-import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -56,6 +54,6 @@ class ReflexKafkaConnector extends FlinkStreamingComponent {
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase], errPrefixStr: String):
   ArrayBuffer[DataWrapperBase] = {
-    ArrayBuffer(new DataWrapper())
+    ArrayBuffer(DataWrapper())
   }
 }

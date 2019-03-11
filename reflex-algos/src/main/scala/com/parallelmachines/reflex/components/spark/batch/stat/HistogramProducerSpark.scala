@@ -1,14 +1,13 @@
 package com.parallelmachines.reflex.components.spark.batch.stat
 
 import breeze.linalg.{DenseVector => BreezeDenseVector}
-import com.parallelmachines.reflex.common._
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
-import com.parallelmachines.reflex.pipeline.{ComponentsGroups, ConnectionGroups, _}
 import org.apache.spark.SparkContext
 import org.apache.spark.mllib.linalg.Vector
 import org.apache.spark.mllib.linalg.distributed.RowMatrix
 import org.apache.spark.mllib.regression.LabeledPoint
 import org.apache.spark.rdd.RDD
+import org.mlpiper.infrastructure._
 import org.mlpiper.stat.healthlib.{CategoricalHealthForSpark, ContinuousHistogramForSpark, HealthLibSpark, HealthType}
 
 import scala.collection.mutable.ArrayBuffer

@@ -12,18 +12,19 @@ import com.parallelmachines.reflex.common.ExtractArchives
 import com.parallelmachines.reflex.components.spark.batch.connectors.{ModelTypeString, ReflexNullConnector, RestDataSource}
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
 import com.parallelmachines.reflex.components.{ComponentAttribute, EnablePerformanceComponentAttribute, EnableValidationComponentAttribute, LabelColComponentAttribute}
-import com.parallelmachines.reflex.pipeline._
 import org.apache.commons.io.FileUtils
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{Row, SparkSession}
+import org.mlpiper.infrastructure._
 import org.mlpiper.mlobject.Model
 import org.mlpiper.sparkutils.SparkMLPipelineModelHelper
 import org.mlpiper.stat.algos.SparkMLPredictionStatsForSpark
 import org.mlpiper.stat.healthlib.{CategoricalHealthForSpark, ContinuousHistogramForSpark, HealthLibSpark, HealthType}
 import org.mlpiper.stat.heatmap.continuous.HeatMap
+import org.mlpiper.utils.DataFrameUtils
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

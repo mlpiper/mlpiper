@@ -1,7 +1,7 @@
 package org.mlpiper.mlobject
 
 import org.mlpiper.mlobject.MLObjectType.MLObjectType
-import com.parallelmachines.reflex.web.RestApis
+import org.mlpiper.infrastructure.rest.RestApis
 
 /**
   * Base class for MLObjects
