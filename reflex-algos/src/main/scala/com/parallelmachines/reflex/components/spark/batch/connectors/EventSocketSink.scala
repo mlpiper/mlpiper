@@ -4,10 +4,11 @@ import com.google.protobuf.ByteString
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent
 import com.parallelmachines.reflex.components.ComponentAttribute
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponent
-import com.parallelmachines.reflex.output.SocketSinkSingleton
-import com.parallelmachines.reflex.pipeline.{ComponentsGroups, _}
+import org.mlpiper.output.SocketSinkSingleton
 import org.apache.spark.SparkContext
 import org.apache.spark.rdd.RDD
+import org.mlpiper.infrastructure.{ComponentsGroups, ConnectionList, DataWrapperBase, EventTypeInfo}
+
 import scala.collection.mutable.ArrayBuffer
 
 object SparkMapDataToEvent {

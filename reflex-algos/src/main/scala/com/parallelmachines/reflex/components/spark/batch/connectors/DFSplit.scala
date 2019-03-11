@@ -1,9 +1,9 @@
 package com.parallelmachines.reflex.components.spark.batch.connectors
 
-import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
 import com.parallelmachines.reflex.components.ComponentAttribute
-import com.parallelmachines.reflex.pipeline._
+import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
 import org.apache.spark.SparkContext
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -37,7 +37,7 @@ class DFSplit extends SparkBatchComponent {
   override val inputTypes: ConnectionList = ConnectionList(input)
   override var outputTypes: ConnectionList = ConnectionList(output1, output2)
 
-  val splitRatio = ComponentAttribute("splitRatio", 0.8, "Split ratio", "Splits DataFrame into two dataframes [DataFrame1, DataFrame2] where each contains a fraction of the samples [ratio, 1-ratio] respectively.", optional = false)
+  val splitRatio = ComponentAttribute("splitRatio", 0.8, "Split ratio", "Splits DataFrame into two dataframes [DataFrame1, DataFrame2] where each contains a fraction of the samples [ratio, 1-ratio] respectively.")
 
   attrPack.add(splitRatio)
 

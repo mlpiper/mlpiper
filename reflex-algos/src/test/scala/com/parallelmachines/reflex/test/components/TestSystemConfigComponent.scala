@@ -1,8 +1,8 @@
 package com.parallelmachines.reflex.test.components
 
-import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.ComponentAttribute
-import com.parallelmachines.reflex.pipeline._
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
+import org.mlpiper.infrastructure.{ComponentsGroups, ConnectionList, DataWrapperBase}
 
 import scala.collection.mutable.ArrayBuffer
 

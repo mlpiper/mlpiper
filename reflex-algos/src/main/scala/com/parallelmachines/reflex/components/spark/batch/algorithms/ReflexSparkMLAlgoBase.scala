@@ -3,19 +3,21 @@ package com.parallelmachines.reflex.components.spark.batch.algorithms
 import java.io.File
 import java.nio.file.Files
 
-import com.parallelmachines.reflex.common.{FeatureImportance, SparkMLModel, _}
+import com.parallelmachines.reflex.common._
 import com.parallelmachines.reflex.components.spark.batch.algorithms.MlMethod.MlMethodType
 import com.parallelmachines.reflex.components.spark.batch.connectors.{ReflexNullConnector, ReflexNullSourceConnector}
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
-import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
-import com.parallelmachines.reflex.web.RestApis
 import org.apache.commons.io.FileUtils
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.{PipelineModel, PipelineStage}
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.StructType
-import org.mlpiper.sparkutils.SparkMLPipelineModelHelper
+import org.mlpiper.datastructures.SparkMLModel
+import org.mlpiper.infrastructure._
+import org.mlpiper.infrastructure.rest.RestApis
+import org.mlpiper.sparkutils.{SparkMLFeatureDetails, SparkMLLabelDetails, SparkMLPipelineModelHelper}
 import org.mlpiper.stat.algos.{ClassificationEvaluation, RegressionEvaluation}
+import org.mlpiper.stat.fi.FeatureImportance
 import org.mlpiper.stat.healthlib.{CategoricalHealthForSpark, ContinuousHistogramForSpark, HealthLibSpark, HealthType}
 import org.slf4j.LoggerFactory
 

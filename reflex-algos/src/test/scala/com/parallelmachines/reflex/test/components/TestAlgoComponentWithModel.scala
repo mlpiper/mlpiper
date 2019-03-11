@@ -1,10 +1,11 @@
 package com.parallelmachines.reflex.test.components
 
-import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.flink.streaming.connectors.{EventSocketSource, ReflexNullConnector, ReflexNullSourceConnector}
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.spark.batch.algorithms.{ModelBehavior, ModelBehaviorType}
-import com.parallelmachines.reflex.pipeline.{ComponentConnection, ComponentsGroups, ConnectionGroups, _}
 import org.mlpiper.datastructures.PredictionOutput
+import org.mlpiper.infrastructure
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -19,7 +20,7 @@ class TestAlgoComponentWithModel extends FlinkStreamingComponent with ModelBehav
 
   override val modelBehaviorType = ModelBehaviorType.ModelConsumer
 
-  val input1 = ComponentConnection(
+  val input1 = infrastructure.ComponentConnection(
     tag = typeTag[Any],
     defaultComponentClass = Some(classOf[ReflexNullSourceConnector]),
     label = "Vector",

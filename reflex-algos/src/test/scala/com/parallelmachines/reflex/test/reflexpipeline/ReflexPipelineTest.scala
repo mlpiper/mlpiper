@@ -4,17 +4,17 @@ import java.io.File
 import java.nio.file.{Files, Paths}
 
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponentFactory
-import com.parallelmachines.reflex.factory.{ByClassComponentFactory, ComponentJSONSignatureParser, ReflexComponentFactory, TensorflowComponent}
-import com.parallelmachines.reflex.pipeline.{Component, ReflexPipelineJsonParser, _}
 import org.junit.runner.RunWith
-import org.scalatest.{FlatSpec, Matchers}
+import org.mlpiper.infrastructure._
+import org.mlpiper.infrastructure.factory.{ByClassComponentFactory, ComponentJSONSignatureParser, ReflexComponentFactory, TensorflowComponent}
 import org.scalatest.junit.JUnitRunner
+import org.scalatest.{FlatSpec, Matchers}
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable.ListBuffer
 
 @RunWith(classOf[JUnitRunner])
-class ReflexPipelineTest extends FlatSpec with Matchers{
+class ReflexPipelineTest extends FlatSpec with Matchers {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
@@ -236,9 +236,9 @@ class ReflexPipelineTest extends FlatSpec with Matchers{
 
   "Good Pipeline to check PipelineInfo API" should "be valid" in {
     val flinkStreamingInfo =
-    ReflexComponentFactory
-      .getEngineFactory(ComputeEngineType.FlinkStreaming)
-      .asInstanceOf[ByClassComponentFactory]
+      ReflexComponentFactory
+        .getEngineFactory(ComputeEngineType.FlinkStreaming)
+        .asInstanceOf[ByClassComponentFactory]
 
     flinkStreamingInfo.registerComponent(classOf[com.parallelmachines.reflex.test.components.TestAlgoComponentWithModel])
     val json1 =
@@ -573,7 +573,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers{
     assert(res != null, "json1 is not valid")
     assert(res.nodeList.length == 3, "wrong number of nodes in DAG after parsing")
   }
-  
+
   "Good Pipeline with multi input component and input index" should "be valid" in {
     val flinkStreamingInfo =
       ReflexComponentFactory
@@ -917,7 +917,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers{
 
     flinkStreamingInfo.registerComponent(classOf[com.parallelmachines.reflex.test.components.TestAlgoComponent])
     val goodJson =
-    """
+      """
     {
       "name": "KMeans Training Example",
       "engineType": "FlinkStreaming",

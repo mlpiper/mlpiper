@@ -4,8 +4,8 @@ import java.nio.file.{Files, Path, Paths}
 
 import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponentFactory
 import com.parallelmachines.reflex.components.spark.batch.SparkBatchComponentFactory
-import com.parallelmachines.reflex.factory.{ReflexComponentFactory, TensorflowComponentFactory}
-import com.parallelmachines.reflex.pipeline._
+import org.mlpiper.infrastructure.factory.{ReflexComponentFactory, TensorflowComponentFactory}
+import org.mlpiper.infrastructure.{ComputeEngineType, ReflexPipelineBuilder, ReflexPipelineDag}
 
 /**
   * Helper object for tests to run the parsing + validate in one run

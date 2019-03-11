@@ -2,7 +2,7 @@ package com.parallelmachines.reflex.components.flink.streaming.parsers
 
 import breeze.linalg.{DenseVector => BreezeDenseVector}
 import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
-import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

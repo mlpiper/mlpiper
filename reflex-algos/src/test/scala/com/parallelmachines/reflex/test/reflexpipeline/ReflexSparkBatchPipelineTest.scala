@@ -4,14 +4,15 @@ import breeze.linalg.DenseVector
 import com.google.protobuf.ByteString
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent
 import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent.EventType
-import com.parallelmachines.reflex.pipeline.{DagGen, DataFrameUtils}
 import com.parallelmachines.reflex.test.common.ComparatorUtils
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.SparkSession
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Json
 import org.junit.runner.RunWith
+import org.mlpiper.infrastructure.DagGen
 import org.mlpiper.stat.healthlib.{CategoricalHealthForSpark, ContinuousHistogramForSpark, HealthType}
+import org.mlpiper.utils.DataFrameUtils
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 

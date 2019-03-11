@@ -1,7 +1,8 @@
 package com.parallelmachines.reflex.components
 
 import com.parallelmachines.reflex.components.ComponentAttribute.ComponentAttribute
-import com.parallelmachines.reflex.pipeline.JsonHeaders
+import org.mlpiper.infrastructure.JsonHeaders
+
 import scala.collection.immutable.ListMap
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

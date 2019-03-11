@@ -2,9 +2,9 @@ package com.parallelmachines.reflex.components.spark.batch.connectors
 
 import com.parallelmachines.reflex.components.spark.batch.algorithms.SparkMLSink
 import com.parallelmachines.reflex.components.ComponentAttribute
-import com.parallelmachines.reflex.pipeline.SparkCapability
 import org.apache.spark.SparkContext
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
+import org.mlpiper.infrastructure.SparkCapability
 
 
 class DFtoHive extends SparkMLSink {

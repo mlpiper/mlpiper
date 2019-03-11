@@ -4,7 +4,6 @@ import breeze.linalg.DenseVector
 import breeze.numerics.pow
 import com.parallelmachines.reflex.common._
 import com.parallelmachines.reflex.common.enums.OpType
-import com.parallelmachines.reflex.pipeline.DataFrameUtils
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.mllib.stat.{MultivariateStatisticalSummary, Statistics}
@@ -14,7 +13,7 @@ import org.mlpiper.datastructures.{NamedMatrix, NamedVector}
 import org.mlpiper.stat.dataanalysis.continuous.ContinuousDataAnalyst
 import org.mlpiper.stat.histogram.HistogramComparatorTypes
 import org.mlpiper.stat.histogram.continuous.{Histogram => ContinuousHistogram, HistogramWrapper => ContinuousHistogramWrapper, NamedMatrixToFeaturedHistogram => NamedMatrixToFeaturedContinuousHistogram}
-import org.mlpiper.utils.{GenericNamedMatrixUtils, ParsingUtils}
+import org.mlpiper.utils.{DataFrameUtils, GenericNamedMatrixUtils, ParsingUtils}
 import org.slf4j.{Logger, LoggerFactory}
 
 import scala.collection.mutable

@@ -1,15 +1,16 @@
 package com.parallelmachines.reflex.components.flink.streaming
 
-import com.parallelmachines.reflex.pipeline._
-import scala.reflect.runtime.universe._
+import org.mlpiper.infrastructure._
+
 import scala.collection.mutable.ArrayBuffer
+import scala.reflect.runtime.universe._
 
 trait FlinkStreamingComponent extends ReflexPipelineComponent {
   override val engineType = ComputeEngineType.FlinkStreaming
 
 
   @throws(classOf[Exception])
-  override def validateAndPropagateIncomingTypes(incomingTypes:ConnectionList) : Unit = {
+  override def validateAndPropagateIncomingTypes(incomingTypes: ConnectionList): Unit = {
 
     validateNumberOfIncoming(incomingTypes)
     if (incomingTypes.length != inputTypes.length) {

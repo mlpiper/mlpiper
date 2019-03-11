@@ -2,15 +2,14 @@ package org.mlpiper.mlops
 
 import com.parallelmachines.reflex.common.InfoType.InfoType
 import com.parallelmachines.reflex.common._
-import com.parallelmachines.reflex.pipeline.DataFrameUtils
-import com.parallelmachines.reflex.pipeline.spark.stats.SystemStatsListener
-import org.mlpiper.stats.{AccumData, _}
+import org.mlpiper.stats.{AccumData, SystemStatsListener, _}
 import org.apache.spark.api.java.{JavaRDD, JavaSparkContext}
 import org.apache.spark.ml.PipelineModel
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.mlpiper.stat.healthlib.{CategoricalHealthForSpark, ContinuousHistogramForSpark, HealthLibSpark, HealthType}
 import org.mlpiper.stat.heatmap.continuous.HeatMap
+import org.mlpiper.utils.DataFrameUtils
 import org.slf4j.LoggerFactory
 
 import scala.collection.mutable

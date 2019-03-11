@@ -1,10 +1,8 @@
 package com.parallelmachines.reflex.components.flink.streaming.connectors
 
-import com.parallelmachines.reflex.components.flink.streaming.FlinkStreamingComponent
 import com.parallelmachines.reflex.components.ComponentAttribute
-import com.parallelmachines.reflex.pipeline.ComponentsGroups
-import com.parallelmachines.reflex.pipeline._
-import com.parallelmachines.reflex.components.flink.streaming.StreamExecutionEnvironment
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
+import org.mlpiper.infrastructure.{ComponentsGroups, ConnectionList, DataWrapperBase}
 
 import scala.collection.mutable.ArrayBuffer
 

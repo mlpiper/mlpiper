@@ -2,9 +2,9 @@ package com.parallelmachines.reflex.components.spark.batch.fe
 
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
 import com.parallelmachines.reflex.components.{ComponentAttribute, InputColComponentAttribute, OutputColComponentAttribute}
-import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.feature.OneHotEncoder
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

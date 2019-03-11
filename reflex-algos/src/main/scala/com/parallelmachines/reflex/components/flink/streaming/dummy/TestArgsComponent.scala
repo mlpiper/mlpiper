@@ -2,7 +2,7 @@ package com.parallelmachines.reflex.components.flink.streaming.dummy
 
 import com.parallelmachines.reflex.components.ComponentAttribute
 import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
-import com.parallelmachines.reflex.pipeline._
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -39,6 +39,6 @@ class TestArgsComponent extends FlinkStreamingComponent {
 
   override def materialize(env: StreamExecutionEnvironment, dsArr: ArrayBuffer[DataWrapperBase],
                            errPrefixStr: String): ArrayBuffer[DataWrapperBase] = {
-    return ArrayBuffer[DataWrapperBase]()
+    ArrayBuffer[DataWrapperBase]()
   }
 }

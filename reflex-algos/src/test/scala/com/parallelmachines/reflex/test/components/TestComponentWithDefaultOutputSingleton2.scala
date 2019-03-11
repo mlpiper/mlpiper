@@ -1,9 +1,8 @@
 package com.parallelmachines.reflex.test.components
 
-import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
 import com.parallelmachines.reflex.components.flink.streaming.connectors.EventSocketSink
-import com.parallelmachines.reflex.pipeline.{ComponentsGroups, ConnectionGroups}
-import com.parallelmachines.reflex.pipeline._
+import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

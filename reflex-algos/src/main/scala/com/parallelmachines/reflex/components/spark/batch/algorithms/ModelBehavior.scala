@@ -1,6 +1,6 @@
 package com.parallelmachines.reflex.components.spark.batch.algorithms
 
-import com.parallelmachines.reflex.pipeline.{JsonHeaders, ReflexPipelineComponent}
+import org.mlpiper.infrastructure.{JsonHeaders, ReflexPipelineComponent}
 
 object ModelBehaviorType extends Enumeration {
   val ModelConsumer, ModelProducer, ModelProducerConsumer, Auxiliary = Value
@@ -8,11 +8,11 @@ object ModelBehaviorType extends Enumeration {
   private val modelProducerList = List[Value](ModelProducer, ModelProducerConsumer)
   private val modelConsumerList = List[Value](ModelConsumer, ModelProducerConsumer)
 
-  def isModelProducer(modelBehaviorType: Value) : Boolean = {
+  def isModelProducer(modelBehaviorType: Value): Boolean = {
     modelProducerList.contains(modelBehaviorType)
   }
 
-  def isModelConsumer(modelBehaviorType: Value) : Boolean = {
+  def isModelConsumer(modelBehaviorType: Value): Boolean = {
     modelConsumerList.contains(modelBehaviorType)
   }
 }

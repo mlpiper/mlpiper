@@ -1,8 +1,8 @@
 package com.parallelmachines.reflex.components.spark.batch.general
 
 import com.parallelmachines.reflex.components.spark.batch.{SparkBatchComponent, SparkBatchPipelineInfo}
-import com.parallelmachines.reflex.pipeline._
 import org.apache.spark.SparkContext
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._

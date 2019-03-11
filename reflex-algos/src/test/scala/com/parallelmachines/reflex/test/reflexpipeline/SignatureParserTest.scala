@@ -1,12 +1,12 @@
 package com.parallelmachines.reflex.test.reflexpipeline
 
 
-import com.parallelmachines.reflex.factory.ComponentJSONSignatureParser
+import com.parallelmachines.reflex.common.constants.McenterTags
 import org.junit.runner.RunWith
+import org.mlpiper.infrastructure.factory.ComponentJSONSignatureParser
 import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
 import org.slf4j.LoggerFactory
-import com.parallelmachines.reflex.common.constants.McenterTags
 
 
 @RunWith(classOf[JUnitRunner])

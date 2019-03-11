@@ -1,10 +1,10 @@
 package com.parallelmachines.reflex.test.common
 
 import breeze.linalg.DenseVector
-import com.parallelmachines.reflex.pipeline.DataFrameUtils
 import org.apache.spark.sql.types._
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 import org.junit.runner.RunWith
+import org.mlpiper.utils.DataFrameUtils
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 

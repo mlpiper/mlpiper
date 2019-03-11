@@ -1,10 +1,10 @@
 package com.parallelmachines.reflex.components.flink.streaming.dummy
 
 import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
-import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
+import org.mlpiper.infrastructure._
 
-import scala.reflect.runtime.universe._
 import scala.collection.mutable.ArrayBuffer
+import scala.reflect.runtime.universe._
 
 class TestComponentWithDefaultInput extends FlinkStreamingComponent {
   override val isSource: Boolean = false

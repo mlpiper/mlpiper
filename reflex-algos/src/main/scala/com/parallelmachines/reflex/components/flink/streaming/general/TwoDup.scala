@@ -1,7 +1,8 @@
 package com.parallelmachines.reflex.components.flink.streaming.general
 
 import com.parallelmachines.reflex.components.flink.streaming.{FlinkStreamingComponent, StreamExecutionEnvironment}
-import com.parallelmachines.reflex.pipeline.{ConnectionGroups, _}
+import org.mlpiper.infrastructure
+import org.mlpiper.infrastructure._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.reflect.runtime.universe._
@@ -27,7 +28,7 @@ class TwoDup extends FlinkStreamingComponent {
     description = "Duplicated data1",
     group = ConnectionGroups.DATA)
 
-  val output2 = ComponentConnection(
+  val output2 = infrastructure.ComponentConnection(
     tag = typeTag[Any],
     label = "Data2",
     description = "Duplicated data2",

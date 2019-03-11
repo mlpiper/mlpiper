@@ -1,6 +1,5 @@
 package com.parallelmachines.reflex.components.spark.batch.connectors
 
-import com.parallelmachines.reflex.common.SnowFlakeCommon
 import com.parallelmachines.reflex.components.ComponentAttribute
 import com.parallelmachines.reflex.components.spark.batch.algorithms.SparkMLSink
 import net.snowflake.spark.snowflake.Utils.SNOWFLAKE_SOURCE_NAME

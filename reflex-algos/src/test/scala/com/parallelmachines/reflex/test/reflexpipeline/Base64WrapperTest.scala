@@ -1,7 +1,7 @@
 package com.parallelmachines.reflex.test.reflexpipeline
 
-import com.parallelmachines.reflex.pipeline.Base64Wrapper
 import org.junit.runner.RunWith
+import org.mlpiper.infrastructure.Base64Wrapper
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{FlatSpec, Matchers}
 

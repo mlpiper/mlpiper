@@ -1,8 +1,8 @@
 package com.parallelmachines.reflex.components.flink.streaming
 
 import com.parallelmachines.reflex.components.flink
-import com.parallelmachines.reflex.factory.ByClassComponentFactory
-import com.parallelmachines.reflex.pipeline.ComputeEngineType
+import org.mlpiper.infrastructure.ComputeEngineType
+import org.mlpiper.infrastructure.factory.ByClassComponentFactory
 
 import scala.collection.mutable
 
