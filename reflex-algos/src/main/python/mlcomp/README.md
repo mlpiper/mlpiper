@@ -18,7 +18,7 @@ R and Java.
   fill in all the following fields:
 
         {
-            "engineType": "Python",
+            "engineType": "Generic",
             "language": "Python",
             "userStandalone": false,
             "name": "<Component name (.e.g string_source)>",
@@ -95,7 +95,7 @@ R and Java.
 
         {
             "name": "Simple MCenter runner test",
-            "engineType": "Python",
+            "engineType": "Generic",
             "pipe": [
                 {
                     "name": "Source String",
