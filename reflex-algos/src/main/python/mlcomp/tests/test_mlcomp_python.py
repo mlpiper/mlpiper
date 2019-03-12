@@ -61,7 +61,7 @@ class TestPythonEngine:
 
         pipeline = {
             "name": "stand_alone_test",
-            "engineType": "Python",
+            "engineType": "Generic",
 
             "pipe": [
                 {
@@ -84,7 +84,7 @@ class TestPythonEngine:
     def test_execute_python_stand_alone(self):
         pipeline = {
             "name": "stand_alone_test",
-            "engineType": "Python",
+            "engineType": "Generic",
 
             "pipe": [
                 {
@@ -106,7 +106,7 @@ class TestPythonEngine:
     def test_execute_python_connected(self, caplog):
         pipeline = {
             "name": "stand_alone_test",
-            "engineType": "Python",
+            "engineType": "Generic",
             "pipe": [
                 {
                     "name": "src",
@@ -136,7 +136,7 @@ class TestPythonEngine:
     def test_execute_java_stand_alone(self):
         pipeline = {
             "name": "stand_alone_test",
-            "engineType": "Python",
+            "engineType": "Generic",
             "pipe": [
                 {
                     "name": "Java",
@@ -162,7 +162,7 @@ class TestPythonEngine:
     def test_execute_java_connected(self, caplog):
         pipeline = {
             "name": "connected_java_test",
-            "engineType": "Python",
+            "engineType": "Generic",
             "pipe": [
                 {
                     "name": "src",
@@ -206,7 +206,7 @@ class TestPythonEngine:
     def test_execute_java_connected_error(self, caplog):
         pipeline = {
             "name": "connected_java_test_error",
-            "engineType": "Python",
+            "engineType": "Generic",
             "pipe": [
                 {
                     "name": "src",
@@ -251,7 +251,7 @@ class TestPythonEngine:
     def test_execute_r_stand_alone(self):
         pipeline = {
             "name": "stand_alone_test",
-            "engineType": "Python",
+            "engineType": "Generic",
             "pipe": [
                 {
                     "name": "R",
@@ -278,7 +278,7 @@ class TestPythonEngine:
 
         pipeline = {
             "name": "connected_java_test",
-            "engineType": "Python",
+            "engineType": "Generic",
             "pipe": [
                 {
                     "name": "src",
@@ -339,7 +339,7 @@ class TestPythonEngine:
         }
         pipeline = {
             "name": "stand_alone_test",
-            "engineType": "Python",
+            "engineType": "Generic",
             "pipe": [
                 {
                     "name": "Test Train",
