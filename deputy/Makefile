@@ -31,8 +31,10 @@ test: egg
 	env PYTHONPATH=./:tests/ python2 -m py.test -v tests/
 	env PYTHONPATH=./:tests/ python3 -m pytest -v tests/
 
+# Creating the softlinks inside the deputy dist dir
 local: egg
-	cp  dist/*.egg  ../../../../target/
+	cd dist; ln -sf $(DEPUTY_EGG_PY2_BASENAME) $(DEPUTY_EGG_PY2_SYMLINK); cd -
+	cd dist; ln -sf $(DEPUTY_EGG_PY3_BASENAME) $(DEPUTY_EGG_PY3_SYMLINK); cd -
 
 run: egg
 	./bin/run-deputy.sh
