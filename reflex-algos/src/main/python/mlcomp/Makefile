@@ -62,8 +62,9 @@ test: egg mlops_egg comp_eggs
 
 	# TODO: add running tests for pyspark components
 
-local: test
-	cp  dist/*.egg  ../../../../target/
+local: egg
+	cd dist; ln -sf $(MLCOMP_EGG_PY2_BASENAME) $(MLCOMP_EGG_PY2_SYMLINK); cd -
+	cd dist; ln -sf $(MLCOMP_EGG_PY3_BASENAME) $(MLCOMP_EGG_PY3_SYMLINK); cd -
 
 
 install: wheel

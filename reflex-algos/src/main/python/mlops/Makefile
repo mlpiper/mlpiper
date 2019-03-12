@@ -46,6 +46,11 @@ ifneq ($(MLOPSDISTDIR),"")
 	cd $(MLOPSDISTDIR); ln -sf $(MLOPS_EGG_PY3_BASENAME) $(MLOPS_EGG_PY3_SYMLINK); cd -
 endif
 
+local: egg
+	cd dist; ln -sf $(MLOPS_EGG_PY2_BASENAME) $(MLOPS_EGG_PY2_SYMLINK); cd -
+	cd dist; ln -sf $(MLOPS_EGG_PY3_BASENAME) $(MLOPS_EGG_PY3_SYMLINK); cd -
+
+
 wheel:
 	python2 setup.py sdist bdist_wheel
 	python3 setup.py sdist bdist_wheel
