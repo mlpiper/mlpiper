@@ -10,7 +10,7 @@ import sys
 
 simple_pipeline = {
     "name": "Simple MLPiper runner test",
-    "engineType": "Python",
+    "engineType": "Generic",
     "pipe": [
         {
             "name": "Source String",
@@ -35,7 +35,7 @@ simple_pipeline = {
 
 model_src_sink_pipeline = {
     "name": "Sink/Src MLPiper runner test",
-    "engineType": "Python",
+    "engineType": "Generic",
     "pipe": [
         {
             "name": "Test source model",
