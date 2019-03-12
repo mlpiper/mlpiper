@@ -1,6 +1,6 @@
 {
     "name": "Sink/Src MCenter runner test",
-    "engineType": "Python",
+    "engineType": "Generic",
     "pipe": [
         {
             "name": "Test source model",

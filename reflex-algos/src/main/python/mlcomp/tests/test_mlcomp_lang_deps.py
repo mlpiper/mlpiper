@@ -11,7 +11,7 @@ expected_r_deps = ["optparse", "reticulate"]
 
 pipeline = {
     "name": "some-pipeline",
-    "engineType": "Python",
+    "engineType": "Generic",
     "systemConfig": {
         "statsDBHost": "localhost",
         "statsDBPort": 8086,

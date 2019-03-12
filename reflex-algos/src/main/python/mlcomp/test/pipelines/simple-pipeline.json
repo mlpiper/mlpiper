@@ -1,6 +1,6 @@
 {
     "name": "Simple MLPiper runner test",
-    "engineType": "Python",
+    "engineType": "Generic",
     "pipe": [
         {
             "name": "Source String",
