@@ -7,6 +7,7 @@ import org.apache.spark.ml.regression.LinearRegression
 
 class ReflexLinearRegression extends ReflexSparkMLAlgoBase {
   override val label: String = "Linear Regression"
+  override lazy val defaultModelName: String = "Linear Regression"
   override val description: String = "Linear Regression Training"
   override val version: String = "1.0.0"
 

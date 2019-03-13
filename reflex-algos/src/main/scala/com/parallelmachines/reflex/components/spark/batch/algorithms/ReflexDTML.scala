@@ -8,7 +8,8 @@ import com.parallelmachines.reflex.common.constants.McenterTags
 
 
 class ReflexDTML extends ReflexSparkMLAlgoBase {
-  override val label: String = "Decision tree classifier Training"
+  override val label: String = "Decision Tree Classifier Training"
+  override lazy val defaultModelName: String = "Decision Tree Classifier"
   override val description: String = "Decision tree classifier training"
   override val version: String = "1.0.0"
   addTags(McenterTags.explainable)

@@ -9,6 +9,7 @@ import org.apache.spark.sql.DataFrame
 
 class ReflexKmeansML extends ReflexSparkMLAlgoBase {
   override val label: String = "KMeans Training"
+  override lazy val defaultModelName: String = "KMeans"
   override val description: String = "Batch KMeans Training"
   override val version: String = "1.0.0"
 

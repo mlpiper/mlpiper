@@ -7,6 +7,7 @@ import org.apache.spark.ml.regression.GeneralizedLinearRegression
 
 class ReflexGLM extends ReflexSparkMLAlgoBase {
   override val label: String = "GLM Training"
+  override lazy val defaultModelName: String = "Generalized Linear Regression"
   override val description: String = "Generalized Linear Regression Training"
   override val version: String = "1.0.0"
 

@@ -18,6 +18,7 @@ import com.parallelmachines.reflex.common.constants.McenterTags
 
 class ReflexRandomForestML extends ReflexSparkMLAlgoBase {
   override val label: String = "Random Forest Classification"
+  override lazy val defaultModelName: String = "Random Forest"
   override val description: String = "Random Forest Classification Training"
   override val version: String = "1.0.0"
   addTags(McenterTags.explainable)

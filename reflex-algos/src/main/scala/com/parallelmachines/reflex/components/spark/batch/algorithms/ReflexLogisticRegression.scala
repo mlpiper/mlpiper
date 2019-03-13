@@ -6,6 +6,7 @@ import org.apache.spark.ml.classification.{LogisticRegression, _}
 
 class ReflexLogisticRegression extends ReflexSparkMLAlgoBase {
   override val label: String = "Logistic Regression"
+  override lazy val defaultModelName: String = "Logistic Regression"
   override val description: String = "Logistic Regression Training"
   override val version: String = "1.0.0"
 
