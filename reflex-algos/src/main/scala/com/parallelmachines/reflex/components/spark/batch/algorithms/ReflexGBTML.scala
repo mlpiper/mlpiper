@@ -9,8 +9,9 @@ import com.parallelmachines.reflex.common.constants.McenterTags
 
 
 class ReflexGBTML extends ReflexSparkMLAlgoBase {
-  override val label: String = "Gradient-Boosted Tree classifier Training"
-  override val description: String = "Gradient-Boosted Tree classifier Training"
+  override val label: String = "Gradient-Boosted Tree Classifier Training"
+  override lazy val defaultModelName: String = "Gradient-Boosted Tree Classifier"
+  override val description: String = "Gradient-Boosted Tree Classifier Training"
   override val version: String = "1.0.0"
   addTags(McenterTags.explainable)
 

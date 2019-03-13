@@ -9,6 +9,7 @@ import com.parallelmachines.reflex.common.constants.McenterTags
 
 class ReflexDTRegML extends ReflexSparkMLAlgoBase {
   override val label: String = "Decision Tree Regression Training"
+  override lazy val defaultModelName: String = "Decision Tree Regression"
   override val description: String = "Decision Tree Regression Training"
   override val version: String = "1.0.0"
   addTags(McenterTags.explainable)
