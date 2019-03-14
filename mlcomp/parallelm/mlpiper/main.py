@@ -103,15 +103,15 @@ def _add_deploy_sub_parser(subparsers, sub_parser_name, sub_parser_help):
     parser_prepare.add_argument('--output-model',
                                 help='Output model file path')
 
-    parser_prepare.add_argument('--deployment-dir', default='/tmp',
+    parser_prepare.add_argument('-d', '--deployment-dir', default=None, required=True,
                                 help="Deployment directory to use for placing the pipeline artifacts")
 
 
 def _add_run_deployment_sub_parser(subparsers):
     parser_run = subparsers.add_parser('run-deployment',
                                        help='Run mlpiper deployment. Note, this is an internal option.')
-    parser_run.add_argument('--deployment-dir', default='/tmp',
-                            help="Deployment directory to use for placing the pipeline artifacts")
+    parser_run.add_argument('-d', '--deployment-dir', default=None, required=True,
+                            help="Directory containing deployed pipeline")
 
 
 def _add_deps_sub_parser(subparsers):
