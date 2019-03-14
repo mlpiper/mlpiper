@@ -15,15 +15,14 @@ from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.stats.single_value import SingleValue
 from parallelm.mlops.stats_category import StatCategory
 from parallelm.protobuf.ReflexEvent_pb2 import ReflexEvent
-from google.protobuf.json_format import MessageToJson
 
 
 class MLOpsPythonChannel(MLOpsChannel):
-    def __init__(self, rest_helper, pipeline_inst_id):
+    def __init__(self):
         logging.basicConfig()
         self._logger = logging.getLogger(__name__)
-        self._rest_helper = rest_helper
-        self._pipeline_inst_id = pipeline_inst_id
+        self._socket = None
+        self._init_events_client()
 
     def get_logger(self, name):
         pass
@@ -82,26 +81,59 @@ class MLOpsPythonChannel(MLOpsChannel):
             raise MLOpsException("stat_class: {} not supported yet".format(category))
 
     def stat_object(self, mlops_stat, reflex_event_message_type=ReflexEvent.StatsMessage):
+        evt = ReflexEvent()
+        evt.eventType = reflex_event_message_type
+
         stat_str = str(mlops_stat.to_semi_json()).encode("utf-8")
+        evt.data = stat_str
 
         self._logger.debug("sending: {}".format(stat_str))
+        self._write_delimited_to(evt)
+
+    def _init_events_client(self):
+        if MLOpsEnvConstants.MLOPS_ML_OBJECT_SERVER_HOST not in os.environ:
+            self._logger.info("Missing env var for ml-object (events) server host! Skipping initialization!")
+            return
+
+        if MLOpsEnvConstants.MLOPS_ML_OBJECT_SERVER_PORT not in os.environ:
+            self._logger.info("Missing env var for ml-object (events) server port! Skipping initialization!")
+            return
+
+        server_host = os.environ[MLOpsEnvConstants.MLOPS_ML_OBJECT_SERVER_HOST]
+        server_port = int(os.environ[MLOpsEnvConstants.MLOPS_ML_OBJECT_SERVER_PORT])
+        self._logger.info("Got ml-object (events) server url: {}:{}".format(server_host, server_port))
+
         try:
-            self._rest_helper.post_stat(self._pipeline_inst_id, stat_str)
-        except Exception as e:
-            self._logger.error("Fail to post stat - " + str(e))
-            pass
+            self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self._socket.connect((server_host, server_port))
+        except socket.error as e:
+            msg = "Error connecting to server {}:{}".format(server_host, server_port)
+            self._logger.error(msg)
+            self._sock_cleanup_and_raise(e, msg)
+
+        self._logger.info("Done init event client")
 
     def table(self):
         raise MLOpsException("Not implemented")
 
     def event(self, event):
-        stat_str = str(MessageToJson(event)).encode("utf-8")
+        if self._socket:
+            self._write_delimited_to(event)
 
-        self._logger.debug("sending: {}".format(stat_str))
-        try:
-            self._rest_helper.post_event(self._pipeline_inst_id, stat_str)
-        except Exception as e:
-            print("Fail to post event - " + str(e))
+    def _write_delimited_to(self, event):
+        serialized_message = event.SerializeToString()
+        delimiter = encoder._VarintBytes(len(serialized_message))
+        if self._socket:
+            try:
+                self._socket.sendall(delimiter + serialized_message)
+            except socket.error as e:
+                self._sock_cleanup_and_raise(e)
+
+    def _sock_cleanup_and_raise(self, ex, msg=""):
+        if self._socket:
+            self._socket.close()
+            self._socket = None
+        raise MLOpsException(str(ex) + msg)
 
     def feature_importance(self, feature_importance_vector=None, feature_names=None, model=None, df=None):
 

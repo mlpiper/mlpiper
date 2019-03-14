@@ -1,8 +1,6 @@
 package org.mlpiper.infrastructure.rest
 
-import com.google.protobuf.ByteString
-import com.parallelmachines.reflex.common.ReflexEventJava.ReflexEvent
-import com.parallelmachines.reflex.common.ReflexEventJava.ReflexEvent.EventType
+import com.parallelmachines.reflex.common.ReflexEvent.ReflexEvent.EventType
 import com.parallelmachines.reflex.common.enums.ModelFormat
 import com.parallelmachines.reflex.common.events.{EventDescription, ModelAccepted}
 import org.json4s.DefaultFormats
@@ -11,7 +9,6 @@ import org.mlpiper.mlobject.MLObjectType.MLObjectType
 import org.mlpiper.mlobject.Model
 import org.mlpiper.mlops.{MLOpsEnvConstants, MLOpsEnvVariables}
 import org.slf4j.LoggerFactory
-import com.google.protobuf.util.JsonFormat
 
 import scala.collection.mutable
 
@@ -115,17 +112,11 @@ object RestApis {
     }
     val params = Map[String, String]("pipelineInstanceId" -> MLOpsEnvVariables.pipelineInstanceId.getOrElse(""))
 
-    val mlEventBuilder = ReflexEvent.newBuilder()
-    mlEventBuilder.setEventType(EventType.ModelAccepted)
-    mlEventBuilder.setData(ByteString.EMPTY)
-    mlEventBuilder.setModelId(model.getId)
-
-    val mlEvent = mlEventBuilder.build()
-    val eventJson = JsonFormat.printer().print(mlEvent)
+    val ed = new EventDescription(new ModelAccepted(model.getId))
 
     val cl = new RestClient(scheme, MLOpsEnvVariables.agentRestHost.get, Some(MLOpsEnvVariables.agentRestPort.get.toInt))
     val uri = buildURIPath(RestApiName.events.toString, params("pipelineInstanceId"))
-    cl.postString(uri, params, eventJson)
+    cl.postString(uri, params, ed.toJson)
   }
 
   /**
