@@ -133,7 +133,7 @@ R and Java.
 Once the `ml-comp` python package is installed, a command line `mlpiper` is installed
 and can be used to execute the pipeline above and the components described in it.
 
-There three main commnads that can be used as follows:
+There are three main commands that can be used as follows:
 
   - **deploy** - deploys a pipeline along with provided components into a given
                  folder. Once deployed, it can also be executed directly from 
@@ -146,12 +146,12 @@ There three main commnads that can be used as follows:
 
 #### Examples:
 
-  - Prepare a deployment. The resulted dirbe copied to a docker container and run
+  - Prepare a deployment. The resulted dir will be copied to a docker container and run
     there
 
         mlpiper deploy -p p1.json -r ~/dev/components -d /tmp/pp
 
-  - Deploy & Run. Usefull for development and debugging
+  - Deploy & Run. Useful for development and debugging
 
         mlpiper run -p p1.json -r ~/dev/components -d /tmp/pp
 
