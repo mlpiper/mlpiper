@@ -110,6 +110,13 @@ class ComponentMetadata(val engineType: String,
     tags
   }
 
+  def getModelBehavior(): Option[String] = {
+    modelBehavior
+  }
+
+  def getGroup(): String = {
+    group
+  }
 }
 
 
