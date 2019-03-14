@@ -21,7 +21,7 @@ def del_if_exists(d, field):
 
 def ee_get_json(mclient, ee_name):
     all_ees = mclient.ee_list()
-    ee = [x for x in all_ees if x["name" == ee_name]]
+    ee = [x for x in all_ees if x["name"] == ee_name]
     if len(ee) > 1:
         raise Exception("More than one EE with the same name!")
 
