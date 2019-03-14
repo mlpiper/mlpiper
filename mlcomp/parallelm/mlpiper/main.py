@@ -95,7 +95,7 @@ def _add_deploy_sub_parser(subparsers, sub_parser_name, sub_parser_help):
     action.add_argument('-f', '--file', type=argparse.FileType('r'),
                         help='A json file path, whose content is a pipeline. Or component JSON')
 
-    parser_prepare.add_argument('-r', '--comp-root', default=None,
+    parser_prepare.add_argument('-r', '--comp-root', default=None, required=True,
                                 help='MLPiper components root dir. Recursively detecting components')
 
     parser_prepare.add_argument('--input-model',
