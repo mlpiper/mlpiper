@@ -4,7 +4,7 @@
 A runner for running components or pipelines defined using the mlcomp API
 
 prepare - given a component directory + pipeline create the necessary component egg/wheel to run the
-          pipeline. And provide the command for running this componeent from this
+          pipeline. And provide the command for running this component from this
 
 run - given previous stage - run the pipeline (can call prepare stage)
 
@@ -15,7 +15,7 @@ Examples:
   mlpiper deploy -p p1.json -r components -d /tmp/pp
 
   # Deploy & Run
-  # Usefull for development debugging
+  # Useful for development debugging
   mlpiper run -p p1.json -r components -d /tmp/pp
 
   # Run a deployment

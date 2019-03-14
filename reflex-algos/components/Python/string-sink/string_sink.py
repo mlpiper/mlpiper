@@ -11,5 +11,5 @@ class StringSink(ConnectableComponent):
         actual_value = parent_data_objs[0]
         print("String Sink, Got:[{}] Expected: [{}] ".format(actual_value, expected_str_value))
         if expected_str_value != actual_value:
-            raise Exception("Actual [{}] != Expcted [{}]".format(actual_value, expected_str_value))
+            raise Exception("Actual [{}] != Expected [{}]".format(actual_value, expected_str_value))
         return []
