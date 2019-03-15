@@ -133,8 +133,9 @@ object ComponentJSONSignatureParser {
     } catch {
       case e : Throwable =>
         val msg = s"Invalid component's description file json format!"
-        logger.error(s"$msg, exception: ${e.getMessage}")
-        throw new Exception(msg)
+        val error_string = s"$msg, exception: ${e.getMessage}"
+        logger.error(error_string)
+        throw new Exception(error_string)
     }
   }
 
