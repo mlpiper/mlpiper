@@ -104,6 +104,31 @@ class TestPythonEngine:
         Executor(config).go()
 
     # @pytest.mark.skip(reason="skipping this test for now - debugging")
+    def test_execute_python_stand_alone_with_argument_from_env_var(self):
+        pipeline = {
+            "name": "stand_alone_test",
+            "engineType": "Generic",
+
+            "pipe": [
+                {
+                    "name": "Hello",
+                    "id": 1,
+                    "type": "test-argument-from-env-var",
+                    "parents": [],
+                    "arguments": {
+                        "arg1": "test-value",
+                        "fromEnvVar2": "test-value2",
+                    },
+                }
+            ]
+        }
+        self._fix_pipeline(pipeline, None)
+        config = self._get_executor_config(pipeline)
+        os.environ.setdefault("TEST_VAR", "test-value")
+        os.environ.setdefault("TEST_VAR2", "non test value")
+        Executor(config).go()
+
+    # @pytest.mark.skip(reason="skipping this test for now - debugging")
     def test_execute_python_connected(self, caplog):
         pipeline = {
             "name": "stand_alone_test",
