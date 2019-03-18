@@ -7,12 +7,6 @@ import os
 import re
 import subprocess
 import sys
-try:
-    import uwsgi
-    from parallelm.components.restful.uwsgi_post_fork import UwsgiPostFork
-except ImportError:
-    # You're actually not running under uWSGI
-    pass
 
 from parallelm.common import constants
 from parallelm.common.base import Base
@@ -27,6 +21,13 @@ from parallelm.components.restful.uwsgi_ini_template import WSGI_INI_CONTENT
 from parallelm.components.restful.uwsgi_entry_point_script_template import WSGI_ENTRY_SCRIPT
 from parallelm.components.restful.uwsgi_cheaper_subsystem import UwsgiCheaperSubSystem
 from parallelm.model.model_selector import ModelSelector
+
+try:
+    from parallelm.components.restful.uwsgi_post_fork import UwsgiPostFork
+    import uwsgi
+except ImportError:
+    # You're actually not running under uWSGI
+    pass
 
 
 class UwsgiBroker(Base):
@@ -65,7 +66,7 @@ class UwsgiBroker(Base):
                 self._logger.info("Stopping uwsgi process ...")
                 try:
                     cmd = UwsgiConstants.STOP_CMD.format(pid_filepath=pid_filepath)
-                    subprocess.check_output(cmd, shell=True)
+                    subprocess.call(cmd, shell=True)
                 except subprocess.CalledProcessError as ex:
                     self._logger.info("'uwsgi' process stopping issue! output: {}, return-code: {}"
                                       .format(ex.output, ex.returncode))
@@ -86,7 +87,8 @@ class UwsgiBroker(Base):
             log_level=entry_point_conf[ComponentConstants.LOG_LEVEL_KEY],
             params=entry_point_conf[UwsgiConstants.PARAMS_KEY],
             pipeline_name=entry_point_conf[UwsgiConstants.PIPELINE_NAME_KEY],
-            model_path=entry_point_conf[UwsgiConstants.MODEL_PATH_KEY])
+            model_path=entry_point_conf[UwsgiConstants.MODEL_PATH_KEY],
+            standalone=shared_conf[SharedConstants.STANDALONE])
 
         uwsgi_script_filepath = os.path.join(self._target_path, UwsgiConstants.ENTRY_POINT_SCRIPT_NAME)
         self._logger.info("Writing uWSGI entry point to: {}".format(uwsgi_script_filepath))
@@ -178,7 +180,7 @@ class UwsgiBroker(Base):
 # Methods that are accessed from uWSGI worker
 
     @classmethod
-    def uwsgi_entry_point(cls, restful_comp, pipeline_name, model_path, within_uwsgi_context):
+    def uwsgi_entry_point(cls, restful_comp, pipeline_name, model_path, within_uwsgi_context, standalone):
         cls._wid = 0 if not within_uwsgi_context else uwsgi.worker_id()
 
         cls.w_logger = logging.getLogger("{}.{}".format(cls.__module__, cls.__name__))
@@ -189,6 +191,7 @@ class UwsgiBroker(Base):
         cls.w_logger.info("Restful comp (wid:{}, pid: {}, ppid:{}): {}"
                           .format(cls._wid, os.getpid(), os.getppid(), restful_comp))
 
+        restful_comp._ml_engine.set_standalone(standalone)
         cls._restful_comp = restful_comp
 
         if within_uwsgi_context:
@@ -224,7 +227,9 @@ class UwsgiBroker(Base):
         logger.info("Model file path: {}".format(model_path))
 
         if within_uwsgi_context:
-            cls._model_selector = ModelSelector(model_path)
+            logger.info("{}".format(100 * 'a'))
+            logger.info("{}".format(cls._restful_comp._ml_engine.standalone))
+            cls._model_selector = ModelSelector(model_path, cls._restful_comp._ml_engine.standalone)
 
             logger.info("Register signal (model reloading): {} (worker, wid: {}, {})"
                         .format(UwsgiConstants.MODEL_RELOAD_SIGNAL_NUM, cls._wid, UwsgiBroker._model_selector))

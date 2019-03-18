@@ -12,7 +12,7 @@ import traceback
 from parallelm.common.base import Base
 from parallelm.common.mlcomp_exception import MLCompException
 from parallelm.common.buff_to_lines import BufferToLines
-from parallelm.components.restful.constants import UwsgiConstants, ComponentConstants, StatsConstants
+from parallelm.components.restful.constants import UwsgiConstants, ComponentConstants, SharedConstants
 from parallelm.components.restful.uwsgi_statistics import UwsgiStatistics
 
 mlops_loaded = False
@@ -35,8 +35,11 @@ class WsgiMonitor(Base):
         self.set_logger(ml_engine.get_engine_logger(self.logger_name()))
 
         self._stats_reporting_interval_sec = uwsgi_entry_point_conf[ComponentConstants.STATS_REPORTING_INTERVAL_SEC]
-        self._stats = UwsgiStatistics(self._stats_reporting_interval_sec, shared_conf["target_path"],
-                                      shared_conf["stats_sock_filename"], self._logger)
+
+        self._stats = None
+        if not shared_conf.get(SharedConstants.STANDALONE):
+            self._stats = UwsgiStatistics(self._stats_reporting_interval_sec, shared_conf["target_path"],
+                                          shared_conf["stats_sock_filename"], self._logger)
 
         self._proc = None
         self._monitor_info = monitor_info
@@ -110,7 +113,8 @@ class WsgiMonitor(Base):
                     wakeup_time = time.time()
                     if wakeup_time - last_stats_read > self._stats_reporting_interval_sec:
                         last_stats_read = wakeup_time
-                        self._stats.report()
+                        if self._stats:
+                            self._stats.report()
 
                 if readable_fd:
                     for pipe in readable_fd:

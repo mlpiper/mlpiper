@@ -8,12 +8,13 @@ class RestModelServingEngine(PythonEngine):
     """
     Implementing the MLEngine API for a RestModelServing engine.
     """
-    def __init__(self, pipeline_name, mlcomp_jar=None):
-        super(RestModelServingEngine, self).__init__(pipeline_name, mlcomp_jar)
+    def __init__(self, pipeline_name, mlcomp_jar=None, standalone=False):
+        super(RestModelServingEngine, self).__init__(pipeline_name, mlcomp_jar, standalone)
         self._model_fetcher = None
 
     def run(self, mlops, pipeline):
-        self._start_background_model_fetcher(mlops, pipeline)
+        if not self.standalone:
+            self._start_background_model_fetcher(mlops, pipeline)
 
     def _start_background_model_fetcher(self, mlops, pipeline):
         system_conf = pipeline[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD]

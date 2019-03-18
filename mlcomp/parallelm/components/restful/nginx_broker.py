@@ -32,7 +32,7 @@ class NginxBroker(Base):
         if not self._dry_run:
             self._logger.info("Stopping 'nginx' service ...")
             try:
-                subprocess.check_output(NginxConstants.STOP_CMD)
+                subprocess.call(NginxConstants.STOP_CMD, shell=True)
             except:
                 # Should catch any exception in order to avoid masking of other important errors in the system
                 pass

@@ -41,6 +41,7 @@ class Executor(Base):
         self._mlcomp_jar = None
         self._use_color = True
         self._comp_root_path = None
+        self._standalone = False
 
         if args:
             self._json_pipeline = getattr(args, "pipeline", None)
@@ -72,6 +73,10 @@ class Executor(Base):
 
     def comp_root_path(self, comp_root_path):
         self._comp_root_path = comp_root_path
+        return self
+
+    def standalone(self, standalone):
+        self._standalone = standalone
         return self
 
     @staticmethod
@@ -164,6 +169,9 @@ class Executor(Base):
                 raise ExecutorException(error_message)
             else:
                 self._logger.warning(error_message)
+        except KeyboardInterrupt:
+            # When running from mlpiper tool (standalone)
+            pass
         finally:
             sys.stdout.flush()
             self._logger.info("Done running pipeline (in finally block)")
@@ -198,7 +206,8 @@ class Executor(Base):
             from parallelm.ml_engine.rest_model_serving_engine import RestModelServingEngine
 
             self._logger.info("Using REST Model Serving engine")
-            self._ml_engine = RestModelServingEngine(pipeline[json_fields.PIPELINE_NAME_FIELD], self._mlcomp_jar)
+            self._ml_engine = RestModelServingEngine(pipeline[json_fields.PIPELINE_NAME_FIELD], self._mlcomp_jar,
+                                                     self._standalone)
             self.set_logger(self._ml_engine.get_engine_logger(self.logger_name()))
             if mlops_loaded:
                 # This initialization applies only to Python components and not to components

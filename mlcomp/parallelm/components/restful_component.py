@@ -60,7 +60,8 @@ class RESTfulComponent(ConnectableComponent):
         shared_conf = {
             SharedConstants.TARGET_PATH_KEY: target_path,
             SharedConstants.SOCK_FILENAME_KEY: UwsgiConstants.SOCK_FILENAME,
-            SharedConstants.STATS_SOCK_FILENAME_KEY: UwsgiConstants.STATS_SOCK_FILENAME
+            SharedConstants.STATS_SOCK_FILENAME_KEY: UwsgiConstants.STATS_SOCK_FILENAME,
+            SharedConstants.STANDALONE: self._ml_engine.standalone
         }
 
         log_format = self._params.get(ComponentConstants.LOG_FORMAT_KEY, ComponentConstants.DEFAULT_LOG_FORMAT)
@@ -74,7 +75,8 @@ class RESTfulComponent(ConnectableComponent):
                                                         ComponentConstants.DEFAULT_STATS_REPORTING_INTERVAL_SEC)
 
         model_filepath_key = java_mapping.RESERVED_KEYS[ComponentConstants.INPUT_MODEL_TAG_NAME]
-        self._params[model_filepath_key] = ModelEnv(self._params[model_filepath_key]).model_filepath
+        self._params[model_filepath_key] = ModelEnv(self._params[model_filepath_key], self._ml_engine.standalone) \
+            .model_filepath
 
         uwsgi_entry_point_conf = {
             UwsgiConstants.RESTFUL_COMP_MODULE_KEY: self.__module__,
@@ -116,13 +118,18 @@ class RESTfulComponent(ConnectableComponent):
         self._logger.info("Going to read model / stop events ... (kidding, going to sleep forever ...)")
 
         if not self._dry_run and monitor_info[UwsgiConstants.MONITOR_THREAD_KEY]:
-            monitor_info[UwsgiConstants.MONITOR_THREAD_KEY].join()
+            try:
+                monitor_info[UwsgiConstants.MONITOR_THREAD_KEY].join()
 
-            if monitor_info[UwsgiConstants.MONITOR_ERROR_KEY]:
-                self._logger.error(monitor_info[UwsgiConstants.MONITOR_ERROR_KEY])
+                if monitor_info[UwsgiConstants.MONITOR_ERROR_KEY]:
+                    self._logger.error(monitor_info[UwsgiConstants.MONITOR_ERROR_KEY])
+                    raise MLCompException(monitor_info[UwsgiConstants.MONITOR_ERROR_KEY])
+            except KeyboardInterrupt:
+                # When running from mlpiper tool (standalone)
+                pass
+            finally:
                 self._nginx_broker.quit()
                 self._wsgi_broker.quit()
-                raise MLCompException(monitor_info[UwsgiConstants.MONITOR_ERROR_KEY])
         else:
             while True:
                 time.sleep(3600*24*365)

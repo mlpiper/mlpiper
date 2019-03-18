@@ -1,6 +1,12 @@
 WSGI_INI_CONTENT = """
 [uwsgi]
 
+# If VIRTAL_ENV is set then use its value to specify the virtualenv directory
+if-env = VIRTUAL_ENV
+print = Your virtualenv is %(_)
+virtualenv = %(_)
+endif =
+
 # placeholders that you have to change
 restful_app_folder = {restful_app_folder}
 logs_folder = %(restful_app_folder)/logs
@@ -26,7 +32,7 @@ disable-logging = {disable_logging}
 # - check if logs size bigger then 10 MB:
 #       du -sb /tmp/restful_comp_TbVOX1/logs | [[ $(awk '{{print $1}}') > 70000 ]] && echo bigger
 # - delete 10 oldest files:
-#       find /tmp/restful_comp_TbVOX1/logs  -type f -printf '%Ts\t%p\n' | sort -nr | cut -f2 | tail -n 10 | xargs -n 1 -I '_' rm _
+#       find /tmp/restful_comp_TbVOX1/logs  -type f -printf '%Ts\\t%p\\n' | sort -nr | cut -f2 | tail -n 10 | xargs -n 1 -I '_' rm _
 
 pidfile = %(restful_app_folder)/{pid_filename}
 socket = %(restful_app_folder)/{sock_filename}
@@ -37,7 +43,7 @@ callable = {callable_app}
 # environment variables
 env = CUDA_VISIBLE_DEVICES=-1
 env = KERAS_BACKEND=theano  # in case the user uses keras
-env = PYTHONPATH=%(restful_app_folder):{python_paths}:$PYTHONPATH
+env = PYTHONPATH=%(restful_app_folder):{python_paths}
 
 master = true
 log-master = true
@@ -54,8 +60,8 @@ vacuum = true
 # but will run in a more consistent and clean environment.
 lazy-apps = false
 
-uid = %(my_user)
-gid = %(my_user)
+uid = %U
+gid = %G
 
 # uWSGI will kill the process instead of reloading it
 die-on-term = true

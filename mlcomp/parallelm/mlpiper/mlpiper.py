@@ -90,13 +90,14 @@ class MLPiper(Base):
         return self
 
     def input_model(self, model_filepath):
-        if not os.path.exists(model_filepath):
-            raise Exception("Input model file path not exists! " + model_filepath)
+        model_full_filepath = os.path.abspath(model_filepath)
+        if not os.path.exists(model_full_filepath):
+            raise Exception("Input model file path not exists! " + model_full_filepath)
 
-        self._input_model_filepath = model_filepath
+        self._input_model_filepath = model_full_filepath
 
     def output_model(self, model_filepath):
-        self._output_model_filepath = model_filepath
+        self._output_model_filepath = os.path.abspath(model_filepath)
 
     def force(self, force):
         self._force = force
@@ -245,7 +246,8 @@ class MLPiper(Base):
             .comp_root_path(self._comp_root_path) \
             .pipeline_file(open(pipeline_file)) \
             .use_color(self._use_color) \
-            .mlcomp_jar(self._mlcomp_jar)
+            .mlcomp_jar(self._mlcomp_jar) \
+            .standalone(True)
 
         if not self._skip_mlpiper_deps:
             py_deps = pipeline_runner.all_py_component_dependencies()

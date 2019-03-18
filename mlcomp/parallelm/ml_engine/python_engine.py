@@ -7,8 +7,8 @@ class PythonEngine(MLEngine):
     """
     Implementing the MLEngine API for a python engine.
     """
-    def __init__(self, pipeline_name, mlcomp_jar=None):
-        super(PythonEngine, self).__init__(pipeline_name)
+    def __init__(self, pipeline_name, mlcomp_jar=None, standalone=False):
+        super(PythonEngine, self).__init__(pipeline_name, standalone)
         self._config = {
             "mlcomp_jar": mlcomp_jar
         }

@@ -7,15 +7,24 @@ class MLEngine(Base):
     An abstract class, which defines the interface of any implemented engine. An example for such engines
     are PySpark, Tensorflow and so on.
     """
-    def __init__(self, pipeline_name):
+    def __init__(self, pipeline_name, standalone):
         super(MLEngine, self).__init__()
         self._pipeline_name = pipeline_name
+        self._standalone = standalone
         self._user_data = {}
         self._config = {}
 
     @property
     def pipeline_name(self):
         return self._pipeline_name
+
+    @property
+    def standalone(self):
+        return self._standalone
+
+    def set_standalone(self, set_standalone):
+        self._standalone = set_standalone
+        return self
 
     @property
     def config(self):

@@ -38,7 +38,7 @@ class ModelFetcher(BgActor):
                 self._download_and_signal()
         except Exception as ex:
             self._logger.error("Failed fetch last approved model from server! {}\n{}"
-                               .format(traceback.format_exc(), ex.message))
+                               .format(traceback.format_exc(), ex))
 
     def _download_and_signal(self):
         self._logger.info("New model is about to be downloaded: {}".format(self._current_model))

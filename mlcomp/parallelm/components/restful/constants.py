@@ -1,3 +1,5 @@
+import platform
+
 
 class SharedConstants:
     # Keys for shared configuration dict
@@ -5,6 +7,7 @@ class SharedConstants:
     SOCK_FILENAME_KEY = 'sock_filename'
     STATS_SOCK_FILENAME_KEY = 'stats_sock_filename'
     REST_COMP_ROOT_PATH = 'rest_comp_root_path'
+    STANDALONE = 'standalone'
 
 
 class ComponentConstants:
@@ -79,8 +82,8 @@ class UwsgiConstants:
 class NginxConstants:
     DEV_AGAINST_VERSION = 'nginx/1.10.3'
 
-    START_CMD = 'service nginx start'
-    STOP_CMD = 'service nginx stop'
+    START_CMD = 'service nginx start' if platform.system() == "Linux" else 'nginx'
+    STOP_CMD = 'service nginx stop' if platform.system() == "Linux" else 'nginx -s quit'
     VER_CMD = 'nginx -v'
 
     SERVER_CONF_FILENAME = 'parallelm.pipeline.restful'
