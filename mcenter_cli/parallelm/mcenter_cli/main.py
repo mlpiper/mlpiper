@@ -55,7 +55,7 @@ class MCenterCli(object):
         self._add_component_commands()
         self._add_model_commands()
         self._add_action_log_commands()
-
+        self._add_agent_commands()
         self._parse_args()
         self._general_actions()
         self._handle_command()
@@ -191,6 +191,22 @@ class MCenterCli(object):
         action_log_parser.add_argument('--action', action='store', help='List of actions to query')
         action_log_parser.add_argument('--username', action='store', help='List of User, whose actions should be queried')
         action_log_parser.add_argument('--status', choices=['both', 'success', 'failed'], help='Show actions with particular staus')
+
+    def _add_agent_commands(self):
+        def _agent_list(mclient, args):
+            agents = mclient.list_agents()
+            fmt = "{:<15} {:<20}"
+
+            print(fmt.format("Name:", "Address:"))
+            for a in agents:
+                print(fmt.format(a["name"], a["address"]))
+
+        self._register_command('agent-list', help='List all agents', action=_agent_list)
+
+        def _agent_register(mclient, args):
+            mclient.create_agent(args.agent)
+        parser = self._register_command('agent-register', help='Register an Agent', action=_agent_register)
+        parser.add_argument('agent', action='store', help='Agent address to register')
 
     def _parse_args(self):
         if len(sys.argv) == 1:
