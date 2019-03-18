@@ -12,6 +12,7 @@ from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.stats_category import StatCategory, StatGraphType
 from pyspark.ml.pipeline import PipelineModel
 from pyspark.sql import DataFrame
+from google.protobuf.json_format import MessageToJson
 
 
 def str2bool(v):
@@ -19,11 +20,12 @@ def str2bool(v):
 
 
 class MLOpsPySparkChannel(MLOpsChannel):
-    def __init__(self, sc):
+    def __init__(self, sc, rest_helper=None, pipeline_inst_id=None):
         self._jvm_mlops = None
         self._logger = None
         self._sc = sc
-        self._socket = None
+        self._rest_helper = rest_helper
+        self._pipeline_inst_id = pipeline_inst_id
 
         try:
             if not isinstance(sc, pyspark.context.SparkContext):
@@ -51,8 +53,6 @@ class MLOpsPySparkChannel(MLOpsChannel):
         else:
             self._logger.info("Could not detect env variable: {} , using default port {}".format(
                 MLOpsEnvConstants.REST_SERVER_PORT, rest_server_port))
-
-        self._init_events_client()
 
         wait_for_exit = True
         if MLOpsEnvConstants.REST_SERVER_WAIT_FOR_EXIT in os.environ:
@@ -124,43 +124,14 @@ class MLOpsPySparkChannel(MLOpsChannel):
                                  mlops_stat.stat_type,
                                  mlops_stat.timestamp_ns_str())
 
-    def _init_events_client(self):
-        if MLOpsEnvConstants.MLOPS_ML_OBJECT_SERVER_HOST not in os.environ:
-            self._logger.info("Missing env var for ml-object (events) server host! Skipping initialization!")
-            return
-
-        if MLOpsEnvConstants.MLOPS_ML_OBJECT_SERVER_PORT not in os.environ:
-            self._logger.info("Missing env var for ml-object (events) server port! Skipping initialization!")
-            return
-
-        server_host = os.environ[MLOpsEnvConstants.MLOPS_ML_OBJECT_SERVER_HOST]
-        server_port = int(os.environ[MLOpsEnvConstants.MLOPS_ML_OBJECT_SERVER_PORT])
-        self._logger.info("Got ml-object (events) server url: {}:{}".format(server_host, server_port))
-
-        try:
-            self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self._socket.connect((server_host, server_port))
-        except socket.error as e:
-            self._sock_cleanup_and_raise(e)
-
     def event(self, event):
-        if self._socket:
-            self._write_delimited_to(event)
-
-    def _write_delimited_to(self, event):
-        serialized_message = event.SerializeToString()
-        delimiter = encoder._VarintBytes(len(serialized_message))
-
-        try:
-            self._socket.sendall(delimiter + serialized_message)
-        except socket.error as e:
-            self._sock_cleanup_and_raise(e)
-
-    def _sock_cleanup_and_raise(self, ex):
-        if self._socket:
-            self._socket.close()
-            self._socket = None
-        raise MLOpsException(str(ex))
+        if self._rest_helper:
+            stat_str = str(MessageToJson(event)).encode("utf-8")
+            self._logger.debug("sending: {}".format(stat_str))
+            try:
+                self._rest_helper.post_event(self._pipeline_inst_id, stat_str)
+            except Exception as e:
+                print("Fail to post event - " + str(e))
 
     def feature_importance(self, feature_importance_vector=None, feature_names=None, model=None, df=None):
 

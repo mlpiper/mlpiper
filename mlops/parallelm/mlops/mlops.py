@@ -143,7 +143,8 @@ class MLOps(object):
             else:
                 self._logger.info("output_channel = pyspark")
                 from parallelm.mlops.channels.mlops_pyspark_channel import MLOpsPySparkChannel
-                self._output_channel = MLOpsPySparkChannel(ctx)
+                self._output_channel = MLOpsPySparkChannel(ctx, self._mlops_ctx.rest_helper(),
+                                                           self._mlops_ctx.current_node().pipeline_instance_id)
                 logger_factory.set_logger_provider_func(self._output_channel.get_logger)
                 self._logger = logger_factory.get_logger(__name__)
         else:
