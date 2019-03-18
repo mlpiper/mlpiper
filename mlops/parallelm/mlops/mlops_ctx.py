@@ -162,7 +162,7 @@ class MLOpsCtx(BaseObj):
                 raise MLOpsException("Could not locate {} instance {}".format(
                     Constants.ION_LITERAL, self._ci.ion_id))
 
-            self._info("{} status: {}".format(Constants.ION_LITERAL, wf_instance['status']))
+            self._debug("{} status: {}".format(Constants.ION_LITERAL, wf_instance['status']))
 
             if IONJsonConstants.PIPELINE_INSTANCES_SECTION in wf_instance:
                 found = True
@@ -183,8 +183,8 @@ class MLOpsCtx(BaseObj):
         ees_json_dict = self._rest_helper.get_ees()
         agents_json_dict = self._rest_helper.get_agents()
 
-        self._info("Agents JSON:\n{}\n\n".format(agents_json_dict))
-        self._info("EEs JSON:\n{}\n\n".format(ees_json_dict))
+        self._debug("Agents JSON:\n{}\n\n".format(agents_json_dict))
+        self._debug("EEs JSON:\n{}\n\n".format(ees_json_dict))
 
         # Generating a dict of all agents by ID
 
@@ -281,8 +281,8 @@ class MLOpsCtx(BaseObj):
         :param name:
         :return: Component object matching name (if found), None if not found
         """
-        self._info("Getting {} component [{}]".format(Constants.ION_LITERAL, name))
-        self._info("{} comps by name: {}".format(Constants.ION_LITERAL, self._ion.node_by_name))
+        self._debug("Getting {} component [{}]".format(Constants.ION_LITERAL, name))
+        self._debug("{} comps by name: {}".format(Constants.ION_LITERAL, self._ion.node_by_name))
         if name in self._ion.node_by_name:
             return self._ion.node_by_name[name]
         return None

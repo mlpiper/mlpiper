@@ -197,7 +197,7 @@ class MLOps(object):
 
         self._connect_mlops = connect_mlops
         self._config = ConfigInfo().read_from_env()
-        self._logger.info("Config:\n{}".format(self._config))
+        self._logger.debug("Config:\n{}".format(self._config))
         self._detect_operation_mode(mlops_mode)
 
         if self._config.mlops_mode == MLOpsMode.STAND_ALONE and connect_mlops is True:

@@ -106,7 +106,7 @@ class Executor(Base):
 
             comps_desc_list = components_desc.ComponentsDesc(self._ml_engine).load()
             self._logger.debug("comp_desc: {}".format(comps_desc_list))
-            dag = Dag(pipeline, comps_desc_list, self._ml_engine)
+            dag = Dag(pipeline, comps_desc_list, self._ml_engine).use_color(self._use_color)
 
             # Flush stdout so the logs looks a bit in order
             sys.stdout.flush()
@@ -125,7 +125,7 @@ class Executor(Base):
 
     def _init_ml_engine(self, pipeline):
         engine_type = pipeline[json_fields.PIPELINE_ENGINE_TYPE_FIELD]
-        print("Engine type: {}".format(engine_type))
+        self._logger.info("Engine type: {}".format(engine_type))
         if engine_type == EngineType.PY_SPARK:
             from parallelm.ml_engine.py_spark_engine import PySparkEngine
 
@@ -204,6 +204,6 @@ class Executor(Base):
             pipeline_str = mask_passwords(str(self._pipeline))
         else:
             pipeline_str = str(self._pipeline)
-        self._logger.info("Pipeline: " + pipeline_str)
+        self._logger.debug("Pipeline: " + pipeline_str)
 
         return self._pipeline

@@ -20,11 +20,11 @@ class MCenterComponentAdapter(ConnectableComponent):
 
     def _materialize(self, parent_data_objs, user_data):
         model_content = self._params.get("model_content", DEFAULT_MODEL_CONTENT)
-        model_output = self._params.get("model_output")
-        iter_num = self._params.get("iter")
-        exit_value = self._params.get("exit_value")
+        model_path = self._params.get("input-model")
+        iter_num = self._params.get("iter", 1)
+        exit_value = self._params.get("exit-value", 0)
 
-        do_predict(model_content, model_output, iter_num, exit_value)
+        do_predict(model_content, model_path, iter_num, exit_value)
         return ["just-a-string-to-connect"]
 
 
@@ -36,6 +36,7 @@ def do_predict(model_content, input_model, iter_num, exit_value):
         time.sleep(1)
 
     # Model should be present
+    print("Checking model: {}".format(input_model))
     if not os.path.exists(input_model):
         raise Exception("Model path does not exists: {}".format(input_model))
 

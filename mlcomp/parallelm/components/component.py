@@ -1,4 +1,6 @@
 import abc
+import pprint
+
 from parallelm.common.base import Base
 
 
@@ -11,8 +13,8 @@ class Component(Base):
         self._params = None
 
     def configure(self, params):
-        self._logger.info("Configure component with input params, name: {}, params: {}"
-                          .format(self.name(), params))
+        self._logger.debug("Configure component with input params, name: {}, params:\n {}"
+                           .format(self.name(), pprint.pformat(params)))
         self._params = params
 
     @abc.abstractmethod

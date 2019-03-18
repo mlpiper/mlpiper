@@ -18,10 +18,10 @@ class MCenterComponentAdapter(ConnectableComponent):
         super(self.__class__, self).__init__(engine)
 
     def _materialize(self, parent_data_objs, user_data):
-        model_content = self._params.get("model_content", DEFAULT_MODEL_CONTENT)
-        model_output = self._params.get("model_output")
-        iter_num = self._params.get("iter")
-        exit_value = self._params.get("exit_value")
+        model_content = self._params.get("model-content", DEFAULT_MODEL_CONTENT)
+        model_output = self._params.get("output-model")
+        iter_num = self._params.get("iter", 1)
+        exit_value = self._params.get("exit-value", None)
 
         do_train(model_content, model_output, iter_num, exit_value)
         return ["just-a-string-to-connect"]
@@ -34,16 +34,22 @@ def do_train(model_content, output_model, iter_num, exit_value):
         print("stderr- Idx  {}".format(idx), file=sys.stderr)
         time.sleep(1)
 
+    print("output_model: {}".format(output_model))
     if output_model is not None:
         with open(output_model, "w") as file:
             file.write(model_content)
-
-    if exit_value >= 0:
-        print("About to exit with value: {}".format(exit_value))
-        sys.exit(exit_value)
     else:
-        print("About to raise exception: {}".format(exit_value))
-        raise Exception("Exiting main using exception")
+        raise Exception("Model Producer component need a model file")
+
+    if exit_value is not None:
+        if exit_value >= 0:
+            print("About to exit with value: {}".format(exit_value))
+            sys.exit(exit_value)
+        else:
+            print("About to raise exception: {}".format(exit_value))
+            raise Exception("Exiting main using exception")
+    else:
+        print("exit_value is None.. continue as usual")
 
 
 def parse_args():

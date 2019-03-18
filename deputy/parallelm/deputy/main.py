@@ -23,11 +23,14 @@ def parse_args():
                         help="Path to python interpeter to use")
     parser.add_argument('--mlcomp-jar', default=None,
                         help="Path to mlcomp jar to be used for Java connected components")
+
+    parser.add_argument('--use-color', action="store_true", default=False,
+                        help="Use terminal colors when running pipeline")
     return parser.parse_args()
 
 
 def set_logging_level(args):
-    print(args.logging_level)
+    print("Setting logging level: {}".format(args.logging_level))
     if args.logging_level:
         logging.getLogger('parallelm').setLevel(LOG_LEVELS[args.logging_level])
 
@@ -38,7 +41,7 @@ def main():
 
     args = parse_args()
     set_logging_level(args)
-    deputy = Deputy().pipeline(args.pipeline_file).mlcomp_jar(args.mlcomp_jar)
+    deputy = Deputy().pipeline(args.pipeline_file).mlcomp_jar(args.mlcomp_jar).use_color(args.use_color)
     ret_val = deputy.run()
     sys.exit(ret_val)
 
