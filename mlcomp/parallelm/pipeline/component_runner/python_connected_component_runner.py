@@ -11,6 +11,6 @@ class PythonConnectedComponentRunner(ComponentRunner):
         self._dag_node.main_cls().configure(params)
 
     def run(self, parent_data_objs):
-        self._logger.info("running the python standalone")
+        self._logger.info("running python connected component")
         data_objs = self._dag_node.main_cls().materialize(parent_data_objs)
         return data_objs
