@@ -22,6 +22,11 @@ def main():
     expected_str_value = format(options.arg1)
     actual_value = format(options.fromEnvVar)
 
+    if expected_str_value == "test-exit-0":
+        exit(0)
+    if expected_str_value == "test-exit-1":
+        exit(1)
+
     print("arg1: {}".format(options.arg1))
     print("fromEnvVar: {}".format(options.fromEnvVar))
 
