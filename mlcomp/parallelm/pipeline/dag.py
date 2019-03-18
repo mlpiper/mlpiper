@@ -1,6 +1,7 @@
 import inspect
 import importlib
 import time
+import sys
 from termcolor import colored
 
 from parallelm.common.base import Base
@@ -31,6 +32,11 @@ class Dag(Base):
         self._parent_data_objs_placeholder = dict()
         self._sorted_execution_graph_list = self._sorted_execution_graph()
         self._report_color = "green"
+        self._use_color = True
+
+    def use_color(self, use_color):
+        self._use_color = use_color
+        return self
 
     @property
     def is_stand_alone(self):
@@ -63,7 +69,10 @@ class Dag(Base):
         dag_node.component_runner.run(None)
 
     def _print_colored(self, msg):
-        print(colored(msg, self._report_color))
+        if self._use_color:
+            print(colored(msg, self._report_color))
+        else:
+            print(msg)
 
     def _component_run_header(self, dag_node):
         self._print_colored(" ")
@@ -71,6 +80,7 @@ class Dag(Base):
         self._print_colored("-" * 60)
         self._print_colored("Component: {}".format(dag_node.comp_name()))
         self._print_colored("Language:  {}".format(dag_node.comp_language()))
+        self._print_colored("Output:")
         self._print_colored("-" * 60)
 
     def _component_run_footer(self, dag_node, data_objs, runtime_in_sec):
@@ -95,7 +105,13 @@ class Dag(Base):
 
             self._component_run_header(dag_node)
             start = time.time()
+
+            sys.stderr.flush()
+            sys.stdout.flush()
             data_objs = dag_node.component_runner.run(parent_data_objs)
+            sys.stderr.flush()
+            sys.stdout.flush()
+
             runtime_in_sec = time.time() - start
             if data_objs and type(data_objs) is not list:
                 raise MLCompException("Invalid returned data type from component! It should be a list! "
@@ -103,7 +119,7 @@ class Dag(Base):
 
             self._component_run_footer(dag_node, data_objs, runtime_in_sec)
 
-            self._logger.info("Output of dag node '{}' is: {}".format(dag_node.comp_name(), data_objs))
+            self._logger.debug("Output of dag node '{}' is: {}".format(dag_node.comp_name(), data_objs))
             self.update_parent_data_objs(dag_node, data_objs)
 
         self._ml_engine.finalize()
@@ -137,10 +153,10 @@ class Dag(Base):
 
                 self._parent_data_objs_placeholder[parent_id][output_index] = data_objs[output_index] \
                     if data_objs and output_index < len(data_objs) else None
-                self._logger.info("Parent entry was updated, parent_id={}, output_index={}"
+                self._logger.debug("Parent entry was updated, parent_id={}, output_index={}"
                                   .format(parent_id, output_index))
         else:
-            self._logger.info("Parent id not in data objs placeholder! id={}".format(parent_id))
+            self._logger.debug("Parent id not in data objs placeholder! id={}".format(parent_id))
 
     def _sorted_execution_graph(self):
         execution_graph = self._execution_graph()

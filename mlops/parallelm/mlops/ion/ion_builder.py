@@ -30,8 +30,8 @@ class IONBuilder(BaseObj):
         super(IONBuilder, self).__init__(__name__)
 
     def build_from_dict(self, json_dict):
-        self._info("Building {} from dict".format(Constants.ION_LITERAL))
-        self._info(mask_passwords(json_dict))
+        self._debug("Building {} from dict".format(Constants.ION_LITERAL))
+        self._debug(mask_passwords(json_dict))
         ion = ION()
         ion.id = json_dict['id']
         ion.name = json_dict[IONJsonConstants.ION_INFO_SECTION][IONJsonConstants.ION_NAME_TAG]
@@ -63,7 +63,7 @@ class IONBuilder(BaseObj):
             ion.node_by_name[comp.name] = comp
 
         pipeline_instances = json_dict[IONJsonConstants.PIPELINE_INSTANCES_SECTION]
-        self._info("pipelines number: {}".format(len(pipeline_instances)))
+        self._debug("pipelines number: {}".format(len(pipeline_instances)))
         for instance_data in pipeline_instances:
             comp_id = instance_data[IONJsonConstants.PIPELINE_WORKFLOW_NODE_ID_TAG]
             pipeline_instance_id = instance_data[IONJsonConstants.PIPELINE_INSTANCE_ID_TAG]

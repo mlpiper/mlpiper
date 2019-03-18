@@ -15,6 +15,7 @@ class Deputy(object):
         self._logger = logging.getLogger(self.__class__.__name__)
         self._pipeline_file = None
         self._mlcomp_jar = None
+        self._use_color = False
 
     def pipeline(self, pipeline_file):
         self._pipeline_file = pipeline_file
@@ -24,13 +25,20 @@ class Deputy(object):
         self._mlcomp_jar = mlcomp_jar
         return self
 
+    def use_color(self, use_color):
+        self._use_color = use_color
+        return self
+
     def run(self):
         self._logger.info("Deputy starting")
 
         # TODO: move to a thread/separate process so we can track
         ret_val = 1
         try:
-            pipeline_runner = Executor(args=None).pipeline_file(self._pipeline_file).mlcomp_jar(self._mlcomp_jar)
+            pipeline_runner = Executor(args=None)\
+                .pipeline_file(self._pipeline_file)\
+                .mlcomp_jar(self._mlcomp_jar)\
+                .use_color(self._use_color)
 
             py_deps = pipeline_runner.all_py_component_dependencies()
             if py_deps:
@@ -41,7 +49,7 @@ class Deputy(object):
                 RPackageInstaller(r_deps).install()
 
             pipeline_runner.go()
-            ret_val=0
+            ret_val = 0
         except Exception as e:
             self._logger.info("Got exception while running code: {}".format(e))
             exc_type, exc_value, exc_traceback = sys.exc_info()
