@@ -7,7 +7,7 @@ import json
 from parallelm.pipeline.components_desc import ComponentsDesc
 from parallelm.ml_engine.python_engine import PythonEngine
 from parallelm.pipeline.dag import Dag
-from parallelm.pipeline.executor import Executor
+from parallelm.pipeline.executor import Executor, ExecutorException
 from parallelm.pipeline.executor_config import ExecutorConfig
 
 import parallelm.pipeline.json_fields as json_fields
@@ -127,6 +127,57 @@ class TestPythonEngine:
         os.environ.setdefault("TEST_VAR", "test-value")
         os.environ.setdefault("TEST_VAR2", "non test value")
         Executor(config).go()
+
+    # @pytest.mark.skip(reason="skipping this test for now - debugging")
+    def test_execute_python_stand_alone_with_exit_0(self):
+        pipeline = {
+            "name": "stand_alone_test",
+            "engineType": "Generic",
+
+            "pipe": [
+                {
+                    "name": "Hello",
+                    "id": 1,
+                    "type": "test-argument-from-env-var",
+                    "parents": [],
+                    "arguments": {
+                        "arg1": "test-exit-0",
+                        "fromEnvVar2": "test-value2",
+                    },
+                }
+            ]
+        }
+        self._fix_pipeline(pipeline, None)
+        config = self._get_executor_config(pipeline)
+        Executor(config).go()
+
+    # @pytest.mark.skip(reason="skipping this test for now - debugging")
+    def test_execute_python_stand_alone_with_exit_1(self):
+        pipeline = {
+            "name": "stand_alone_test",
+            "engineType": "Generic",
+
+            "pipe": [
+                {
+                    "name": "Hello",
+                    "id": 1,
+                    "type": "test-argument-from-env-var",
+                    "parents": [],
+                    "arguments": {
+                        "arg1": "test-exit-1",
+                        "fromEnvVar2": "test-value2",
+                    },
+                }
+            ]
+        }
+        self._fix_pipeline(pipeline, None)
+        config = self._get_executor_config(pipeline)
+        passed = 0
+        try:
+            Executor(config).go()
+        except ExecutorException as e:
+            passed = str(e).startswith("Pipeline called exit(), with code: 1")
+        assert(passed)
 
     # @pytest.mark.skip(reason="skipping this test for now - debugging")
     def test_execute_python_connected(self, caplog):

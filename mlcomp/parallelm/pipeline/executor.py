@@ -1,6 +1,8 @@
 import json
 import os
+import six
 import sys
+import traceback
 
 from parallelm.common.base import Base
 from parallelm.common.mlcomp_exception import MLCompException
@@ -20,6 +22,8 @@ except ImportError as e:
     print("Note: was not able to import mlops: " + str(e))
     pass  # Designed for tests
 
+class ExecutorException(Exception):
+    pass
 
 class Executor(Base):
     def __init__(self, args=None):
@@ -93,6 +97,10 @@ class Executor(Base):
 
         return accumulated_py_deps
 
+    def _parse_exit_code(self, code):
+        # in case of calls like exit("some_string")
+        return code if isinstance(code, six.integer_types) else 1
+
     def go(self):
         """
         Actual execution phase
@@ -116,7 +124,20 @@ class Executor(Base):
                 dag.run_single_component_pipeline(system_conf, self._ml_engine)
             else:
                 dag.run_connected_pipeline(system_conf, self._ml_engine)
-
+        # This except is intended to catch exit() calls from components.
+        # Do not use exit() in mlpiper code.
+        except SystemExit as e:
+            code = self._parse_exit_code(e.code)
+            error_message = "Pipeline called exit(), with code: {}".format(e.code)
+            traceback_message = traceback.format_exc()
+            if code != 0:
+                self._logger.error("{}\n{}".format(error_message, traceback_message))
+                # For Py2 put traceback into the exception message
+                if sys.version_info[0] == 2:
+                    error_message = "{}\n{}".format(error_message, traceback.format_exc())
+                raise ExecutorException(error_message)
+            else:
+                self._logger.warn(error_message)
         finally:
             sys.stdout.flush()
             self._logger.info("Done running pipeline (in finally block)")
