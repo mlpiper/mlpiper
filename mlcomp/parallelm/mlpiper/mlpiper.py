@@ -257,13 +257,18 @@ class MLPiper(Base):
 
     def run_deployment(self):
         self._logger.info("Running prepared deployment, {}".format(self._deploy_dir))
+        py_version_major = sys.version_info[0]
 
         sys.path.insert(0, self._deploy_dir)
-        for egg in glob.glob("{}/*.egg".format(self._deploy_dir)):
+        eggs = glob.glob("{}/*py{}*.egg".format(self._deploy_dir, py_version_major))
+        if len(eggs) == 0:
+            self._logger.warn("No eggs found for py{}. Trying to find all possible eggs.".format(py_version_major))
+            eggs = glob.glob("{}/*.egg".format(self._deploy_dir))
+        for egg in eggs:
             sys.path.insert(0, egg)
 
         import pkg_resources
-        if sys.version_info[0] < 3:
+        if py_version_major < 3:
             reload(pkg_resources)
         else:
             import importlib
