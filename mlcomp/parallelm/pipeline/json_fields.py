@@ -1,4 +1,3 @@
-
 # Constants to access pipeline json fields
 PIPELINE_NAME_FIELD = 'name'
 PIPELINE_ENGINE_TYPE_FIELD = 'engineType'
@@ -11,6 +10,7 @@ PIPELINE_COMP_ARGUMENTS_FIELD = 'arguments'
 PIPELINE_COMP_PARENTS_FIELD = 'parents'
 PIPELINE_COMP_PARENTS_FIRST_FIELD = 'parent'
 PIPELINE_COMP_PARENTS_SECOND_FIELD = 'output'
+PIPELINE_COMP_PARENTS_THIRD_FIELD = 'input'
 
 # Constants to access component description json fields
 COMPONENT_DESC_NAME_FIELD = 'name'

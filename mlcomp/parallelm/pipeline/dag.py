@@ -1,24 +1,23 @@
-import inspect
 import importlib
+import inspect
 import time
 import sys
+
 from termcolor import colored
 
 from parallelm.common.base import Base
 from parallelm.common.mlcomp_exception import MLCompException
-from parallelm.components.restful_component import RESTfulComponent
 from parallelm.pipeline import json_fields
+from parallelm.pipeline.component_language import ComponentLanguage
+from parallelm.pipeline.component_runner.external_connected_component_runner import ExternalConnectedComponentRunner
+from parallelm.pipeline.component_runner.external_standalone_component_runner import ExternalStandaloneComponentRunner
+from parallelm.pipeline.component_runner.java_connected_component_runner import JavaConnectedComponentRunner
+from parallelm.pipeline.component_runner.java_standalone_component_runner import JavaStandaloneComponentRunner
+from parallelm.pipeline.component_runner.python_connected_component_runner import PythonConnectedComponentRunner
+from parallelm.pipeline.component_runner.python_standalone_component_runner import PythonStandaloneComponentRunner
 from parallelm.pipeline.dag_node import DagNode
 from parallelm.pipeline.pipeline_utils import main_component_module
-from parallelm.pipeline.component_language import ComponentLanguage
 from parallelm.pipeline.topological_sort import TopologicalSort
-
-from parallelm.pipeline.component_runner.python_standalone_component_runner import PythonStandaloneComponentRunner
-from parallelm.pipeline.component_runner.python_connected_component_runner import PythonConnectedComponentRunner
-from parallelm.pipeline.component_runner.java_standalone_component_runner import JavaStandaloneComponentRunner
-from parallelm.pipeline.component_runner.java_connected_component_runner import JavaConnectedComponentRunner
-from parallelm.pipeline.component_runner.external_standalone_component_runner import ExternalStandaloneComponentRunner
-from parallelm.pipeline.component_runner.external_connected_component_runner import ExternalConnectedComponentRunner
 
 
 class Dag(Base):
@@ -129,32 +128,46 @@ class Dag(Base):
 
     def parent_data_objs(self, dag_node):
         data_objs = []
+        # dict to keep track of proper input index going to components
+        data_object_dict = {}
+        max_index = 0
+
         for parent in dag_node.parents():
             parent_id = parent[json_fields.PIPELINE_COMP_PARENTS_FIRST_FIELD]
             output_index = parent[json_fields.PIPELINE_COMP_PARENTS_SECOND_FIELD]
+
+            input_index = parent.get(json_fields.PIPELINE_COMP_PARENTS_THIRD_FIELD, max_index)
+
             if parent_id in self._parent_data_objs_placeholder:
                 if output_index in self._parent_data_objs_placeholder[parent_id]:
                     self._logger.debug("Concatenate parent data objs, parent_id={}, output_index={}"
                                        .format(parent_id, output_index))
-                    data_objs.append(self._parent_data_objs_placeholder[parent_id][output_index])
+                    data_object_dict[input_index] = self._parent_data_objs_placeholder[parent_id][output_index]
                 else:
-                    data_objs.append(None)
+                    data_object_dict[input_index] = None
                     self._logger.debug("Output index not in data objs placeholder! parent_id={}, output_index={}"
                                        .format(parent_id, output_index))
             else:
-                data_objs.append(None)
+                data_object_dict[input_index] = None
                 self._logger.debug("Parent id not in data objs placeholder! id={}".format(parent_id))
+
+            max_index += 1
+        # asserting if we really have covered all parents.
+        assert len(data_object_dict) == len(dag_node.parents())
+
+        for index in range(len(dag_node.parents())):
+            data_objs.append(data_object_dict[index])
+
         return data_objs
 
     def update_parent_data_objs(self, dag_node, data_objs):
         parent_id = dag_node.pipe_id()
         if parent_id in self._parent_data_objs_placeholder:
             for output_index in self._parent_data_objs_placeholder[parent_id]:
-
                 self._parent_data_objs_placeholder[parent_id][output_index] = data_objs[output_index] \
                     if data_objs and output_index < len(data_objs) else None
                 self._logger.debug("Parent entry was updated, parent_id={}, output_index={}"
-                                  .format(parent_id, output_index))
+                                   .format(parent_id, output_index))
         else:
             self._logger.debug("Parent id not in data objs placeholder! id={}".format(parent_id))
 
@@ -176,7 +189,7 @@ class Dag(Base):
 
             if comp_desc[json_fields.COMPONENT_DESC_USER_STAND_ALONE]:
                 if dag_node.comp_language() == ComponentLanguage.PYTHON or \
-                   dag_node.comp_language() == ComponentLanguage.JUPYTER:
+                        dag_node.comp_language() == ComponentLanguage.JUPYTER:
                     comp_runner = PythonStandaloneComponentRunner(self._ml_engine, dag_node)
                 elif dag_node.comp_language() == ComponentLanguage.JAVA:
                     comp_runner = JavaStandaloneComponentRunner(self._ml_engine, dag_node)
@@ -215,9 +228,9 @@ class Dag(Base):
             output_index = connector[json_fields.PIPELINE_COMP_PARENTS_SECOND_FIELD]
 
             if parent_id in self._parent_data_objs_placeholder and \
-               output_index not in self._parent_data_objs_placeholder[parent_id]:
+                    output_index not in self._parent_data_objs_placeholder[parent_id]:
                 self._logger.debug("An entry already exists in data objs placeholder, parend_id={}, output_id={}"
-                                       .format(parent_id, output_index))
+                                   .format(parent_id, output_index))
                 self._parent_data_objs_placeholder[parent_id][output_index] = None
             else:
                 self._logger.debug("Adding an entry in data objs placeholder ... parent_id={}, output_index={}"
