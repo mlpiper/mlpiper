@@ -19,11 +19,12 @@ class TimeCapture1:
     count = [[30000], [60000], [90000], [120000], [150000], [180000], [210000], [240000], [270000],
              [300000], [330000]]
 
-    mlapp_id = "fc25d0f9-44c1-4db9-ad38-b0a84f9c319b"
+    mlapp_id = "8b6e1602-bb53-4e54-bd17-26cf6402ff36"
 
     mlapp_policy = "ALWAYS_UPDATE"
 
-    mlapp_nodes = ['8c418fbe-4b38-4d56-8145-91b9c46dda68', '7918d3ca-d9c5-479e-a05b-a8f1eda3db73']
+    mlapp_nodes = [['b9e53ad3-590d-4a40-8994-9c313e7f56cb', 'MODEL_PRODUCER', 'sprml train'],
+                   ['c88c8fba-1d73-4601-8fb1-67bbb6359139', 'MODEL_CONSUMER', 'sparkML Inference']]
 
     events = ['GenericEvent', 'GenericEvent', 'GenericEvent', 'Model', 'GenericEvent',
               'GenericEvent', 'ModelAccepted', 'GenericEvent', 'GenericEvent', 'GenericEvent',
@@ -32,7 +33,7 @@ class TimeCapture1:
     file_names = ['mlopsdb-aggregates-6064a0b6-f006-4855-a941-6da55ef3c917.csv',
                   'mlopsdb-Ion-stats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-b9e53ad3-590d-4a40-8994-9c313e7f56cb-Agent-daenerys-c18.csv_matrix.csv',
                   'mlopsdb-Ion-stats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-c88c8fba-1d73-4601-8fb1-67bbb6359139-Agent-daenerys-c18.csv_heatmap.csv',
-                  'mlopsdb-Ion-stats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-c88c8fba-1d73-4601-8fb1-67bbb6359139-Agent-daenerys-c18.csv', 'ion-details.txt',
+                  'mlopsdb-Ion-stats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-c88c8fba-1d73-4601-8fb1-67bbb6359139-Agent-daenerys-c18.csv', 'MLApp-details.txt',
                   'mlopsdb-Ion-sysstats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-b9e53ad3-590d-4a40-8994-9c313e7f56cb-Agent-daenerys-c18.csv',
                   'mlopsdb-Ion-stats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-c88c8fba-1d73-4601-8fb1-67bbb6359139-Agent-daenerys-c18.csv_multilinegraph.csv',
                   'mlopsdb-Ion-stats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-b9e53ad3-590d-4a40-8994-9c313e7f56cb-Agent-daenerys-c18.csv_bargraph.csv',
@@ -43,7 +44,7 @@ class TimeCapture1:
                   'mlopsdb-Ion-sysstats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-c88c8fba-1d73-4601-8fb1-67bbb6359139-Agent-daenerys-c18.csv']
 
     original_file_names = ['mlopsdb-aggregates-6064a0b6-f006-4855-a941-6da55ef3c917.csv',
-                  'mlopsdb-Ion-stats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-c88c8fba-1d73-4601-8fb1-67bbb6359139-Agent-daenerys-c18.csv', 'ion-details.txt',
+                  'mlopsdb-Ion-stats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-c88c8fba-1d73-4601-8fb1-67bbb6359139-Agent-daenerys-c18.csv', 'MLApp-details.txt',
                   'mlopsdb-Ion-sysstats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-b9e53ad3-590d-4a40-8994-9c313e7f56cb-Agent-daenerys-c18.csv',
                   'mlopsdb-events-6064a0b6-f006-4855-a941-6da55ef3c917.csv',
                   'mlopsdb-Ion-stats-6064a0b6-f006-4855-a941-6da55ef3c917-Instance-b9e53ad3-590d-4a40-8994-9c313e7f56cb-Agent-daenerys-c18.csv',

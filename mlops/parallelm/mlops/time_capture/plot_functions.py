@@ -29,15 +29,22 @@ class PlotFunctions:
         self._multigraph_df_file = mtc.get_multigraph_df_file()
         self._attribute_names_list = mtc.get_attribute_names_list()
 
-    def line_plot(self, name):
+    def line_plot(self, name, df_input=None):
         """
-        Plotting of line graphs per bin per file name
+        Plotting of line graphs per bin per file name. The function aggregates all the information
+        from the timeline capture tar according to the variable name, or works on a specific
+         dataframe, if provided
 
         :param self:
-        :param name: attibute name
+        :param name: attribute name
+        :param df_input: Optional Input dataframe for plot, instead of getting the stats from the tar
         :return:
         """
-        df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
+
+        df = df_input
+        if df_input is None:
+            df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
+        node_info = self._mtc.get_nodes()
         if ("keys" in df.columns) and en_plt:
             color_list = ['r', 'b', 'g', 'c', 'k', 'y', '0.75', 'm', '0.25']
             bins, bins_vert = self.hist_bin_adapt(df)
@@ -64,8 +71,10 @@ class PlotFunctions:
                 self.annotate_events(figure=ax3)
                 ax3.legend(bbox_to_anchor=(1, 1), prop={'size': 10}, loc=2)
                 ax3.grid()
-                ax3.set_title('Linegraph vs time for ' + str(name) + " @ Pipeline "
-                              + pipelines_elements)
+                pipeline_index = [i for i, node_elements in enumerate(node_info)
+                 if node_elements[0] == pipelines_elements]
+                ax3.set_title('Linegraph vs time for ' + str(name) + " @ Pipeline: "
+                              + node_info[pipeline_index[0]][1] + ", " + node_info[pipeline_index[0]][2])
                 ax3.set_ylabel('value')
                 ax3.set_xlabel('time')
 
@@ -100,15 +109,19 @@ class PlotFunctions:
                     figure.axvline(x=self._events_df_file["time"]
                                    .loc[location_index], linewidth=2, linestyle='dashed', color='r')
 
-    def bar_plot(self, name):
+    def bar_plot(self, name, df_name=None):
         """
         Plotting of Overlapping Bar Graphs:
 
         :param self:
         :param name: Attribute name
+        :param df_name: dataframe
         :return:
         """
-        df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
+        df = df_name
+        if df_name is None:
+            df = self._mtc.get_stats(name, mlapp_node=None, agent=None, start_time=None, end_time=None)
+        node_info = self._mtc.get_nodes()
         if ("keys" in df.columns) and en_plt:
             bins, bins_vert = self.hist_bin_adapt(df)
             name_pipeline, td_matrix = self.align_bins(df)
@@ -119,6 +132,8 @@ class PlotFunctions:
                 bins_scale = np.arange(0, len(bins))
                 all_pipelines = list(set(name_pipeline))
                 for p_idx, pipeline in enumerate(all_pipelines):
+                    pipeline_index = [i for i, node_elements in enumerate(node_info)
+                                      if node_elements[0] == pipeline]
                     file_index = [i for i, e in enumerate(name_pipeline)
                                   if e == pipeline]
                     for location_index in file_index:
@@ -130,7 +145,7 @@ class PlotFunctions:
                     figure.bar(bins_scale, td_matrix[location_index, :],
                                color=color_list[p_idx % (len(color_list))],
                                align='center', alpha=0.1,
-                               label="pipeline " + pipeline)
+                               label="pipeline: " + node_info[pipeline_index[0]][1] + ", " + node_info[pipeline_index[0]][2])
                 figure.set_xticks(bins_scale)
                 figure.set_xticklabels(bins_vert)
                 figure.tick_params(labelsize=8)
@@ -142,9 +157,29 @@ class PlotFunctions:
 
     # Matrix Printing
 
+    def get_matrix_names(self):
+        """
+        get matrix names:
+
+        :param self:
+        :return matrix_name_list:
+        """
+        matrix_name_list = []
+        node_info = self._mtc.get_nodes()
+        for filename in self._file_names:
+            try:
+                df_file = self._matrix_df_file[filename]
+                name_list = df_file["Name"].unique()
+                node_name = self.file_to_node(filename)
+                name_list1 = [[name_el, node_name] for name_el in name_list.tolist()]
+                matrix_name_list += name_list1
+            except Exception:
+                pass
+        return matrix_name_list
+
     def print_matrix(self):
         """
-        printing matix:
+        printing matrix:
 
         :param self:
         :return:
@@ -159,30 +194,71 @@ class PlotFunctions:
                 for name in name_list:
                     df = df_file[df_file['Name'] == name]
                     df = df.reset_index()
-                    num_graphs = df.shape[0]
-                    matrix_df = pd.DataFrame()
-                    col_num = 0
-                    header = []
-                    for location_index in range(0, num_graphs):
-                        matrix_loc = {}
-                        if df["ROW_NAME"].loc[location_index] == "HEADER":
-                            header = df["ROW_VALUE"].loc[location_index]
-                            col_num = len(header)
-                        else:
-                            matrix_loc["ROW_NAME"] = df["ROW_NAME"].loc[location_index]
-                            matrix_loc["datetime"] = df["datetime"].loc[location_index]
-                            for col_index in range(0, col_num):
-                                matrix_loc[str(header[col_index])] = \
-                                    (df["ROW_VALUE"].loc[location_index])[col_index]
-                            matrix_df = matrix_df.append(pd.Series(matrix_loc), ignore_index=True)
-
+                    matrix_df = self._format_df_matrix(df) # format the matrix dataframe
                     print('matrix for ' + str(name))
                     if en_tabulate:
                         print(tabulate(matrix_df, headers='keys', tablefmt='psql'))
                     else:
                         print(matrix_df)
-            except Exception as err:
+            except Exception:
                 pass
+
+    def get_matrix_df(self, name):
+        """
+        getting the DF of a matrix according to the its name:
+        The matrix is identified by a list with it attribute name and pipeline name
+
+        :param self:
+        :param name: Name of attribute to list
+        :return: matrix_df
+        """
+        matrix_df = pd.DataFrame()
+        # Locate the specific matrix from the fines.
+        for filename in self._file_names: # go through the stat files
+            try:
+                node_name = self.file_to_node(filename) # get the pipeline name of the file
+                if (name[1] == node_name): # check that the pipeline name fits the input
+                    df_file = self._matrix_df_file[filename]
+                    name_list = df_file["Name"].unique() # attribute names in the file
+                    if name[0] in name_list: # check if the input name is in the name list
+                        df = df_file[df_file['Name'] == name[0]] # get entries of the this attribute
+                        df = df.reset_index()
+                        matrix_df = self._format_df_matrix(df) # format the matrix dataframe
+            except Exception:
+                pass
+        return matrix_df
+
+    def _format_df_matrix(self, df):
+        """
+        The function parses from the stat file the matrix data and format it in a dataframe
+        taing the header line and making it as column names and then align the data in the rows
+        into these columns.
+
+        :param df: Input raw matrix Dataframe
+        :return: matrix_df: Output formatted dataframe
+        """
+        matrix_df = pd.DataFrame()
+        num_rows = df.shape[0]
+        col_num = 0
+        header = []
+        header_names = []
+        for location_index in range(0, num_rows):
+            matrix_loc = {}
+            if df["ROW_NAME"].loc[location_index] == "HEADER": # Check for a header row
+                header = df["ROW_VALUE"].loc[location_index] # create the header of the DF
+                col_num = len(header)
+            else:
+                matrix_loc["ROW_NAME"] = df["ROW_NAME"].loc[location_index]
+                matrix_loc["datetime"] = df["datetime"].loc[location_index]
+                header_names = []
+                for col_index in range(0, col_num): # align the data in the rows into the header columns.
+                    matrix_loc[str(header[col_index])] = \
+                        (df["ROW_VALUE"].loc[location_index])[col_index]
+                    header_names.append(str(header[col_index]))
+                matrix_df = matrix_df.append(pd.Series(matrix_loc), ignore_index=True)
+        matrix_df = matrix_df[["ROW_NAME"] + header_names + ["datetime"]] # Order the columns
+        # so that rowname is first and datetime is last for nice printing
+        return matrix_df
 
     def multigraph_plot(self):
         """
@@ -284,20 +360,56 @@ class PlotFunctions:
             bins = df_keys.loc[0]
             num_of_bins = len(bins)
             td_matrix_loc = np.zeros((num_graphs, num_of_bins))
+            rounded_bins = bins
+            for keys_origin_index in range(0, num_of_bins):
+                if ' to ' in bins[keys_origin_index]:
+                    bins_vect = bins[keys_origin_index].split(' to ')
+                    rounded_bins_vect = bins_vect
+                    for index_bin in range(0,2):
+                        if 'inf' not in bins_vect[index_bin]:
+                            rounded_bins_vect[index_bin] = str(round(float(bins_vect[index_bin]), 4))
+                    rounded_bins[keys_origin_index] = rounded_bins_vect[0] + ' to ' + rounded_bins_vect[1]
 
             for location_index in range(0, num_graphs):
                 df_values = []
                 for keys_origin_index in range(0, num_of_bins):
                     append_val = 0
-                    for key_index in range(0, len(df_keys.loc[location_index])):
-                        if bins[keys_origin_index] == \
-                                df_keys.loc[location_index][key_index]:
-                            append_val = df["values"].loc[location_index][key_index]
+                    if ' to ' in bins[keys_origin_index]:
+                        bins1 = df_keys.loc[location_index][keys_origin_index]
+                        bins1_vect = bins1.split(' to ')
+                        rounded_bins1_vect = bins1_vect
+                        for index_bin in range(0,2):
+                            if 'inf' not in bins1_vect[index_bin]:
+                                rounded_bins1_vect[index_bin] = str(round(float(bins1_vect[index_bin]), 4))
+                        rounded_bins1 = rounded_bins1_vect[0] + ' to ' + rounded_bins1_vect[1]
+                        if rounded_bins[keys_origin_index] == \
+                                rounded_bins1:
+                            append_val = df["values"].loc[location_index][keys_origin_index]
+                    else:
+                        for key_index in range(0, len(df_keys.loc[location_index])):
+                            if bins[keys_origin_index] == \
+                                    df_keys.loc[location_index][key_index]:
+                                append_val = df["values"].loc[location_index][key_index]
                     df_values.append(append_val)
 
                 td_matrix_loc[location_index, :] = df_values
 
-                name_pipeline_vect = df["FileName"].loc[location_index].split('-')
-                name_pipeline = name_pipeline_vect[len(name_pipeline_vect) - 4]
+                name_pipeline_vect = df["FileName"].loc[location_index].split('-Instance-')
+                name_pipeline = (name_pipeline_vect[1].split('-Agent-'))[0]
                 name_pipeline1.append(name_pipeline)
             return name_pipeline1, td_matrix_loc
+
+    def file_to_node(self, filename):
+        """
+        get node name from file name:
+
+        :param self:
+        :param filename:
+        :return node_name:
+        """
+        node_info = self._mtc.get_nodes()
+        name_pipeline_vect = filename.split('-Instance-')
+        name_pipeline = (name_pipeline_vect[1].split('-Agent-'))[0]
+        pipeline_index = [i for i, node_elements in enumerate(node_info)
+                          if node_elements[0] == name_pipeline]
+        return node_info[pipeline_index[0]][2]

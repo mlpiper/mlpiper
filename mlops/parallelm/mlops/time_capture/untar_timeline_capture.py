@@ -2,6 +2,7 @@ import os
 import tarfile
 import csv
 from parallelm.mlops.mlops_exception import MLOpsException
+import logging
 
 
 
@@ -12,6 +13,7 @@ class UntarTimelineCapture:
         """Initialized the parameters of the untar class."""
         self._file_names = []
         self._tmpdir = tmpdir
+        self._logger = logging.getLogger(__name__)
         self._extracted_dir = self._tmpdir + '/timeline-capture-export/'
         self._input_timeline_capture = input_timeline_capture
         self._timeline_capture = {}
@@ -26,12 +28,12 @@ class UntarTimelineCapture:
         :return:
         """
         try:
-            print("self._input_timeline_capture", self._input_timeline_capture)
-            print("self._tmpdir", self._tmpdir)
+            self._logger.info("self._input_timeline_capture -  {}".format(self._input_timeline_capture))
+            self._logger.info("self._tmpdir -  {}".format(self._tmpdir))
             with tarfile.open(self._input_timeline_capture) as tar_obj:
                 tar_obj.extractall(self._tmpdir)
         except Exception as e:
-            print("Unable to open the timeline capture file")
+            self._logger.error("Unable to open the timeline capture file")
             raise MLOpsException(e)
         self._file_names = os.listdir(self._extracted_dir)
 

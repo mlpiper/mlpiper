@@ -7,7 +7,9 @@ from collections import OrderedDict
 from parallelm.mlops.time_capture.json_to_df import JsonToDf
 from parallelm.mlops.stats_category import StatGraphType
 from parallelm.mlops.time_capture.untar_timeline_capture import UntarTimelineCapture
+from parallelm.mlops.ion.ion_builder import IONBuilder, IONJsonConstants
 import shutil
+import logging
 
 
 class Parsers(UntarTimelineCapture):
@@ -18,6 +20,7 @@ class Parsers(UntarTimelineCapture):
     def __init__(self, input_timeline_capture, tmpdir):
         """Initialize the parameters of the parser."""
         self._attribute_names_list = []
+        self._logger = logging.getLogger(__name__)
         self._df_name = {}
         self._heatmap_df_file = {}
         self._matrix_df_file = {}
@@ -76,8 +79,8 @@ class Parsers(UntarTimelineCapture):
                 self._sys_stat_df_file[file_name] = pd.read_csv(extracted_dir + file_name,
                                                                 na_filter=False)
 
-            elif 'ion-details' in file_name:
-                print("parse ion-details file")
+            elif 'MLApp-details' in file_name:
+                self._logger.debug("parse MLApp-details file")
                 self._parse_mlapp(extracted_dir + file_name)
 
             with open(self._extracted_dir + str(file_name), 'r') as f:
@@ -175,23 +178,15 @@ class Parsers(UntarTimelineCapture):
         """
         with open(file_path, 'r') as f:
             reader1 = f.read()
-        reader1 = reader1.replace('wfNodes', ',wfNodes')
-        reader1 = reader1.replace('GroupID', ',GroupID')
-        reader1 = reader1.replace('Mode', ',Mode')
-        reader1 = reader1.replace('Type', ',Type')
-        reader1 = reader1.replace(',', '","')
-        reader1 = reader1.replace(':', '":"')
-        reader1 = reader1.replace('" [', '[{"')
-        reader1 = reader1.replace(']"', '"}]')
-        reader1 = reader1.replace(' ', '')
-        reader1 = reader1.replace(',"PipelineID', '},{"PipelineID')
-        nd1 = '{"' + reader1 + '"}'
-        kd = json.loads(nd1)
+        kd = json.loads(reader1)
         self._mlapp_id = kd["WorkflowID"]
         self._model_policy = kd["modelPolicy"]
-        self._nodes_number = len(kd["wfNodes"])
-        self._nodes_id = [nodes["PipelineID"] for nodes in kd["wfNodes"]]
-        self._nodes_type = [nodes["Type"] for nodes in kd["wfNodes"]]
+        self._nodes_number = len(kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION])
+
+        self._nodes_id = [[nodes[IONJsonConstants.PIPELINE_INSTANCE_ID_TAG], nodes[IONJsonConstants.PIPELINE_TYPE],
+                           nodes[IONJsonConstants.PIPELINE_NAME_TAG]]  for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
+        self._nodes_type = [nodes[IONJsonConstants.PIPELINE_TYPE] for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
+        self._nodes_name = [nodes[IONJsonConstants.PIPELINE_NAME_TAG] for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
 
     def _name_stats_df(self, filename, df):
         """
