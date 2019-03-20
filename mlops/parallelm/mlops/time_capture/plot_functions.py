@@ -31,11 +31,13 @@ class PlotFunctions:
 
     def line_plot(self, name, df_input=None):
         """
-        Plotting of line graphs per bin per file name
+        Plotting of line graphs per bin per file name. The function aggregates all the information
+        from the timeline capture tar according to the variable name, or works on a specific
+         dataframe, if provided
 
         :param self:
         :param name: attribute name
-        :param df_input: Input df optional
+        :param df_input: Optional Input dataframe for plot, instead of getting the stats from the tar
         :return:
         """
 
@@ -207,6 +209,7 @@ class PlotFunctions:
         The matrix is identified by a list with it attribute name and pipeline name
 
         :param self:
+        :param name: Name of attribute to list
         :return: matrix_df
         """
         matrix_df = pd.DataFrame()

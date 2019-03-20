@@ -9,6 +9,7 @@ from parallelm.mlops.stats_category import StatGraphType
 from parallelm.mlops.time_capture.untar_timeline_capture import UntarTimelineCapture
 from parallelm.mlops.ion.ion_builder import IONBuilder, IONJsonConstants
 import shutil
+import logging
 
 
 class Parsers(UntarTimelineCapture):
@@ -19,6 +20,7 @@ class Parsers(UntarTimelineCapture):
     def __init__(self, input_timeline_capture, tmpdir):
         """Initialize the parameters of the parser."""
         self._attribute_names_list = []
+        self._logger = logging.getLogger(__name__)
         self._df_name = {}
         self._heatmap_df_file = {}
         self._matrix_df_file = {}
@@ -78,7 +80,7 @@ class Parsers(UntarTimelineCapture):
                                                                 na_filter=False)
 
             elif 'MLApp-details' in file_name:
-                print("parse MLApp-details file")
+                self._logger.debug("parse MLApp-details file")
                 self._parse_mlapp(extracted_dir + file_name)
 
             with open(self._extracted_dir + str(file_name), 'r') as f:
@@ -181,7 +183,6 @@ class Parsers(UntarTimelineCapture):
         self._model_policy = kd["modelPolicy"]
         self._nodes_number = len(kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION])
 
-        self._nodes_id1 = [nodes[IONJsonConstants.PIPELINE_INSTANCE_ID_TAG] for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
         self._nodes_id = [[nodes[IONJsonConstants.PIPELINE_INSTANCE_ID_TAG], nodes[IONJsonConstants.PIPELINE_TYPE],
                            nodes[IONJsonConstants.PIPELINE_NAME_TAG]]  for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
         self._nodes_type = [nodes[IONJsonConstants.PIPELINE_TYPE] for nodes in kd[IONJsonConstants.PIPELINE_INSTANCES_SECTION]]
