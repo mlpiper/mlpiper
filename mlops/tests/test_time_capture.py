@@ -4,6 +4,14 @@ import os
 import shutil
 import tarfile
 
+# force to use not-interactive backend (when there is no real display)
+# remove this is if you want to show real window
+try:
+    import matplotlib
+    matplotlib.use("Agg")
+except:
+    print("matplotlib package is not installed")
+
 from time_capture_test_helper import TimeCapture1
 from parallelm.mlops import mlops as pm
 from parallelm.mlops.time_capture.plot_functions import PlotFunctions
