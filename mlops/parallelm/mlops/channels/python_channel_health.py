@@ -135,8 +135,8 @@ class PythonChannelHealth(object):
         heat_map_values = []
         if len(valid_feature_values) > 0:
 
-            max_continuous_features_values = np.max(valid_feature_values, axis=0)
-            min_continuous_features_values = np.min(valid_feature_values, axis=0)
+            max_continuous_features_values = np.nanmax(valid_feature_values, axis=0)
+            min_continuous_features_values = np.nanmin(valid_feature_values, axis=0)
 
             for each_feature_index in range(len(valid_feature_names)):
 
@@ -155,7 +155,7 @@ class PythonChannelHealth(object):
                                                      min_continuous_features_values) * 1.0 / \
                                                     max_min_diff
 
-            heat_map_values = np.mean(normalized_continuous_features_values, axis=0)
+            heat_map_values = np.nanmean(normalized_continuous_features_values, axis=0)
 
             mlops_heatmap_stat = _HeatMapStat() \
                 .name(PyHealth.HEATMAP_KEY) \
@@ -369,32 +369,32 @@ class PythonChannelHealth(object):
         if model_stat is not None:
             if continuous_features_values.shape[0] > 0:
                 continuous_features_names, heat_map_values = PythonChannelHealth. \
-                _create_current_continuous_heatmap_rep(continuous_features_values=continuous_features_values,
-                                                       continuous_features_names=continuous_features_names,
-                                                       stat_object_method=stat_object_method,
-                                                       model_id=model_id)
+                    _create_current_continuous_heatmap_rep(continuous_features_values=continuous_features_values,
+                                                           continuous_features_names=continuous_features_names,
+                                                           stat_object_method=stat_object_method,
+                                                           model_id=model_id)
                 logger.debug("features: {}, heatmap values: {}".format(continuous_features_names,
-                                                                   heat_map_values))
+                                                                       heat_map_values))
 
                 compared_continuous_feature_names, compared_continuous_feature_score = PythonChannelHealth. \
                     _compare_health(
-                        current_histogram_representation=current_continuous_histogram_representation,
-                        contender_histogram_representation=contender_continuous_histogram_representation,
-                        stat_object_method=stat_object_method,
-                        name_of_stat=PyHealth.CONTINUOUS_HISTOGRAM_OVERLAP_SCORE_KEY,
-                        model_id=model_id)
+                    current_histogram_representation=current_continuous_histogram_representation,
+                    contender_histogram_representation=contender_continuous_histogram_representation,
+                    stat_object_method=stat_object_method,
+                    name_of_stat=PyHealth.CONTINUOUS_HISTOGRAM_OVERLAP_SCORE_KEY,
+                    model_id=model_id)
                 logger.debug(
                     "continuous features: {}, overlap scores: {}".format(compared_continuous_feature_names,
-                                                                     compared_continuous_feature_score))
+                                                                         compared_continuous_feature_score))
 
             if categorical_features_values.shape[0] > 0:
                 compared_categorical_feature_names, compared_categorical_feature_names = PythonChannelHealth. \
                     _compare_health(
-                        current_histogram_representation=current_categorical_histogram_representation,
-                        contender_histogram_representation=contender_categorical_histogram_representation,
-                        stat_object_method=stat_object_method,
-                        name_of_stat=PyHealth.CATEGORICAL_HISTOGRAM_OVERLAP_SCORE_KEY,
-                        model_id=model_id)
+                    current_histogram_representation=current_categorical_histogram_representation,
+                    contender_histogram_representation=contender_categorical_histogram_representation,
+                    stat_object_method=stat_object_method,
+                    name_of_stat=PyHealth.CATEGORICAL_HISTOGRAM_OVERLAP_SCORE_KEY,
+                    model_id=model_id)
                 logger.debug(
                     "categorical features: {}, overlap scores: {}".format(
-                     compared_categorical_feature_names, compared_categorical_feature_names))
+                        compared_categorical_feature_names, compared_categorical_feature_names))

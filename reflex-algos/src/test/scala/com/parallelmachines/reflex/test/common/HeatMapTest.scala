@@ -62,4 +62,31 @@ class HeatMapTest extends FlatSpec with Matchers {
 
     sc.stop()
   }
+
+  it should "Generate Correct HeatMap From RDD Of NV Having Nulls For Spark" in {
+    val sparkSession = SparkSession.builder.
+      master("local[*]").appName("Histograms API Test").getOrCreate()
+
+    val sc = sparkSession.sparkContext
+
+    val rddOfNV = sc.parallelize(HeatMapTestData.testDataStreamOfNamedVectorNullsForHeatMap, 2)
+
+    // calculating heatmap for given rdd of vectors by using "local-by-norm-mean" methodology
+    val heatMapValues: Map[String, Double] = HeatMap
+      .createHeatMap(
+        rddOfNamedVec = rddOfNV,
+        env = sc
+      ).get.heatMapValue
+
+    //    For A ==> min = 0. max = 4. ==> so normalized A = [0.25, NaN, 0, 1, Nan] ==> mean = 0.417
+    //    For B ==> min = -10. max = 100. ==> so normalized B = [NaN, 1, 1, 0, 0.5454] ==> mean = 0.6363
+    val expectedHeatMapValuesSeq: Map[String, Double] = Map("A" -> 0.41666, "B" -> 0.6363, "C" -> 0.55)
+
+    expectedHeatMapValuesSeq.foreach(eachTuple => {
+      eachTuple._2 should be(heatMapValues(eachTuple._1) +- 1e-2)
+    })
+
+    sc.stop()
+  }
+
 }

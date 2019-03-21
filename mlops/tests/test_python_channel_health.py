@@ -121,6 +121,21 @@ def test_creation_of_heatmap():
     assert False not in (np.ceil(heatmap_constant_B_with_zeros * 1000) == [1000, 0])
 
 
+def test_creation_of_heatmap_of_NaN():
+    continuous_features_values = np.array([[1, np.NaN], [np.NaN, 100], [0, 100], [4, -10], [np.NaN, 50]])
+    continuous_features_names = ["A", "B"]
+    features_names, heatmap = PythonChannelHealth. \
+        _create_current_continuous_heatmap_rep(continuous_features_values,
+                                               continuous_features_names,
+                                               stat_object_method=None,
+                                               model_id=None)
+
+    assert features_names == ["A", "B"]
+    # For A ==> min = 0. max = 4. ==> so normalized A = [0.25, NaN, 0, 1, Nan] ==> mean = 0.417
+    # For B ==> min = -10. max = 100. ==> so normalized B = [NaN, 1, 1, 0, 0.5454] ==> mean = 0.6363
+    assert False not in (np.ceil(heatmap * 1000) == [417, 637])
+
+
 def test_compare_health_functionality():
     i1_categorical_histogram_data_object = CategoricalHistogramDataObject(feature_name="c1", edges=["a", "b", "c", "d"],
                                                                           bins=[0.4, 0.2, 0.3, 0.1])

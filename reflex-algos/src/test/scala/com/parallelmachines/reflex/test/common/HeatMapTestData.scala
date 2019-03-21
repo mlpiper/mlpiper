@@ -57,6 +57,28 @@ object HeatMapTestData {
       ColumnEntry(columnName = "C", columnValue = -20.0, OpType.CONTINUOUS)))
   )
 
+  val testDataStreamOfNamedVectorNullsForHeatMap: Seq[NamedVector] = Seq[NamedVector](
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 1, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = Double.NaN, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "C", columnValue = 100.0, OpType.CONTINUOUS))),
+
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = Double.NaN, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 100, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "C", columnValue = 50.0, OpType.CONTINUOUS))),
+
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 0.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 100, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "C", columnValue = 50.0, OpType.CONTINUOUS))),
+
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = 4.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = -10.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "C", columnValue = -100.0, OpType.CONTINUOUS))),
+
+    NamedVector(Array[ColumnEntry](ColumnEntry(columnName = "A", columnValue = Double.NaN, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "B", columnValue = 50.0, OpType.CONTINUOUS),
+      ColumnEntry(columnName = "C", columnValue = -50.0, OpType.CONTINUOUS)))
+  )
+
   // expected mean heatmap will be mean values of attributes for given minibatch and then min-max-scaling of average values
   val expectedMeanHeatMapForDoubleWindow_Mean_MinMax: Seq[Map[String, Double]] = Seq[Map[String, Double]](
     // average of 1, 2 entry -> avg1 = (15.0, 0.75, 75).
