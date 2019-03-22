@@ -44,6 +44,7 @@ class MLPiper(Base):
 
         self._input_model_filepath = None
         self._output_model_filepath = None
+        self._force = False
 
     def _print_info(self):
         self._logger.info("dist_dir: {}".format(self._dist_dir))
@@ -98,6 +99,10 @@ class MLPiper(Base):
     def output_model(self, model_filepath):
         self._output_model_filepath = model_filepath
 
+    def force(self, force):
+        self._force = force
+        return self
+
     def deploy(self):
         self._logger.info("Preparing pipeline for run")
         self._print_info()
@@ -106,7 +111,10 @@ class MLPiper(Base):
             raise Exception("Deployment dir was not provided")
 
         if os.path.exists(self._deploy_dir):
-            raise Exception("Deployment dir already exists: {}".format(self._deploy_dir))
+            if self._force:
+                shutil.rmtree(self._deploy_dir)
+            else:
+                raise Exception("Deployment dir already exists: {}".format(self._deploy_dir))
 
         if not self._pipeline_dict:
             raise Exception("Pipeline was not provided")
