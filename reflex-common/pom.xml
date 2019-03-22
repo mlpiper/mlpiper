@@ -6,13 +6,13 @@
         <modelVersion>4.0.0</modelVersion>
 
     <properties>
-        <reflexVersion>1.4.0</reflexVersion>
+        <reflexVersion>1.5.0</reflexVersion>
     </properties>
 
 	<groupId>com.parallelmachines.reflex</groupId>
 	<artifactId>mcenter-common</artifactId>
 	<packaging>pom</packaging>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<name>mcenter-common</name>
 	<url>http://maven.apache.org</url>
 
