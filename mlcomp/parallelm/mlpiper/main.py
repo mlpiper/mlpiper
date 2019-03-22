@@ -106,6 +106,9 @@ def _add_deploy_sub_parser(subparsers, sub_parser_name, sub_parser_help):
     parser_prepare.add_argument('-d', '--deployment-dir', default=None, required=True,
                                 help="Deployment directory to use for placing the pipeline artifacts")
 
+    parser_prepare.add_argument('--force', action='store_true',
+                                help='Overwrite any previous generated files/directories (.e.g deployed dir)')
+
 
 def _add_run_deployment_sub_parser(subparsers):
     parser_run = subparsers.add_parser('run-deployment',
@@ -141,7 +144,8 @@ def main(bin_dir=None):
         ml_piper = MLPiper(options).comp_repo(options.comp_root).deployment_dir(options.deployment_dir) \
             .bin_dir(bin_dir).pipeline(options.pipeline if options.pipeline else options.file) \
             .skip_clean(options.skip_clean).use_color(not options.no_color) \
-            .skip_mlpiper_deps_install(options.skip_mlpiper_deps)
+            .skip_mlpiper_deps_install(options.skip_mlpiper_deps) \
+            .force(options.force)
 
         if options.input_model:
             ml_piper.input_model(options.input_model)
