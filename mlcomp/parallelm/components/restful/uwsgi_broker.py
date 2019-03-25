@@ -4,7 +4,9 @@ setup, configuration and execution
 """
 import logging
 import os
+import re
 import subprocess
+import sys
 try:
     import uwsgi
     from parallelm.components.restful.uwsgi_post_fork import UwsgiPostFork
@@ -93,8 +95,7 @@ class UwsgiBroker(Base):
             f.write(wsgi_entry_script_code)
 
     def _generate_ini_file(self, shared_conf, entry_point_conf):
-        pypath = os.environ.get("PYTHONPATH", None)
-        egg_paths = [p for p in pypath.split(':') if p.endswith(".egg")]
+        egg_paths = [p for p in sys.path if UwsgiBroker._include_egg(p)]
         egg_paths = ":".join(egg_paths)
 
         cheaper_conf = UwsgiCheaperSubSystem.get_config()
@@ -124,6 +125,17 @@ class UwsgiBroker(Base):
             f.write(ini_content)
 
         return ini_filepath
+
+    @staticmethod
+    def _include_egg(filename):
+        if filename.endswith(".egg"):
+            py_ver = "py{}".format(sys.version_info[0])
+            if py_ver in filename:
+                return True
+            elif not re.search('py[2-3]', filename):
+                # 'py2' or 'py3' are not in the egg filename, so include it
+                return True
+        return False
 
     def _get_metrics_configuration(self, metrics):
         metrics_conf = ""
