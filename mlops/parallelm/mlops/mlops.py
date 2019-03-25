@@ -30,8 +30,7 @@ from parallelm.mlops.events.system_alert import SystemAlert
 from parallelm.mlops.ion.ion import Agent
 from parallelm.mlops.logger_factory import logger_factory
 from parallelm.mlops.mlops_ctx import MLOpsCtx
-from parallelm.mlops.mlops_exception import MLOpsException
-from parallelm.mlops.mlops_mode import MLOpsMode
+from parallelm.mlops.mlops_exception import MLOpsException, SuppressException
 from parallelm.mlops.models.model import Model
 from parallelm.mlops.models.model import ModelFormat
 from parallelm.mlops.models.model_filter import ModelFilter
@@ -242,6 +241,15 @@ class MLOps(object):
     @property
     def init_called(self):
         return self._init_called
+
+    def suppress_connection_errors(self, suppress):
+        """
+        Turn on/off connection errors suppression; suppress MLOpsConnectionException.
+        If suppression is turned on, errors are logged as warnings.
+
+        :param suppress: boolean True/False
+        """
+        SuppressException.set_suppress(suppress)
 
     @property
     def mlapp_id(self):
@@ -769,7 +777,7 @@ class MLOps(object):
         :param title: A short description that is used as the title
         :param is_healthy: whether the canary pipeline is healthy
         :param score: the canary comparison score
-        :param theshold: the canary comparison threshold
+        :param threshold: the canary comparison threshold
         :return: The current PM instance for further calls
         :raises: MLOpsException
 
@@ -909,7 +917,7 @@ class MLOps(object):
     def publish_model(self, model):
         """
         Exports Model to the PM service.
-        Model data and metada must be set using :class:`Model`
+        Model data and metadata must be set using :class:`Model`
 
         :param model: Object of type :class:`Model`
         :return: The model Id
