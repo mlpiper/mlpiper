@@ -16,7 +16,6 @@ if sys.version_info[0] < 3:
 
 setup(
     name=project_name,
-    namespace_packages=['parallelm'],
     version=version,
     description="An engine for running component based ML pipelines",
     long_description=README,
