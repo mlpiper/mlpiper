@@ -16,7 +16,6 @@ README = open(ROOT + "/README.md").read()
 
 setup(
     name=Constants.OFFICIAL_NAME,
-    namespace_packages=['parallelm'],
     version=Constants.MLOPS_CURRENT_VERSION,
     description="A library to read and report MLApp statistics",
     long_description=README,
