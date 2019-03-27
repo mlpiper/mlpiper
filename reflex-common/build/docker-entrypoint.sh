@@ -8,7 +8,7 @@ adduser -u $HOST_UID -g $HOST_GID -d $HOME -M $HOST_USERNAME
 ln -s /tmp/m2 ${HOME}/.m2
 
 # Run the build
-DEFAULT_BUILD="mvn install -Dmaven.javadoc.skip=true "
+DEFAULT_BUILD="mvn clean install -Dmaven.javadoc.skip=true "
 MVN_ARGS=""
 if [ ! -z "$1" ] && [ "$1" == "-DskipTests" ]; then
    MVN_ARGS="-DskipTests"
