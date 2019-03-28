@@ -240,7 +240,7 @@ class MLPiper(Base):
         self._logger.info("Installing py dependencies ... {}".format(py_deps))
 
         fd, reqs_pathname = tempfile.mkstemp(prefix="mlpiper_requirements_", dir="/tmp", text=True)
-        os.write(fd, "\n".join(py_deps))
+        os.write(fd, "\n".join(py_deps).encode())
         os.close(fd)
 
         cmd = "yes | {} -m pip install --disable-pip-version-check --requirement {}"\
