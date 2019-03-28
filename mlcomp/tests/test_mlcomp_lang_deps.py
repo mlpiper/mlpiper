@@ -4,7 +4,7 @@ from tempfile import mkstemp
 from parallelm.pipeline.executor import Executor
 
 
-expected_py_deps = ["scikitlearn==1.3.2", "docopt", "kazoo", "numpy"]
+expected_py_deps = ["scikit-learn==0.20.3", "docopt", "kazoo", "numpy"]
 expected_r_deps = ["optparse", "reticulate"]
 
 
