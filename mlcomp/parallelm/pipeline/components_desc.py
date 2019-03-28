@@ -78,4 +78,5 @@ class ComponentsDesc(Base):
             self._logger.error(msg)
             raise MLCompException(msg)
 
-        return pkg_resources.resource_string(component_package, metadata_filename)
+        # resource_string returns binary string, so need to decode
+        return pkg_resources.resource_string(component_package, metadata_filename).decode()
