@@ -9,7 +9,7 @@
   "inputInfo": [],
   "outputInfo": [],
   "group": "Algorithms",
-  "deps": ["scikitlearn==1.3.2", "docopt", "kazoo"],
+  "deps": ["scikit-learn==0.20.3", "docopt", "kazoo"],
   "arguments": [
     {
       "key": "arg1",
