@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-import io
-import logging
 import glob
 import json
-import tempfile
+import logging
 import os
 import shutil
 import subprocess
 import sys
+import tempfile
 
 from parallelm.mlpiper.component_scanner import ComponentScanner
 from parallelm.pipeline import json_fields
@@ -165,7 +164,8 @@ class MLPiper(Base):
         for comp_name in self._get_pipeline_components():
             # Copying each component only once (some pipelines can contain the same component multiple times)
             if comp_name not in comp_copied:
-                comp_src_abs_files = self._get_comp_repo_folder_structure(comp_name)["files"]
+                comp_repo_folder_struct = self._get_comp_repo_folder_structure(comp_name)
+                comp_src_abs_files = comp_repo_folder_struct["files"]
                 self._logger.debug("Copying component {} to dst_comp_tmp_dir from {}".format(comp_name, os.path.dirname(comp_src_abs_files[0])))
                 comp_dst_dir = os.path.join(dest_dir, comp_name)
                 os.mkdir(comp_dst_dir)
@@ -174,6 +174,12 @@ class MLPiper(Base):
                         shutil.copy(f, comp_dst_dir)
                     else:
                         shutil.copytree(f, os.path.join(comp_dst_dir, os.path.basename(f)))
+
+                shutil.copyfile(comp_repo_folder_struct["comp_json"], os.path.join(comp_dst_dir, "component.json"))
+
+                if "init" in comp_repo_folder_struct:
+                    open(os.path.join(comp_dst_dir, "__init__.py"), 'a').close()
+
 
                 comp_copied[comp_name] = True
 
