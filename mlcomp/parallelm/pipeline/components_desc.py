@@ -20,6 +20,17 @@ class ComponentsDesc(Base):
     def handle(args):
         ComponentsDesc(args).write_details()
 
+
+    @staticmethod
+    def is_valid(comp_desc):
+        comp_desc_signature = (json_fields.COMPONENT_DESC_NAME_FIELD,
+                               json_fields.COMPONENT_DESC_LANGUAGE_FIELD,
+                               json_fields.COMPONENT_DESC_PROGRAM_FIELD)
+
+        if all (key in comp_desc for key in comp_desc_signature):
+            return True
+        return False
+
     def write_details(self):
         out_file_path = self._args.comp_desc_out_path if self._args.comp_desc_out_path \
             else './components_description.json'
