@@ -112,9 +112,12 @@ class Dag(Base):
             sys.stdout.flush()
 
             runtime_in_sec = time.time() - start
-            if data_objs and type(data_objs) is not list:
-                raise MLCompException("Invalid returned data type from component! It should be a list! "
+            if data_objs is None:
+                raise MLCompException("Invalid returned data type from component! It should be a list or not None object! "
                                       "name: " + dag_node.comp_name())
+
+            if type(data_objs) is not list:
+                data_objs = [data_objs]
 
             self._component_run_footer(dag_node, data_objs, runtime_in_sec)
 
