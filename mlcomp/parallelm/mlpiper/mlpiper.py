@@ -129,7 +129,7 @@ class MLPiper(Base):
         if not self._skip_clean:
             self._cleanup()
 
-    def _get_comp_src_dir(self, comp_name):
+    def _get_comp_repo_folder_structure(self, comp_name):
         return self._comp_repo_info[self._engine][comp_name]
 
     def _get_pipeline_components(self):
@@ -141,7 +141,7 @@ class MLPiper(Base):
 
         for comp_name in self._get_pipeline_components():
             try:
-                self._get_comp_src_dir(comp_name)
+                self._get_comp_repo_folder_structure(comp_name)
             except Exception as e:
                 raise Exception("Component {} is not found in loaded components".format(comp_name))
 
@@ -165,10 +165,16 @@ class MLPiper(Base):
         for comp_name in self._get_pipeline_components():
             # Copying each component only once (some pipelines can contain the same component multiple times)
             if comp_name not in comp_copied:
-                comp_src_dir = self._get_comp_src_dir(comp_name)
-                self._logger.debug("Copying component {} to dst_comp_tmp_dir from {}".format(comp_name, comp_src_dir))
+                comp_src_abs_files = self._get_comp_repo_folder_structure(comp_name)["files"]
+                self._logger.debug("Copying component {} to dst_comp_tmp_dir from {}".format(comp_name, os.path.dirname(comp_src_abs_files[0])))
                 comp_dst_dir = os.path.join(dest_dir, comp_name)
-                shutil.copytree(comp_src_dir, comp_dst_dir)
+                os.mkdir(comp_dst_dir)
+                for f in comp_src_abs_files:
+                    if os.path.isfile(f):
+                        shutil.copy(f, comp_dst_dir)
+                    else:
+                        shutil.copytree(f, os.path.join(comp_dst_dir, os.path.basename(f)))
+
                 comp_copied[comp_name] = True
 
     def _add_pkg_files(self, comp_pkg_dir):

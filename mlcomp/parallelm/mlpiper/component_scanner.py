@@ -36,7 +36,8 @@ class ComponentScanner(object):
                     if engine_type not in comps:
                         comps[engine_type] = {}
 
-                    comps[engine_type][os.path.basename(root)] = root
+                    # save component files absolute paths
+                    comps[engine_type][os.path.basename(root)] = {"files": [os.path.join(root, filename) for filename in os.listdir(root)]}
                 except Exception as e:
                     logging.error("Component in directory: {} has non valide description. [{}]".format(root, e))
                     continue
