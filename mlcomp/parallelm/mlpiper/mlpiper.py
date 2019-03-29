@@ -262,7 +262,7 @@ class MLPiper(Base):
         sys.path.insert(0, self._deploy_dir)
         eggs = glob.glob("{}/*py{}*.egg".format(self._deploy_dir, py_version_major))
         if len(eggs) == 0:
-            self._logger.warn("No eggs found for py{}. Trying to find all possible eggs.".format(py_version_major))
+            self._logger.warning("No eggs found for py{}. Trying to find all possible eggs.".format(py_version_major))
             eggs = glob.glob("{}/*.egg".format(self._deploy_dir))
         for egg in eggs:
             sys.path.insert(0, egg)

@@ -28,7 +28,7 @@ class BgActor(Base, threading.Thread):
 
             self._do_repetitive_work()
 
-        self._logger.warn("Exiting background actor ...")
+        self._logger.warning("Exiting background actor ...")
 
     def stop_gracefully(self):
         with self._condition:

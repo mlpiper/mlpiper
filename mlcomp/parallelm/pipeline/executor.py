@@ -137,7 +137,7 @@ class Executor(Base):
                     error_message = "{}\n{}".format(error_message, traceback.format_exc())
                 raise ExecutorException(error_message)
             else:
-                self._logger.warn(error_message)
+                self._logger.warning(error_message)
         finally:
             sys.stdout.flush()
             self._logger.info("Done running pipeline (in finally block)")

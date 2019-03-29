@@ -102,7 +102,7 @@ class RESTfulComponent(ConnectableComponent):
         self._dry_run = parameter.str2bool(self._params.get(ComponentConstants.DRY_RUN_KEY,
                                                             ComponentConstants.DEFAULT_DRY_RUN))
         if self._dry_run:
-            self._logger.warn("\n\n" + 80 * '#' + "\n" + 25 * " " + "Running in DRY RUN mode\n" + 80 * '#')
+            self._logger.warning("\n\n" + 80 * '#' + "\n" + 25 * " " + "Running in DRY RUN mode\n" + 80 * '#')
 
         self._dry_run = parameter.str2bool(self._params.get(ComponentConstants.DRY_RUN_KEY, ComponentConstants.DEFAULT_DRY_RUN))
 
