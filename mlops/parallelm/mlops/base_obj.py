@@ -15,7 +15,7 @@ class BaseObj(object):
         self._logger.error(msg)
 
     def _warn(self, msg):
-        self._logger.warn(msg)
+        self._logger.warning(msg)
 
     def _info(self, msg):
         self._logger.info(msg)

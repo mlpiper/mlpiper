@@ -80,8 +80,8 @@ class SparkPipelineModelHelper(Base):
                 hadoop_fs.delete(dst_path, True)
 
             except Exception as e:
-                self._logger.warn("{}".format(e))
-                self._logger.warn("trying simple loading instead of using hdfs")
+                self._logger.warning("{}".format(e))
+                self._logger.warning("trying simple loading instead of using hdfs")
                 model_obj = PipelineModel.load(local_model_path)
 
             return model_obj
@@ -125,8 +125,8 @@ class SparkPipelineModelHelper(Base):
 
 
             except Exception as e:
-                self._logger.warn("{}".format(e))
-                self._logger.warn("trying simple loading instead of using hdfs")
+                self._logger.warning("{}".format(e))
+                self._logger.warning("trying simple loading instead of using hdfs")
                 model.write().overwrite().save(file_model_dir_path)
 
         else:

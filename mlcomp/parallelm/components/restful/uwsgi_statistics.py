@@ -85,7 +85,7 @@ class UwsgiStatistics(object):
         try:
             stats_sock.connect(self._server_address)
         except socket.error as ex:
-            self._logger.warn("Failed to open connection to uWSI statistics server! {}".format(ex))
+            self._logger.warning("Failed to open connection to uWSI statistics server! {}".format(ex))
             return None
         return stats_sock
 
