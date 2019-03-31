@@ -7,7 +7,7 @@
   "program": "string_source.py",
   "componentClass": "StringSource",
   "group": "Connectors",
-  "includeGlobPatterns" : "source_add*",
+  "includeGlobPatterns" : "string_source* | source_add* | util/*.py",
   "useMLOps": true,
   "inputInfo": [],
   "outputInfo": [

@@ -6,7 +6,7 @@ import fnmatch
 import json
 import logging
 import os
-import pprint
+import re
 
 from parallelm.pipeline.components_desc import ComponentsDesc
 from parallelm.pipeline import json_fields
@@ -14,8 +14,10 @@ from parallelm.pipeline import json_fields
 
 class ComponentScanner(object):
 
-    @classmethod
-    def scan_dir(cls, root_dir):
+    def __init__(self):
+        pass
+
+    def scan_dir(self, root_dir):
         """
         Scanning a directory returning a map of components:
         {
@@ -25,94 +27,81 @@ class ComponentScanner(object):
         }
         :return:
         """
-        def _parse_patterns(pattern):
-            if not pattern:
-                return []
-            return pattern.replace(" ", "").split('|')
+        comps = {}
+        logging.debug("Scanning {}".format(root_dir))
+        for root, comp_desc in self._get_next_comp_desc(root_dir):
+            engine_type = comp_desc[json_fields.COMPONENT_DESC_ENGINE_TYPE_FIELD]
+            comps.setdefault(engine_type, {})
 
-        def _is_path_included(file, include_patterns, exclude_patterns):
-            # For any given path, assume first that it should be included. This is the default
-            # if no 'include' matcher exists. If 'include' matcher exists, assume that the path
-            # should be excluded, then check the inclusion condition and set it accordingly
-            included = False if len(include_patterns) > 0 else True
+            comp_name = comp_desc[json_fields.COMPONENT_DESC_NAME_FIELD]
+            if comp_name in comps[engine_type]:
+                raise Exception("Component already defined!\n\tPrev comp root: {}\n\tCurr comp root: {}"
+                                .format(comps[engine_type][comp_name]["root"], root))
 
-            for pattern in include_patterns:
-                if fnmatch.fnmatch(file, pattern):
-                    included = True
-                    break
+            comps[engine_type][comp_name] = {}
+            comps[engine_type][comp_name]["comp_desc"] = comp_desc
+            comps[engine_type][comp_name]["root"] = root
+            comps[engine_type][comp_name]["files"] = self._include_files(root, comp_desc)
+
+            logging.debug("Found component, root: {}, engine: {}, name: ".format(root, engine_type, comp_name))
+        return comps
+
+    def _get_next_comp_desc(self, root_dir):
+        for root, _, files in os.walk(root_dir):
+            for filename in files:
+                comp_desc = self._comp_desc(root, filename)
+                if comp_desc:
+                    yield root, comp_desc
+
+    def _comp_desc(self, root, filename):
+        if filename.endswith(".json"):
+            comp_json = os.path.join(root, filename)
+            with open(comp_json) as f:
+                try:
+                    comp_desc = json.load(f)
+                except ValueError as ex:
+                    raise Exception("Invalid json format! filename: {}, exception: {}".format(comp_json, str(ex)))
+
+            if ComponentsDesc.is_valid(comp_desc):
+                return comp_desc
+        return None
+
+    def _include_files(self, comp_root, comp_desc):
+        include_patterns = self._parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_INCLUDE_GLOB_PATTERNS))
+        exclude_patterns = self._parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_EXCLUDE_GLOB_PATTERNS))
+
+        included_files = []
+        for root, _, files in os.walk(comp_root):
+            for f in files:
+                rltv_path = os.path.relpath(root,  comp_root)
+                filepath = os.path.join(rltv_path, f) if rltv_path != "." else f
+                if self._path_included(filepath, include_patterns, exclude_patterns):
+                    included_files.append(filepath)
+        return included_files
+
+    def _parse_patterns(self, pattern):
+        if not pattern:
+            return []
+        return re.sub("\s+", "", pattern.strip()).split('|')
+
+    def _path_included(self, file, include_patterns, exclude_patterns):
+        # For any given path, assume first that it should be included. This is the default
+        # if no 'include' matcher exists. If 'include' matcher exists, assume that the path
+        # should be excluded, then check the inclusion condition and set it accordingly
+        included = False if include_patterns else True
+
+        for pattern in include_patterns:
+            if fnmatch.fnmatch(file, pattern):
+                included = True
+                break
 
             # For a any given path, only if it is supposed to be included, check for exclusion condition.
-            if included:
-                for pattern in exclude_patterns:
-                    if fnmatch.fnmatch(file, pattern):
-                        included = False
-                        break
+        if included:
+            for pattern in exclude_patterns:
+                if fnmatch.fnmatch(file, pattern):
+                    included = False
+                    break
 
-            return included
+        return included
 
-        comps = {}
 
-        logging.debug("Scanning {}".format(root_dir))
-        for root, subdirs, files in os.walk(root_dir):
-            logging.debug("root: {} subdirs: {}".format(root, subdirs))
-            if ComponentsDesc.COMPONENT_JSON_FILE in files:
-                try:
-                    with open(os.path.join(root, ComponentsDesc.COMPONENT_JSON_FILE)) as f:
-                        comp_desc = json.load(f)
-                    engine_type = comp_desc[json_fields.PIPELINE_ENGINE_TYPE_FIELD]
-                    if engine_type not in comps:
-                        comps[engine_type] = {}
-
-                    include_patterns = _parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_INCLUDE_GLOB_PATTERNS, None))
-                    exclude_patterns = _parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_EXCLUDE_GLOB_PATTERNS, None))
-
-                    include_files = [os.path.join(root, f) for f in files + subdirs if _is_path_included(f, include_patterns, exclude_patterns)]
-
-                    # save component files absolute paths
-                    comp_name = os.path.basename(root)
-                    comps[engine_type][comp_name] = {}
-
-                    include_files.append(os.path.join(root, comp_desc[json_fields.COMPONENT_DESC_PROGRAM_FIELD]))
-
-                    # usually init should exist
-                    init_path = os.path.join(root, "__init__.py")
-                    if os.path.exists(init_path):
-                        include_files.append(init_path)
-                    # otherwise add a flag, so it will be created during files copying
-                    else:
-                        comps[engine_type][comp_name]["init"] = "__init__.py"
-
-                    comps[engine_type][comp_name]["comp_json"] = os.path.join(root, ComponentsDesc.COMPONENT_JSON_FILE)
-                    comps[engine_type][comp_name]["files"] = include_files
-
-                except Exception as e:
-                    logging.error("Component in directory: {} has non valid description. [{}]".format(root, e))
-                    continue
-            else:
-                json_files = [f for f in files if os.path.splitext(f)[1] == ".json"]
-                for f in json_files:
-                    comp_json = os.path.join(root, f)
-                    with open(comp_json) as f:
-                        comp_desc = json.load(f)
-
-                    if not ComponentsDesc.is_valid(comp_desc):
-                        continue
-
-                    engine_type = comp_desc[json_fields.PIPELINE_ENGINE_TYPE_FIELD]
-                    if engine_type not in comps:
-                        comps[engine_type] = {}
-
-                    include_patterns = _parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_INCLUDE_GLOB_PATTERNS, None))
-                    exclude_patterns = _parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_EXCLUDE_GLOB_PATTERNS, None))
-
-                    include_files = [os.path.join(root, f) for f in files + subdirs if _is_path_included(f, include_patterns, exclude_patterns)]
-
-                    comp_name = comp_desc[json_fields.COMPONENT_DESC_NAME_FIELD]
-                    comps[engine_type][comp_name] = {}
-                    include_files.append(os.path.join(root, comp_desc[json_fields.COMPONENT_DESC_PROGRAM_FIELD]))
-                    comps[engine_type][comp_name]["comp_json"] = comp_json
-                    comps[engine_type][comp_name]["files"] = include_files
-                    comps[engine_type][comp_name]["init"] = "__init__.py"
-
-        logging.debug(pprint.pformat(comps))
-        return comps

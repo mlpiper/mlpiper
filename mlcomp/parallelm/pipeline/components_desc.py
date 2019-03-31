@@ -23,11 +23,12 @@ class ComponentsDesc(Base):
 
     @staticmethod
     def is_valid(comp_desc):
-        comp_desc_signature = (json_fields.COMPONENT_DESC_NAME_FIELD,
+        comp_desc_signature = [json_fields.COMPONENT_DESC_ENGINE_TYPE_FIELD,
+                               json_fields.COMPONENT_DESC_NAME_FIELD,
                                json_fields.COMPONENT_DESC_LANGUAGE_FIELD,
-                               json_fields.COMPONENT_DESC_PROGRAM_FIELD)
+                               json_fields.COMPONENT_DESC_PROGRAM_FIELD]
 
-        if all (key in comp_desc for key in comp_desc_signature):
+        if set(comp_desc_signature) <= set(comp_desc):
             return True
         return False
 

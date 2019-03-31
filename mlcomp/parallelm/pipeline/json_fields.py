@@ -13,6 +13,7 @@ PIPELINE_COMP_PARENTS_SECOND_FIELD = 'output'
 PIPELINE_COMP_PARENTS_THIRD_FIELD = 'input'
 
 # Constants to access component description json fields
+COMPONENT_DESC_ENGINE_TYPE_FIELD = 'engineType'
 COMPONENT_DESC_NAME_FIELD = 'name'
 COMPONENT_DESC_PROGRAM_FIELD = 'program'
 COMPONENT_DESC_LANGUAGE_FIELD = "language"
