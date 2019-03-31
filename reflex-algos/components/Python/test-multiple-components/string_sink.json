@@ -7,7 +7,7 @@
   "program": "string_sink.py",
   "componentClass": "StringSink",
   "group": "Sinks",
-  "includeGlobPatterns" : "sink_add*",
+  "excludeGlobPatterns" : "string_source* | source_add*",
   "useMLOps": true,
   "inputInfo": [
     {

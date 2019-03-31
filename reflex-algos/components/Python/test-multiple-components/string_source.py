@@ -1,6 +1,9 @@
 from parallelm.components import ConnectableComponent
 
 from .source_additions.add import source_encode
+from .util.word import Word
+
+
 class StringSource(ConnectableComponent):
 
     def __init__(self, engine):
@@ -9,4 +12,5 @@ class StringSource(ConnectableComponent):
     def _materialize(self, parent_data_objs, user_data):
         str_value = self._params.get('value', "default-string-value")
         str_value = source_encode(str_value)
+        self._logger.info("Word: {}".format(Word("Hello World").words))
         return [str_value]

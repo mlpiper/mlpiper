@@ -50,7 +50,7 @@ class MLPiper(Base):
         self._logger.info("bin_dir: {}".format(self._bin_dir))
 
     def comp_repo(self, comp_root_dir):
-        self._comp_repo_info = ComponentScanner.scan_dir(comp_root_dir)
+        self._comp_repo_info = ComponentScanner().scan_dir(comp_root_dir)
         return self
 
     def deployment_dir(self, deploy_dir):
@@ -165,21 +165,26 @@ class MLPiper(Base):
             # Copying each component only once (some pipelines can contain the same component multiple times)
             if comp_name not in comp_copied:
                 comp_repo_folder_struct = self._get_comp_repo_folder_structure(comp_name)
-                comp_src_abs_files = comp_repo_folder_struct["files"]
-                self._logger.debug("Copying component {} to dst_comp_tmp_dir from {}".format(comp_name, os.path.dirname(comp_src_abs_files[0])))
-                comp_dst_dir = os.path.join(dest_dir, comp_name)
-                os.mkdir(comp_dst_dir)
-                for f in comp_src_abs_files:
-                    if os.path.isfile(f):
-                        shutil.copy(f, comp_dst_dir)
-                    else:
-                        shutil.copytree(f, os.path.join(comp_dst_dir, os.path.basename(f)))
+                src_comp_root = comp_repo_folder_struct["root"]
+                src_comp_files = comp_repo_folder_struct["files"]
+                comp_dst_root = os.path.join(dest_dir, comp_name)
+                os.mkdir(comp_dst_root)
+                for f in src_comp_files:
+                    try:
+                        src_path = os.path.join(src_comp_root, f)
+                        dst_path = os.path.join(comp_dst_root, f)
+                        shutil.copy(src_path, dst_path)
+                    except IOError as e:
+                        os.makedirs(os.path.dirname(dst_path))
+                        shutil.copy(src_path, dst_path)
+                    self._logger.debug("Copied src comp file to dst: {} ==> {}".format(src_path, dst_path))
 
-                shutil.copyfile(comp_repo_folder_struct["comp_json"], os.path.join(comp_dst_dir, "component.json"))
+                with open(os.path.join(comp_dst_root, "component.json"), "w") as f:
+                    json.dump(comp_repo_folder_struct["comp_desc"], f)
 
-                if "init" in comp_repo_folder_struct:
-                    open(os.path.join(comp_dst_dir, "__init__.py"), 'a').close()
+                open(os.path.join(comp_dst_root, "__init__.py"), 'a').close()
 
+                self._logger.debug("Created tmp dst component dir: {}".format(comp_dst_root))
 
                 comp_copied[comp_name] = True
 

@@ -1,6 +1,9 @@
 from parallelm.components import ConnectableComponent
 
 from .sink_additions.add import sink_decode
+from .util.word import Word
+
+
 class StringSink(ConnectableComponent):
 
     def __init__(self, engine):
@@ -12,6 +15,7 @@ class StringSink(ConnectableComponent):
         actual_value = sink_decode(actual_value)
         print("String Sink, encoded value: {}; decoded value: {}".format(parent_data_objs[0], actual_value))
         print("String Sink, Got:[{}] Expected: [{}] ".format(actual_value, expected_str_value))
+        self._logger.info("Word: {}".format(Word("Hello World").words))
         if expected_str_value != actual_value:
             raise Exception("Actual [{}] != Expected [{}]".format(actual_value, expected_str_value))
         return []
