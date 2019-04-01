@@ -8,30 +8,56 @@ import sys
 
 from constants import COMPONENTS_PATH
 
-simple_pipeline = {
-    "name": "Simple MLPiper runner test",
-    "engineType": "Generic",
-    "pipe": [
-        {
-            "name": "Source String",
-            "id": 1,
-            "type": "string-source",
-            "parents": [],
-            "arguments": {
-                "value": "Hello World: testing string source and sink"
+simple_pipelines_for_testing = [
+    {
+        "name": "Simple MLPiper runner test",
+        "engineType": "Generic",
+        "pipe": [
+            {
+                "name": "Source String",
+                "id": 1,
+                "type": "string-source",
+                "parents": [],
+                "arguments": {
+                    "value": "Hello World: testing string source and sink"
+                }
+            },
+            {
+                "name": "Sink String",
+                "id": 2,
+                "type": "string-sink",
+                "parents": [{"parent": 1, "output": 0}],
+                "arguments": {
+                    "expected-value": "Hello World: testing string source and sink"
+                }
             }
-        },
-        {
-            "name": "Sink String",
-            "id": 2,
-            "type": "string-sink",
-            "parents": [{"parent": 1, "output": 0}],
-            "arguments": {
-                "expected-value": "Hello World: testing string source and sink"
+        ]
+    },
+    {
+        "name": "Simple MLPiper runner test (shared dir)",
+        "engineType": "Generic",
+        "pipe": [
+            {
+                "name": "Source String (Shared Dir)",
+                "id": 1,
+                "type": "string-source-shared-dir",
+                "parents": [],
+                "arguments": {
+                    "value": "Hello World: testing string source and sink"
+                }
+            },
+            {
+                "name": "Sink String (Shared Dir)",
+                "id": 2,
+                "type": "string-sink-shared-dir",
+                "parents": [{"parent": 1, "output": 0}],
+                "arguments": {
+                    "expected-value": "Hello World: testing string source and sink"
+                }
             }
-        }
-    ]
-}
+        ]
+    }
+]
 
 model_src_sink_pipeline = {
     "name": "Sink/Src MLPiper runner test",
@@ -63,17 +89,13 @@ model_src_sink_pipeline = {
 
 
 class TestMLPiper:
-    pipeline_tmp_file = None
     mlpiper_script = None
     egg_paths = []
+    pipelines_to_test = []
+    skip_cleanup = False
 
     @classmethod
     def setup_class(cls):
-        _, TestMLPiper.pipeline_tmp_file = mkstemp(prefix='test_mlpiper_pipeline_', dir='/tmp')
-        print("pipeline_tmp_file:", TestMLPiper.pipeline_tmp_file)
-        with open(TestMLPiper.pipeline_tmp_file, 'w') as f:
-            json.dump(simple_pipeline, f)
-
         mlcomp_root_path = os.path.join(os.path.dirname(__file__), "..")
         # os.chdir(mlcomp_root_path)
         # subprocess.check_call("make egg", shell=True)
@@ -93,9 +115,7 @@ class TestMLPiper:
 
     @classmethod
     def teardown_class(cls):
-        if TestMLPiper.pipeline_tmp_file:
-            os.remove(TestMLPiper.pipeline_tmp_file)
-            TestMLPiper.pipeline_tmp_file = None
+        pass
 
     def setup_method(self, method):
         """ setup any state tied to the execution of the given method in a
@@ -109,8 +129,21 @@ class TestMLPiper:
         call.
         """
         print("teardown_method: {}".format(method))
-        if self._deployment_dir:
+        if self._deployment_dir and not TestMLPiper.skip_cleanup:
             shutil.rmtree(self._deployment_dir)
+
+    @staticmethod
+    def _next_pipeline():
+        for pipeline in simple_pipelines_for_testing:
+            try:
+                _, pipeline_tmp_file = mkstemp(prefix='test_mlpiper_pipeline_', dir='/tmp')
+                print("pipeline_tmp_file:", pipeline_tmp_file)
+                with open(pipeline_tmp_file, 'w') as f:
+                    json.dump(pipeline, f)
+                yield pipeline_tmp_file
+            finally:
+                if pipeline_tmp_file:
+                    os.remove(pipeline_tmp_file)
 
     def _exec_shell_cmd(self, cmd, err_msg):
         os.environ["PYTHONPATH"] = ":".join(TestMLPiper.egg_paths)
@@ -120,19 +153,21 @@ class TestMLPiper:
 
         print("stdout: {}".format(stdout))
         if p.returncode != 0:
+            TestMLPiper.skip_cleanup = True
             print("stderr: {}".format(stderr))
             assert p.returncode == 0, err_msg
 
     def _exec_deploy_or_run_cmdline(self, cmdline_action):
-        self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
-        os.rmdir(self._deployment_dir)
+        for pipeline_filepath in TestMLPiper._next_pipeline():
+            self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
+            os.rmdir(self._deployment_dir)
 
-        comp_dir = os.path.join(os.path.dirname(__file__), COMPONENTS_PATH)
+            comp_dir = os.path.join(os.path.dirname(__file__), COMPONENTS_PATH)
 
-        cmd = "{} {} -r {} -f {} --deployment-dir {}".format(TestMLPiper.mlpiper_script, cmdline_action, comp_dir,
-                                                             TestMLPiper.pipeline_tmp_file, self._deployment_dir)
+            cmd = "{} {} -r {} -f {} --deployment-dir {}".format(TestMLPiper.mlpiper_script, cmdline_action, comp_dir,
+                                                                 pipeline_filepath, self._deployment_dir)
 
-        self._exec_shell_cmd(cmd, "Failed in '{}' mlpiper command line! {}".format(cmdline_action, cmd))
+            self._exec_shell_cmd(cmd, "Failed in '{}' mlpiper command line! {}".format(cmdline_action, cmd))
 
     def _exec_run_deployment_cmdline(self):
         cmd = "{} run-deployment --deployment-dir {}".format(TestMLPiper.mlpiper_script, self._deployment_dir)

@@ -77,7 +77,7 @@ class TestPythonEngine:
             ]
         }
         python_engine = PythonEngine("test-pipe")
-        comps_desc_list = ComponentsDesc(python_engine).load()
+        comps_desc_list = ComponentsDesc(python_engine, pipeline=pipeline).load()
         dag = Dag(pipeline, comps_desc_list, python_engine)
         assert dag.is_stand_alone is True
 
@@ -430,7 +430,7 @@ class TestPythonEngine:
             ]
         }
         python_engine = PythonEngine("test-pipe")
-        comps_desc_list = ComponentsDesc(python_engine).load()
+        comps_desc_list = ComponentsDesc(python_engine, pipeline=pipeline).load()
         dag = Dag(pipeline, comps_desc_list, python_engine)
 
         dag_node = dag.get_dag_node(0)

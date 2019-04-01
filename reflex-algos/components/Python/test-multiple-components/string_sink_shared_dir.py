@@ -1,10 +1,10 @@
 from parallelm.components import ConnectableComponent
 
-from .sink_additions.add import sink_decode
-from .util.word import Word
+from sink_additions.add import sink_decode
+from util.word import Word
 
 
-class StringSink(ConnectableComponent):
+class StringSinkSharedDir(ConnectableComponent):
 
     def __init__(self, engine):
         super(self.__class__, self).__init__(engine)

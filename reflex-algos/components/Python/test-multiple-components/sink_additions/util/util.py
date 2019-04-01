@@ -1,6 +1,6 @@
 import sys
 
-from ..util2 import util2
+from sink_additions.util2 import util2
 
 
 def show_py_ver():

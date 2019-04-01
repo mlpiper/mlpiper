@@ -37,7 +37,7 @@ callable = {callable_app}
 # environment variables
 env = CUDA_VISIBLE_DEVICES=-1
 env = KERAS_BACKEND=theano  # in case the user uses keras
-env = PYTHONPATH=%(restful_app_folder):{egg_paths}:$PYTHONPATH
+env = PYTHONPATH=%(restful_app_folder):{python_paths}:$PYTHONPATH
 
 master = true
 log-master = true

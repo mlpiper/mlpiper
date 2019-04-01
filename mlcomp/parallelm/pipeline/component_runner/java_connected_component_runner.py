@@ -11,7 +11,6 @@ from parallelm.common.mlcomp_exception import MLCompException
 from parallelm.common.process_monitor import ProcessMonitor
 from parallelm.common.byte_conv import ByteConv
 from parallelm.pipeline.component_runner.component_runner import ComponentRunner
-from parallelm.pipeline.component_dir_helper import ComponentDirHelper
 
 mlops_loaded = False
 try:
@@ -50,8 +49,7 @@ class JavaConnectedComponentRunner(ComponentRunner):
     def run(self, parent_data_objs):
 
         # Run the java py4j entry point
-        comp_helper = ComponentDirHelper(self._dag_node.comp_package(), self._dag_node.comp_program())
-        comp_dir = comp_helper.extract_component_out_of_egg()
+        comp_dir = self._dag_node.comp_root_path()
         self._logger.info("comp_dir: {}".format(comp_dir))
 
         component_jar = os.path.join(comp_dir, self._dag_node.comp_program())

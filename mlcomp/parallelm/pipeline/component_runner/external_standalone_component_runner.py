@@ -2,6 +2,7 @@ from parallelm.pipeline.pipeline_utils import assemble_cmdline_from_args
 from parallelm.pipeline.component_runner.standalone_component_runner import StandaloneComponentRunner
 from parallelm.pipeline.component_runner.external_program_runner import ExternalProgramRunner
 
+
 class ExternalStandaloneComponentRunner(StandaloneComponentRunner):
     def __init__(self, ml_engine, dag_node):
         super(ExternalStandaloneComponentRunner, self).__init__(ml_engine, dag_node)
@@ -10,10 +11,9 @@ class ExternalStandaloneComponentRunner(StandaloneComponentRunner):
         self._logger.info("Running ExternalStandaloneComponentRunner component")
 
         self._logger.info("Using external program runner")
-        self._logger.info("Package: {}".format(self._dag_node.comp_package()))
         self._logger.info("Program: {}".format(self._dag_node.comp_program()))
 
-        external_runner = ExternalProgramRunner(pkg=self._dag_node.comp_package(),
+        external_runner = ExternalProgramRunner(root_path=self._dag_node.comp_root_path(),
                                                 main_program=self._dag_node.comp_program())
 
         cmdline = assemble_cmdline_from_args(self._params)

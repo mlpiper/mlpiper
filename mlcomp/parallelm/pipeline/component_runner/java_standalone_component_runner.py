@@ -2,7 +2,6 @@ import subprocess
 import os
 import sys
 
-from parallelm.pipeline.component_dir_helper import ComponentDirHelper
 from parallelm.pipeline.component_runner.standalone_component_runner import StandaloneComponentRunner
 from parallelm.pipeline.pipeline_utils import assemble_cmdline_from_args
 
@@ -34,8 +33,7 @@ class JavaStandaloneComponentRunner(StandaloneComponentRunner):
     def run(self, parent_data_objs):
         self._logger.info("Materialize for Java standalone")
 
-        comp_helper = ComponentDirHelper(self._dag_node.comp_package(), self._dag_node.comp_program())
-        comp_dir = comp_helper.extract_component_out_of_egg()
+        comp_dir = self._dag_node.comp_root_path()
         print("comp_dir: {}".format(comp_dir))
         jar_file = self._dag_node.comp_program()
         self._logger.info("jar_file: {}".format(jar_file))
