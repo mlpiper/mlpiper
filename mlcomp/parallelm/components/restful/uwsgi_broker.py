@@ -95,8 +95,8 @@ class UwsgiBroker(Base):
             f.write(wsgi_entry_script_code)
 
     def _generate_ini_file(self, shared_conf, entry_point_conf):
-        egg_paths = [p for p in sys.path if UwsgiBroker._include_egg(p)]
-        egg_paths = ":".join(egg_paths)
+        python_paths = [p for p in sys.path if UwsgiBroker._include_py_path(p)]
+        python_paths = ":".join(python_paths)
 
         cheaper_conf = UwsgiCheaperSubSystem.get_config()
         self._logger.info("Cheaper subsystem: {}".format(cheaper_conf))
@@ -109,7 +109,7 @@ class UwsgiBroker(Base):
                                               stats_sock_filename=shared_conf[SharedConstants.STATS_SOCK_FILENAME_KEY],
                                               restful_app_file=UwsgiConstants.ENTRY_POINT_SCRIPT_NAME,
                                               callable_app='application',
-                                              egg_paths=egg_paths,
+                                              python_paths=python_paths,
                                               disable_logging=entry_point_conf[ComponentConstants.UWSGI_DISABLE_LOGGING_KEY],
                                               workers=cheaper_conf[UwsgiCheaperSubSystem.WORKERS],
                                               cheaper=cheaper_conf[UwsgiCheaperSubSystem.CHEAPER],
@@ -127,7 +127,7 @@ class UwsgiBroker(Base):
         return ini_filepath
 
     @staticmethod
-    def _include_egg(filename):
+    def _include_py_path(filename):
         if filename.endswith(".egg"):
             py_ver = "py{}".format(sys.version_info[0])
             if py_ver in filename:
@@ -135,7 +135,13 @@ class UwsgiBroker(Base):
             elif not re.search('py[2-3]', filename):
                 # 'py2' or 'py3' are not in the egg filename, so include it
                 return True
+        elif not UwsgiBroker._system_path(filename):
+            return True
         return False
+
+    @staticmethod
+    def _system_path(filename):
+        return filename.startswith('/usr/')
 
     def _get_metrics_configuration(self, metrics):
         metrics_conf = ""

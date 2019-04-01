@@ -1,0 +1,24 @@
+{
+    "name": "Simple MLPiper runner test (shared dir)",
+    "engineType": "Generic",
+    "pipe": [
+        {
+            "name": "Source String (Shared Dir)",
+            "id": 1,
+            "type": "string-source-shared-dir",
+            "parents": [],
+            "arguments": {
+                "value": "Hello World: testing string source and sink"
+            }
+        },
+        {
+            "name": "Sink String (Shared Dir)",
+            "id": 2,
+            "type": "string-sink-shared-dir",
+            "parents": [{"parent": 1, "output": 0}],
+            "arguments": {
+                "expected-value": "Hello World: testing string source and sink"
+            }
+        }
+    ]
+}

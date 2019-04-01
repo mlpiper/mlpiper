@@ -30,7 +30,7 @@ COMPONENT_DESC_INCLUDE_GLOB_PATTERNS = 'includeGlobPatterns'
 COMPONENT_DESC_EXCLUDE_GLOB_PATTERNS = 'excludeGlobPatterns'
 
 # Auto-generated internal fields
-COMPONENT_DESC_PACKAGE_FIELD = 'package'
+COMPONENT_DESC_ROOT_PATH_FIELD = 'root-path'
 
 # Component metadata reference json
 COMPONENT_METADATA_REF_FILE_NAME_FIELD = 'metadataFilename'

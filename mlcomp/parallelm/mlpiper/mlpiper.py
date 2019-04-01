@@ -18,9 +18,7 @@ from parallelm.pipeline.executor import Executor
 
 class MLPiper(Base):
     SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
-    COMPONENT_PACKAGE = "parallelm/code_components"
-    COMP_PKG_DIR = "comp_pkg"
-    DIST_DIR = "mlpiper_dist"
+    COMP_DIR = "components"
     COMPONENTS_SETUP_PY = "mcenter_components_setup.py"
 
     MLPIPER_SCRIPT = "mlpiper"
@@ -30,7 +28,7 @@ class MLPiper(Base):
         super(MLPiper, self).__init__()
         self.set_logger(logging.getLogger(self.logger_name()))
         self._comp_repo_info = None
-        self._dist_dir = None
+        self._comp_root_path = None
         self._deploy_dir = None
         self._bin_dir = None
         self._pipeline_dict = None
@@ -38,7 +36,6 @@ class MLPiper(Base):
         self._engine = None
         self._options = options
 
-        self._skip_clean = False
         self._skip_mlpiper_deps = False
 
         self._input_model_filepath = None
@@ -46,23 +43,20 @@ class MLPiper(Base):
         self._force = False
 
     def _print_info(self):
-        self._logger.info("dist_dir: {}".format(self._dist_dir))
+        self._logger.info("comp_root_path: {}".format(self._comp_root_path))
         self._logger.info("bin_dir: {}".format(self._bin_dir))
 
-    def comp_repo(self, comp_root_dir):
-        self._comp_repo_info = ComponentScanner().scan_dir(comp_root_dir)
+    def comp_repo(self, comp_root_path):
+        self._comp_repo_info = ComponentScanner().scan_dir(comp_root_path)
         return self
 
     def deployment_dir(self, deploy_dir):
         self._deploy_dir = os.path.abspath(deploy_dir)
+        self._comp_root_path = os.path.join(self._deploy_dir, MLPiper.COMP_DIR)
         return self
 
     def bin_dir(self, bin_dir):
         self._bin_dir = os.path.realpath(bin_dir)
-        return self
-
-    def skip_clean(self, skip_clean):
-        self._skip_clean = skip_clean
         return self
 
     def skip_mlpiper_deps_install(self, skip_deps):
@@ -104,7 +98,6 @@ class MLPiper(Base):
 
     def deploy(self):
         self._logger.info("Preparing pipeline for run")
-        self._print_info()
 
         if not self._deploy_dir:
             raise Exception("Deployment dir was not provided")
@@ -118,15 +111,11 @@ class MLPiper(Base):
         if not self._pipeline_dict:
             raise Exception("Pipeline was not provided")
 
-        if not self._dist_dir:
-            self._dist_dir = os.path.join(self._deploy_dir, MLPiper.DIST_DIR)
-
+        self._print_info()
         self._validate_pipeline()
         self._fix_pipeline()
-        self._create_components_pkg()
+        self._create_components_store()
         self._create_deployment()
-        if not self._skip_clean:
-            self._cleanup()
 
     def _get_comp_repo_folder_structure(self, comp_name):
         return self._comp_repo_info[self._engine][comp_name]
@@ -158,7 +147,7 @@ class MLPiper(Base):
             self._pipeline_dict[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD][java_mapping.MODEL_FILE_SINK_PATH_KEY] = \
                 self._output_model_filepath
 
-    def _copy_components(self, dest_dir):
+    def _copy_components(self):
         self._logger.debug("Copying pipeline components to staging area")
         comp_copied = {}
         for comp_name in self._get_pipeline_components():
@@ -167,7 +156,7 @@ class MLPiper(Base):
                 comp_repo_folder_struct = self._get_comp_repo_folder_structure(comp_name)
                 src_comp_root = comp_repo_folder_struct["root"]
                 src_comp_files = comp_repo_folder_struct["files"]
-                comp_dst_root = os.path.join(dest_dir, comp_name)
+                comp_dst_root = os.path.join(self._comp_root_path, comp_name)
                 os.mkdir(comp_dst_root)
                 for f in src_comp_files:
                     try:
@@ -179,51 +168,17 @@ class MLPiper(Base):
                         shutil.copy(src_path, dst_path)
                     self._logger.debug("Copied src comp file to dst: {} ==> {}".format(src_path, dst_path))
 
-                with open(os.path.join(comp_dst_root, "component.json"), "w") as f:
-                    json.dump(comp_repo_folder_struct["comp_desc"], f)
-
                 open(os.path.join(comp_dst_root, "__init__.py"), 'a').close()
 
                 self._logger.debug("Created tmp dst component dir: {}".format(comp_dst_root))
 
                 comp_copied[comp_name] = True
 
-    def _add_pkg_files(self, comp_pkg_dir):
-        self._logger.debug("Copying setup.py to component package")
-        src_comp_pkg_setup = os.path.join(self._bin_dir, MLPiper.COMPONENTS_SETUP_PY)
-        dst_comp_pkg_setup = os.path.join(comp_pkg_dir, "setup.py")
-        shutil.copy(src_comp_pkg_setup, dst_comp_pkg_setup)
+    def _create_components_store(self):
+        os.makedirs(self._comp_root_path)
+        self._logger.debug("dist_dir: {}".format(self._comp_root_path))
 
-        dst_comp_tmp_dir = os.path.join(comp_pkg_dir, MLPiper.COMPONENT_PACKAGE)
-        # This is the __init__ at the namespace directory
-        with open(os.path.join(dst_comp_tmp_dir, '..', '__init__.py'), 'w') as f:
-            f.write("__import__('pkg_resources').declare_namespace(__name__)")
-
-        # This is the __init__ at the lower level dirctory (the directory containing all components as dirs)
-        open(os.path.join(dst_comp_tmp_dir, '__init__.py'), 'w').close()
-
-    def _create_pkg(self, comp_pkg_dir):
-        create_egg_script = os.path.join(self._bin_dir, "create-egg.sh")
-        if not os.path.exists(create_egg_script):
-            raise Exception("Script {} does not exists, might be bad installation".format(create_egg_script))
-
-        create_pkg_cmd = '{} --root={} --silent'.format(create_egg_script, comp_pkg_dir)
-        self._logger.debug("create_pkg_cmd: {}".format(create_pkg_cmd))
-
-        subprocess.check_call(create_pkg_cmd, shell=True)
-
-    def _create_components_pkg(self):
-
-        comp_pkg_dir = os.path.join(self._dist_dir, MLPiper.COMP_PKG_DIR)
-        os.makedirs(comp_pkg_dir)
-        self._logger.debug("comp_pkg_dir: {}".format(comp_pkg_dir))
-        dst_comp_tmp_dir = os.path.join(comp_pkg_dir, MLPiper.COMPONENT_PACKAGE)
-        self._logger.info("dest_comp_tmp_dir: {}".format(dst_comp_tmp_dir))
-        os.makedirs(dst_comp_tmp_dir)
-
-        self._copy_components(dst_comp_tmp_dir)
-        self._add_pkg_files(comp_pkg_dir)
-        self._create_pkg(comp_pkg_dir)
+        self._copy_components()
 
     def _copy_pkg(self, comp_pkg_dir):
 
@@ -236,12 +191,6 @@ class MLPiper(Base):
             shutil.copy(pkg_filepath, self._deploy_dir)
 
     def _create_deployment(self):
-
-        comp_pkg_dir = os.path.join(self._dist_dir, MLPiper.COMP_PKG_DIR)
-        self._copy_pkg(comp_pkg_dir)
-
-        # TODO - add system config to pipeline
-        #self._pipeline_json['systemConfig']['modelFileSinkPath'] = self._model_save_path
         pipeline_file = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_PIPELINE)
         with open(pipeline_file, 'w') as f:
             json.dump(self._pipeline_dict, f, indent=4)
@@ -251,7 +200,7 @@ class MLPiper(Base):
 
     def _cleanup(self):
         self._logger.info("Cleaning up ... " + self._deploy_dir)
-        shutil.rmtree(self._dist_dir)
+        shutil.rmtree(self._comp_root_path)
 
     def _install_deps(self, py_deps):
         self._logger.info("Installing py dependencies ... {}".format(py_deps))
@@ -284,18 +233,14 @@ class MLPiper(Base):
         for egg in eggs:
             sys.path.insert(0, egg)
 
-        import pkg_resources
-        if py_version_major < 3:
-            reload(pkg_resources)
-        else:
-            import importlib
-            importlib.reload(pkg_resources)
-
         pipeline_file = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_PIPELINE)
         if not os.path.exists(pipeline_file):
             raise Exception("Pipeline file not exists! path: {}".format(pipeline_file))
 
-        pipeline_runner = Executor().pipeline_file(open(pipeline_file)).use_color(self._use_color)
+        pipeline_runner = Executor() \
+            .comp_root_path(self._comp_root_path) \
+            .pipeline_file(open(pipeline_file)) \
+            .use_color(self._use_color)
 
         if not self._skip_mlpiper_deps:
             py_deps = pipeline_runner.all_py_component_dependencies()

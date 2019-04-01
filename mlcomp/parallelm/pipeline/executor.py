@@ -22,8 +22,10 @@ except ImportError as e:
     print("Note: was not able to import mlops: " + str(e))
     pass  # Designed for tests
 
+
 class ExecutorException(Exception):
     pass
+
 
 class Executor(Base):
     def __init__(self, args=None):
@@ -31,12 +33,13 @@ class Executor(Base):
 
         self._args = args
         self._pipeline_file = None
+        self._pipeline = None
         self._json_pipeline = None
         self._run_locally = False
         self._ml_engine = None
-        self._pipeline = None
         self._mlcomp_jar = None
         self._use_color = True
+        self._comp_root_path = None
 
         if args:
             self._json_pipeline = getattr(args, "pipeline", None)
@@ -44,6 +47,7 @@ class Executor(Base):
             self._run_locally = getattr(args, "run_locally", False)
             self._mlcomp_jar = getattr(args, MLCOMP_JAR_ARG, None)
             self._spark_jars = getattr(args, SPARK_JARS_ARG, None)
+            self._comp_root_path = getattr(args, "comp_root_path", None)
         else:
             self._spark_jars = os.environ.get(SPARK_JARS_ENV_VAR, None)
 
@@ -51,12 +55,22 @@ class Executor(Base):
         self._pipeline_file = pipeline_file
         return self
 
+    @property
+    def pipeline(self):
+        if not self._pipeline:
+            self._load_pipeline()
+        return self._pipeline
+
     def mlcomp_jar(self, mlcomp_jar):
         self._mlcomp_jar = mlcomp_jar
         return self
 
     def use_color(self, use_color):
         self._use_color = use_color
+        return self
+
+    def comp_root_path(self, comp_root_path):
+        self._comp_root_path = comp_root_path
         return self
 
     @staticmethod
@@ -88,7 +102,8 @@ class Executor(Base):
     def all_component_dependencies(self, lang):
         accumulated_py_deps = set()
 
-        comps_desc_list = components_desc.ComponentsDesc().load()
+        comps_desc_list = components_desc.ComponentsDesc(pipeline=self.pipeline,
+                                                         comp_root_path=self._comp_root_path).load()
         for comp_desc in comps_desc_list:
             if comp_desc[json_fields.PIPELINE_LANGUAGE_FIELD] == lang:
                 deps = comp_desc.get(json_fields.COMPONENT_DESC_PYTHON_DEPS, None)
@@ -107,19 +122,19 @@ class Executor(Base):
         """
 
         self._logger.debug("Executor.go()")
-        pipeline = self._load_pipeline()
 
         try:
-            self._init_ml_engine(pipeline)
+            self._init_ml_engine(self.pipeline)
 
-            comps_desc_list = components_desc.ComponentsDesc(self._ml_engine).load()
+            comps_desc_list = components_desc.ComponentsDesc(self._ml_engine, self.pipeline, self._comp_root_path)\
+                .load()
             self._logger.debug("comp_desc: {}".format(comps_desc_list))
-            dag = Dag(pipeline, comps_desc_list, self._ml_engine).use_color(self._use_color)
+            dag = Dag(self.pipeline, comps_desc_list, self._ml_engine).use_color(self._use_color)
 
             # Flush stdout so the logs looks a bit in order
             sys.stdout.flush()
 
-            system_conf = pipeline[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD]
+            system_conf = self.pipeline[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD]
             if dag.is_stand_alone:
                 dag.run_single_component_pipeline(system_conf, self._ml_engine)
             else:
@@ -216,6 +231,8 @@ class Executor(Base):
             self._pipeline = json.loads(self._json_pipeline)
         elif self._pipeline_file:
             self._pipeline = json.load(self._pipeline_file)
+        else:
+            raise MLCompException("Missing pipeline file!")
 
         # Validations
         if json_fields.PIPELINE_PIPE_FIELD not in self._pipeline:

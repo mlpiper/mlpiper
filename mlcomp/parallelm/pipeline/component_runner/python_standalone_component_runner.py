@@ -6,7 +6,6 @@ from parallelm.pipeline.pipeline_utils import main_component_module
 from parallelm.pipeline.component_runner.standalone_component_runner import StandaloneComponentRunner
 from parallelm.pipeline.pipeline_utils import assemble_cmdline_from_args
 from parallelm.pipeline.component_language import ComponentLanguage
-from parallelm.pipeline.component_dir_helper import ComponentDirHelper
 import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 from nbconvert import HTMLExporter
@@ -47,8 +46,7 @@ class PythonStandaloneComponentRunner(StandaloneComponentRunner):
             elif self._dag_node.comp_language() == ComponentLanguage.JUPYTER:
                 # run the jupyter notebook
                 self._logger.info("Jupyter Notebook runner")
-                comp_helper = ComponentDirHelper(self._dag_node.comp_package(), self._dag_node.comp_program())
-                comp_dir = comp_helper.extract_component_out_of_egg()
+                comp_dir = self._dag_node.comp_root_path()
                 self._logger.debug("Component directory {} -> {}".format(comp_dir, os.listdir(comp_dir)))
 
                 notebook_filename = os.path.join(comp_dir, self._dag_node.comp_program())

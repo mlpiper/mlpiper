@@ -29,7 +29,7 @@ class ComponentScanner(object):
         """
         comps = {}
         logging.debug("Scanning {}".format(root_dir))
-        for root, comp_desc in self._get_next_comp_desc(root_dir):
+        for root, comp_desc in ComponentsDesc.next_comp_desc(root_dir):
             engine_type = comp_desc[json_fields.COMPONENT_DESC_ENGINE_TYPE_FIELD]
             comps.setdefault(engine_type, {})
 
@@ -45,26 +45,6 @@ class ComponentScanner(object):
 
             logging.debug("Found component, root: {}, engine: {}, name: ".format(root, engine_type, comp_name))
         return comps
-
-    def _get_next_comp_desc(self, root_dir):
-        for root, _, files in os.walk(root_dir):
-            for filename in files:
-                comp_desc = self._comp_desc(root, filename)
-                if comp_desc:
-                    yield root, comp_desc
-
-    def _comp_desc(self, root, filename):
-        if filename.endswith(".json"):
-            comp_json = os.path.join(root, filename)
-            with open(comp_json) as f:
-                try:
-                    comp_desc = json.load(f)
-                except ValueError as ex:
-                    raise Exception("Invalid json format! filename: {}, exception: {}".format(comp_json, str(ex)))
-
-            if ComponentsDesc.is_valid(comp_desc):
-                return comp_desc
-        return None
 
     def _include_files(self, comp_root, comp_desc):
         include_patterns = self._parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_INCLUDE_GLOB_PATTERNS))

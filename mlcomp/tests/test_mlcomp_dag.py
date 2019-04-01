@@ -74,7 +74,7 @@ class TestPythonIO:
             ]
         }
         python_engine = PythonEngine("test-pipe")
-        comps_desc_list = ComponentsDesc(python_engine).load()
+        comps_desc_list = ComponentsDesc(python_engine, pipeline=pipeline).load()
         dag = Dag(pipeline, comps_desc_list, python_engine)
 
         dag_node_1 = dag.get_dag_node(0)

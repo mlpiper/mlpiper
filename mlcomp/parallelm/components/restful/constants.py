@@ -4,6 +4,7 @@ class SharedConstants:
     TARGET_PATH_KEY = 'target_path'
     SOCK_FILENAME_KEY = 'sock_filename'
     STATS_SOCK_FILENAME_KEY = 'stats_sock_filename'
+    REST_COMP_ROOT_PATH = 'rest_comp_root_path'
 
 
 class ComponentConstants:

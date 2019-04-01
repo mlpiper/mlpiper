@@ -62,9 +62,6 @@ def parse_args():
 
     parser.add_argument('--logging-level', required=False, choices=list(LOG_LEVELS.keys()), default="info")
 
-    parser.add_argument('--skip-clean', action="store_true", default=False,
-                        help="Do not cleanup deployment after run - useful for debugging pipelines/components")
-
     parser.add_argument('--no-color', action="store_true", default=False,
                         help="Do not use colors in printouts")
 
@@ -141,9 +138,12 @@ def main(bin_dir=None):
     if options.subparser_name in ("deploy", "run"):
         logging.debug("component_root: {}".format(options.comp_root))
 
-        ml_piper = MLPiper(options).comp_repo(options.comp_root).deployment_dir(options.deployment_dir) \
-            .bin_dir(bin_dir).pipeline(options.pipeline if options.pipeline else options.file) \
-            .skip_clean(options.skip_clean).use_color(not options.no_color) \
+        ml_piper = MLPiper(options) \
+            .comp_repo(options.comp_root) \
+            .deployment_dir(options.deployment_dir) \
+            .bin_dir(bin_dir) \
+            .pipeline(options.pipeline if options.pipeline else options.file) \
+            .use_color(not options.no_color) \
             .skip_mlpiper_deps_install(options.skip_mlpiper_deps) \
             .force(options.force)
 

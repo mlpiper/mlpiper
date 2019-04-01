@@ -35,8 +35,8 @@ class DagNode(Base):
     def comp_program(self):
         return self.comp_desc()[json_fields.COMPONENT_DESC_PROGRAM_FIELD]
 
-    def comp_package(self):
-        return self.comp_desc()[json_fields.COMPONENT_DESC_PACKAGE_FIELD]
+    def comp_root_path(self):
+        return self.comp_desc()[json_fields.COMPONENT_DESC_ROOT_PATH_FIELD]
 
     def comp_class(self):
         return self.comp_desc()[json_fields.COMPONENT_DESC_CLASS_FIELD]

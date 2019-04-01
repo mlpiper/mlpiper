@@ -85,7 +85,7 @@ class Dag(Base):
     def _component_run_footer(self, dag_node, data_objs, runtime_in_sec):
         self._print_colored("-" * 60)
         self._print_colored("Runtime:    {:.1f} sec".format(runtime_in_sec))
-        self._print_colored("NR outputs: {}".format(len(data_objs)))
+        self._print_colored("NR outputs: {}".format(len(data_objs) if data_objs else 0))
         self._print_colored(" ")
 
     def run_connected_pipeline(self, system_conf, engine_info):

@@ -1,4 +1,4 @@
-from .util import util
+from sink_additions.util import util
 
 
 def sink_decode(str):
