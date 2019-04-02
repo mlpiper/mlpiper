@@ -5,7 +5,7 @@
                 {
                     "name": "src",
                     "id": 1,
-                    "type": "string-source",
+                    "type": "string-source-shared-dir",
                     "parents": [],
                     "arguments": {
                         "value": "test-st1-1234"
@@ -14,7 +14,7 @@
                 {
                     "name": "sink",
                     "id": 2,
-                    "type": "string-sink",
+                    "type": "string-sink-shared-dir",
                     "parents": [{"parent": 1, "output": 0}],
                     "arguments": {
                         "expected-value": "test-st1-1234"
