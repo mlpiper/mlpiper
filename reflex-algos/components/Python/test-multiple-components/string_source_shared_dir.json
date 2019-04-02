@@ -7,7 +7,7 @@
   "program": "string_source_shared_dir.py",
   "componentClass": "StringSourceSharedDir",
   "group": "Connectors",
-  "includeGlobPatterns" : "string_source_shared_dir* | source_add* | util/*.py",
+  "includeGlobPatterns" : "__init__.py | string_source_shared_dir* | source_add* | util/*.py",
   "useMLOps": true,
   "inputInfo": [],
   "outputInfo": [
