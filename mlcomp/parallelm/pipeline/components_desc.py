@@ -76,6 +76,8 @@ class ComponentsDesc(Base):
 
         if not self._comp_root_path:
             try:
+                # The following call to 'pkg_resources.resource_filename' actually extract all the files
+                # from the component's egg file from 'parallelm.code_components' folder
                 self._comp_root_path = pkg_resources.resource_filename(ComponentsDesc.CODE_COMPONETS_MODULE_NAME, '')
                 self._logger.info("Cached components are at: {}".format(self._comp_root_path))
             except ModuleNotFoundError:
