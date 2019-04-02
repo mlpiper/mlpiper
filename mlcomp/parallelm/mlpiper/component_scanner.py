@@ -51,12 +51,22 @@ class ComponentScanner(object):
         exclude_patterns = self._parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_EXCLUDE_GLOB_PATTERNS))
 
         included_files = []
+        init_py_found = False
         for root, _, files in os.walk(comp_root):
             for f in files:
                 rltv_path = os.path.relpath(root,  comp_root)
                 filepath = os.path.join(rltv_path, f) if rltv_path != "." else f
                 if self._path_included(filepath, include_patterns, exclude_patterns):
+                    if filepath == "__init__.py":
+                        init_py_found = True
                     included_files.append(filepath)
+
+        if not init_py_found:
+            comp_name = comp_desc[json_fields.COMPONENT_DESC_NAME_FIELD]
+            raise Exception("Missing '__init__.py' in component's root folder or it is not included"
+                            " by 'glob' pattern! Please make sure to add it! name: {}, path: {}"
+                            .format(comp_name, comp_root))
+
         return included_files
 
     def _parse_patterns(self, pattern):

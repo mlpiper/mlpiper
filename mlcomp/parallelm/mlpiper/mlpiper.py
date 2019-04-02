@@ -168,8 +168,6 @@ class MLPiper(Base):
                         shutil.copy(src_path, dst_path)
                     self._logger.debug("Copied src comp file to dst: {} ==> {}".format(src_path, dst_path))
 
-                open(os.path.join(comp_dst_root, "__init__.py"), 'a').close()
-
                 self._logger.debug("Created tmp dst component dir: {}".format(comp_dst_root))
 
                 comp_copied[comp_name] = True
