@@ -16,6 +16,7 @@ class MLEngine(with_metaclass(abc.ABCMeta, Base)):
         self._standalone = standalone
         self._user_data = {}
         self._config = {}
+        self._uuid = None
 
     @property
     def pipeline_name(self):
@@ -102,3 +103,9 @@ class MLEngine(with_metaclass(abc.ABCMeta, Base)):
     @abc.abstractmethod
     def _context(self):
         pass
+
+    def set_uuid(self, uuid):
+        self._uuid = uuid
+
+    def get_uuid(self):
+        return self._uuid

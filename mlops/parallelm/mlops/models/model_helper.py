@@ -71,26 +71,42 @@ class ModelHelper(BaseObj):
             self._info("Models dataframe is empty")
             return df
 
-        self._debug("DF\n{}".format(df[["workflowRunId", "createdTimestamp", "modelId", "modelFormat"]]))
+        self._debug("DF\n{}".format(df))
 
         if model_filter is not None:
             self._info("Got filter: {}".format(model_filter))
 
-            query = "workflowRunId == @self._ion.id "
+            query = ""
+            num_cols = 0
+            if "workflowRunId" in df.columns:
+                query = "workflowRunId == @self._ion.id "
+                num_cols += 1
 
             if model_filter.time_window_start is not None:
                 start_ts = datetime_to_timestamp_milli(model_filter.time_window_start)
-                query += " & createdTimestamp >= @start_ts"
+                if num_cols > 0:
+                    query += " &"
+                query += " createdTimestamp >= @start_ts"
+                num_cols += 1
 
             if model_filter.time_window_end is not None:
                 end_ts = datetime_to_timestamp_milli(model_filter.time_window_end)
-                query += " & createdTimestamp <= @end_ts"
+                if num_cols > 0:
+                    query += " &"
+                query += " createdTimestamp <= @end_ts"
+                num_cols += 1
 
             if model_filter.id is not None:
-                query += " & modelId == @model_filter.id"
+                if num_cols > 0:
+                    query += " &"
+                query += " modelId == @model_filter.id"
+                num_cols += 1
 
-            if model_filter.pipeline_instance_id:
-                query += " & pipelineInstanceId == @model_filter.pipeline_instance_id"
+            if model_filter.pipeline_instance_id and "pipelineInstanceId" in df.columns:
+                if num_cols > 0:
+                    query += " &"
+                query += " pipelineInstanceId == @model_filter.pipeline_instance_id"
+                num_cols += 1
 
             self._info("\nQUERY: {}".format(query))
             df_filtered = df.query(query)

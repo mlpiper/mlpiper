@@ -1,6 +1,7 @@
 import sys
 import logging
 import traceback
+import uuid
 
 from parallelm.deputy.deps_install.py_package_installer import PyPackageInstaller
 from parallelm.deputy.deps_install.r_package_installer import RPackageInstaller
@@ -16,6 +17,8 @@ class Deputy(object):
         self._pipeline_file = None
         self._mlcomp_jar = None
         self._use_color = False
+        self._uuid = uuid.uuid4()
+        self._logger.info("Deputy ID {}".format(self._uuid))
 
     def pipeline(self, pipeline_file):
         self._pipeline_file = pipeline_file
@@ -38,7 +41,8 @@ class Deputy(object):
             pipeline_runner = Executor(args=None)\
                 .pipeline_file(self._pipeline_file)\
                 .mlcomp_jar(self._mlcomp_jar)\
-                .use_color(self._use_color)
+                .use_color(self._use_color)\
+                .set_uuid(self._uuid)
 
             py_deps = pipeline_runner.all_py_component_dependencies()
             if py_deps:

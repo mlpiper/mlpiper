@@ -46,7 +46,7 @@ class MLOpsCtx(BaseObj):
         self._agents_dict = {}
         self._rest_helper = MlOpsRestFactory().get_rest_helper(self._mode, self._ci.mlops_server, self._ci.mlops_port, self._ci.token)
 
-        if self._mode == MLOpsMode.AGENT:
+        if self._mode == MLOpsMode.AGENT or self._mode == MLOpsMode.REST_ACCUMULATOR:
             # In agent mode, we talk with the agent and use the mlops prefix to the http requests
             self._validate_config()
             self._info("Agent mode")

@@ -22,18 +22,46 @@ from parallelm.components import parameter
 from parallelm.common.mlcomp_exception import MLCompException
 from parallelm.components.connectable_component import ConnectableComponent
 from parallelm.components.restful.constants import SharedConstants, ComponentConstants, UwsgiConstants, NginxConstants
-from parallelm.components.restful.metric import Metric
+from parallelm.components.restful.constants import RestfulConstants
 from parallelm.components.restful.uwsgi_broker import UwsgiBroker
 from parallelm.components.restful.nginx_broker import NginxBroker
+from parallelm.components.restful.flask_route import FlaskRoute
+from parallelm.components.restful.metric import Metric, MetricType, MetricRelation
+
+
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops
+    from parallelm.mlops.mlops_mode import MLOpsMode
+    mlops_loaded = True
+except ImportError as e:
+    print("Note: 'mlops' was not loaded")
 
 
 class RESTfulComponent(ConnectableComponent):
+    _uuid_engine = None
+    _stats_path_filename = None
+    _stats_count = 0
+
     def __init__(self, engine):
         super(RESTfulComponent, self).__init__(engine if engine else RestModelServingEngine("uwsgi-context"))
         self._dry_run = False
         self._wsgi_broker = None
         self._nginx_broker = None
         self._wid = None
+
+        if mlops_loaded:
+            from os import environ
+            if environ.get(RestfulConstants.STATS_AGGREGATE_FLAG) is not None:
+                mlops.init(mlops_mode=MLOpsMode.REST_ACCUMULATOR)
+            else:
+                mlops.init()
+
+        self._total_stat_requests = Metric("pm.stat_requests",
+                                           title="Total number of stat requests",
+                                           metric_type=MetricType.COUNTER,
+                                           value_type=int,
+                                           metric_relation=MetricRelation.SUM_OF)
 
     def set_wid(self, wid):
         self._wid = wid
@@ -57,11 +85,18 @@ class RESTfulComponent(ConnectableComponent):
                                        prefix=ComponentConstants.TMP_RESTFUL_DIR_PREFIX)
         os.chmod(target_path, 0o777)
 
+        fd, stats_path_filename = tempfile.mkstemp(dir=ComponentConstants.TMP_RESTFUL_ROOT,
+                                                   prefix=ComponentConstants.TMP_RESTFUL_DIR_PREFIX)
+        os.chmod(stats_path_filename, 0o777)
+
+        self._logger.debug("Path for stats {}".format(stats_path_filename))
+
         shared_conf = {
             SharedConstants.TARGET_PATH_KEY: target_path,
             SharedConstants.SOCK_FILENAME_KEY: UwsgiConstants.SOCK_FILENAME,
             SharedConstants.STATS_SOCK_FILENAME_KEY: UwsgiConstants.STATS_SOCK_FILENAME,
-            SharedConstants.STANDALONE: self._ml_engine.standalone
+            SharedConstants.STANDALONE: self._ml_engine.standalone,
+            SharedConstants.STATS_PATH_FILENAME_KEY: stats_path_filename
         }
 
         log_format = self._params.get(ComponentConstants.LOG_FORMAT_KEY, ComponentConstants.DEFAULT_LOG_FORMAT)
@@ -87,6 +122,7 @@ class RESTfulComponent(ConnectableComponent):
             UwsgiConstants.PARAMS_KEY: self._params,
             UwsgiConstants.PIPELINE_NAME_KEY: pipeline_name,
             UwsgiConstants.MODEL_PATH_KEY: self._params[model_filepath_key],
+            UwsgiConstants.DEPUTY_ID_KEY: self._ml_engine.get_uuid(),
             ComponentConstants.UWSGI_DISABLE_LOGGING_KEY:
                 parameter.str2bool(self._params.get(ComponentConstants.UWSGI_DISABLE_LOGGING_KEY,
                                                     ComponentConstants.DEFAULT_UWSGI_DISABLE_LOGGING)),
@@ -176,10 +212,51 @@ class RESTfulComponent(ConnectableComponent):
 
         UwsgiBroker._application.run(host='localhost', port=port)
 
+    # NOTE: do not rename this route or over-ride it
+    @FlaskRoute('/{}'.format(RestfulConstants.STATS_ROUTE))
+    #@FlaskRoute('/statsinternal')
+    def stats(self, url_params, form_params):
+        status_code = 200
+
+        import os
+        import json
+
+        stats_dict = {}
+        self._stats_count += 1
+        self._total_stat_requests.increase()
+
+        if self._stats_path_filename is None or os.stat(self._stats_path_filename).st_size == 0:
+            pass
+        else:
+            with open(self._stats_path_filename, 'r') as input:
+                dict_json = ''
+                for line in input:
+                    dict_json += line
+                try:
+                    stats_dict = json.loads(dict_json)
+                except Exception as e:
+                    stats_dict[RestfulConstants.STATS_SYSTEM_ERROR] = str(e)
+                    #stats_dict['system_error'] = str(e)
+                    print("Unexpected error: {}", str(e))
+
+        stats_dict[RestfulConstants.STATS_SYSTEM_INFO] = {}
+        stats_dict[RestfulConstants.STATS_SYSTEM_INFO][RestfulConstants.STATS_WID] = self._wid
+        stats_dict[RestfulConstants.STATS_SYSTEM_INFO][RestfulConstants.STATS_UUID] = self._uuid_engine
+
+        try:
+            if mlops_loaded:
+                stats_dict[RestfulConstants.STATS_USER] = mlops.get_stats_map()
+            else:
+                print("Warning: mlops is not loaded, user statistics are lost")
+        except Exception as e:
+            print("error in get_stats_map: " + str(e))
+            status_code = 404
+            stats_dict = {"error": "error fetching stats map: {}".format(e)}
+
+        return status_code, stats_dict
+
 
 if __name__ == '__main__':
-
-    from parallelm.components.restful.flask_route import FlaskRoute
 
     class MyResfulComp(RESTfulComponent):
         def __init__(self, engine):

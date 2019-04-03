@@ -89,6 +89,7 @@ class MLOps(object):
         self._config = None
         self._mlops_ctx = None
         self._curr_model = None
+        self._uuid = None
 
         # Run in test mode
         self._test_mode = False
@@ -153,6 +154,11 @@ class MLOps(object):
                                                            self._mlops_ctx.current_node().pipeline_instance_id)
                 logger_factory.set_logger_provider_func(self._output_channel.get_logger)
                 self._logger = logger_factory.get_logger(__name__)
+        elif self._config.mlops_mode == MLOpsMode.REST_ACCUMULATOR:
+            self._logger.info("output_channel = rest accumulator")
+            from parallelm.mlops.channels.python_accumulator_channel import PythonAccumulatorChannel
+            self._output_channel = PythonAccumulatorChannel(self._mlops_ctx.rest_helper(),
+                                                            self._mlops_ctx.current_node().pipeline_instance_id)
         else:
             raise MLOpsException("Mlops mode [{}] is not supported".format(self._config.mlops_mode))
         self._logger.info("setting output channel - 2 {} {}".format(self._config.mlops_mode, self._output_channel))
@@ -239,6 +245,13 @@ class MLOps(object):
         self._mlops_ctx = None
         self._done_called = True
         self._init_called = False
+
+    def get_uuid(self):
+        return self._uuid
+
+    def set_uuid(self, uuid):
+        self._uuid = uuid
+        return self
 
     @property
     def done_called(self):
@@ -443,6 +456,9 @@ class MLOps(object):
         self._verify_mlops_is_ready()
         self._stats_helper.set_stat(name=name, data=data, model_id=None, category=category, timestamp=timestamp,
                                     **kwargs)
+
+    def get_stats_map(self):
+        return self._output_channel.get_stats_map()
 
     def set_kpi(self, name, data, timestamp=None, units=None):
         """
