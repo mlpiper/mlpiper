@@ -410,6 +410,21 @@
                                 </configuration>
                             </execution>
                             <execution>
+                                <id>mlcomp-python-tests</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <workingDirectory>${project.basedir}/../mlcomp</workingDirectory>
+                                    <environmentVariables>
+                                        <PYTHONPATH>./:$PYTHONPATH</PYTHONPATH>
+                                    </environmentVariables>
+                                    <executable>make</executable>
+                                    <commandlineArgs>test</commandlineArgs>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>package-py2_py3-deputy-eggs</id>
                                 <phase>package</phase>
                                 <goals>
@@ -422,8 +437,6 @@
                                     </commandlineArgs>
                                 </configuration>
                             </execution>
-
-
                             <execution>
                                 <id>component-json-generation</id>
                                 <phase>install</phase>
