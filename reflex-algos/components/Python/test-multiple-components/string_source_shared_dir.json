@@ -3,7 +3,7 @@
   "userStandalone": false,
   "language": "Python",
   "name": "string-source-shared-dir",
-  "label": "Simple String Source (Shared Dir)",
+  "label": "Simple String Source",
   "program": "string_source_shared_dir.py",
   "componentClass": "StringSourceSharedDir",
   "group": "Connectors",

@@ -3,7 +3,7 @@
   "userStandalone": false,
   "language": "Python",
   "name": "string-sink-shared-dir",
-  "label": "Simple String Sink (Shared Dir)",
+  "label": "Simple String Sink",
   "program": "string_sink_shared_dir.py",
   "componentClass": "StringSinkSharedDir",
   "group": "Sinks",
