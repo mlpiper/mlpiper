@@ -11,6 +11,7 @@ class SharedConstants:
     STATS_SOCK_FILENAME_KEY = 'stats_sock_filename'
     REST_COMP_ROOT_PATH = 'rest_comp_root_path'
     STANDALONE = 'standalone'
+    STATS_PATH_FILENAME_KEY = 'stats_path_filename'
 
 
 class ComponentConstants:
@@ -80,6 +81,19 @@ class UwsgiConstants:
     PARAMS_KEY = 'params'
     PIPELINE_NAME_KEY = 'pipeline_name'
     MODEL_PATH_KEY = 'model_path'
+    DEPUTY_ID_KEY = 'deputy_id'
+    WORKER_ID = 'worker_id'
+
+
+class RestfulConstants:
+    STATS_ROUTE = 'statsinternal'
+    STATS_SYSTEM_INFO = 'sys_info'
+    STATS_WID = 'wid'
+    STATS_UUID = 'uuid2'
+    STATS_USER = 'user'
+    STATS_SYSTEM = 'system'
+    STATS_SYSTEM_ERROR = 'system_error'
+    STATS_AGGREGATE_FLAG = 'AGGREGATE_STATS'
 
 
 class NginxConstants:

@@ -13,6 +13,7 @@ class UwsiStatsSnapshot(object):
         self._uwsgi_pm_metrics_accumulation = {}
         self._uwsgi_pm_metrics_per_window = None
         self._metrics_execution_order = []
+        self._worker_ids = None
         self._extract_relevant_stats(prev_stats_snapshot)
 
     def _extract_relevant_stats(self, prev_stats_snapshot):
@@ -26,6 +27,7 @@ class UwsiStatsSnapshot(object):
         worker_requests = {"wid-{:02d}".format(w["id"]):
                                (w["requests"], w["status"].encode('utf8')) for w in self._raw_stats["workers"]
                                if w["id"] != 0}
+        self._worker_ids = sorted([w["id"] for w in self._raw_stats["workers"] if w["id"] != 0])
 
         self._sorted_worker_stats = sorted([(k, v[0], v[1].decode()) for k, v in worker_requests.items()])
 
@@ -122,6 +124,10 @@ class UwsiStatsSnapshot(object):
     @property
     def avg_workers_response_time(self):
         return self._avg_rt
+
+    @property
+    def worker_ids(self):
+        return self._worker_ids
 
     @property
     def uwsgi_pm_metrics(self):

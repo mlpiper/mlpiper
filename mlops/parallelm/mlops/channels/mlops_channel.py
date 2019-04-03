@@ -65,3 +65,6 @@ class MLOpsChannel(with_metaclass(abc.ABCMeta, object)):
         else:
             stat_mode = StatsMode.TimeSeries
         return stat_mode, graph_type
+
+    def get_stats_map(self):
+        return None

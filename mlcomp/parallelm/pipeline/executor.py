@@ -17,6 +17,7 @@ from parallelm.pipeline.executor_config import ExecutorConfig, MLCOMP_JAR_ARG, S
 mlops_loaded = False
 try:
     from parallelm.mlops import mlops
+    from parallelm.mlops.mlops_mode import MLOpsMode
     from parallelm.mlops.common.string_ops import mask_passwords
     mlops_loaded = True
 except ImportError as e:
@@ -42,6 +43,7 @@ class Executor(Base):
         self._use_color = True
         self._comp_root_path = None
         self._standalone = False
+        self._uuid = None
 
         if args:
             self._json_pipeline = getattr(args, "pipeline", None)
@@ -77,6 +79,10 @@ class Executor(Base):
 
     def standalone(self, standalone):
         self._standalone = standalone
+        return self
+
+    def set_uuid(self, uuid):
+        self._uuid = uuid
         return self
 
     @staticmethod
@@ -189,6 +195,7 @@ class Executor(Base):
             self._ml_engine = PySparkEngine(pipeline, self._run_locally, self._spark_jars)
             if mlops_loaded:
                 mlops.init(self._ml_engine.context)
+                mlops.set_uuid(self._uuid)
 
         elif engine_type in [EngineType.GENERIC, EngineType.REST_MODEL_SERVING,  EngineType.SAGEMAKER]:
             # All are supposed to be derived from python engine
@@ -198,6 +205,15 @@ class Executor(Base):
 
                 self._logger.info("Using python engine")
                 self._ml_engine = PythonEngine(pipeline, self._mlcomp_jar)
+
+                self.set_logger(self._ml_engine.get_engine_logger(self.logger_name()))
+                if mlops_loaded:
+                    # This initialization applies only to Python components and not to components
+                    # that are written in other languages (.e.g R). The reason for that is that
+                    # those components are executed within different process and thus need to
+                    # load and init the mlops library separately.
+                    mlops.init()
+                    mlops.set_uuid(self._uuid)
 
             elif engine_type == EngineType.REST_MODEL_SERVING:
                 from parallelm.ml_engine.rest_model_serving_engine import RestModelServingEngine
@@ -216,13 +232,23 @@ class Executor(Base):
                 # that are written in other languages (.e.g R). The reason for that is that
                 # those components are executed within different process and thus need to
                 # load and init the mlops library separately.
-                mlops.init()
+
+                from os import environ
+                from parallelm.components.restful.constants import RestfulConstants
+                if environ.get(RestfulConstants.STATS_AGGREGATE_FLAG) is not None:
+                    self._logger.info("Using the accumulator channel")
+                    mlops.init(mlops_mode=MLOpsMode.REST_ACCUMULATOR)
+                else:
+                    self._logger.info("Using the standard channel")
+                    mlops.init()
+                mlops.set_uuid(self._uuid)
 
         else:
             raise MLCompException("Engine type is not supported by the Python execution engine! engineType: {}"
                                   .format(engine_type))
 
         if mlops_loaded:
+            self._ml_engine.set_uuid(self._uuid)
             self._ml_engine.run(mlops, pipeline)
 
     def _cleanup_on_exist(self):

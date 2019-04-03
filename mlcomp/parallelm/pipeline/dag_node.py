@@ -14,6 +14,7 @@ class DagNode(Base):
 
         self._temp_visit = False  # Used by 'TopologicalSort'
         self._perm_visit = False  # Used by 'TopologicalSort'
+        self._ml_engine = ml_engine
 
     def __str__(self):
         return "pipe id: {}\ncomp_desc: {}".format(self.pipe_id(), self.comp_desc())

@@ -77,6 +77,8 @@ class UwsgiBroker(Base):
                                       logger=self._logger)
 
     def _generate_entry_point_script(self, shared_conf, entry_point_conf):
+        self._logger.debug("shared conf {}".format(shared_conf))
+        self._logger.debug('entry conf {}'.format(entry_point_conf))
         wsgi_entry_script_code = WSGI_ENTRY_SCRIPT.format(
             module=self.__class__.__module__,
             cls=self.__class__.__name__,
@@ -88,7 +90,9 @@ class UwsgiBroker(Base):
             params=entry_point_conf[UwsgiConstants.PARAMS_KEY],
             pipeline_name=entry_point_conf[UwsgiConstants.PIPELINE_NAME_KEY],
             model_path=entry_point_conf[UwsgiConstants.MODEL_PATH_KEY],
-            standalone=shared_conf[SharedConstants.STANDALONE])
+            standalone=shared_conf[SharedConstants.STANDALONE],
+            deputy_id=entry_point_conf[UwsgiConstants.DEPUTY_ID_KEY],
+            stats_path_filename=shared_conf[SharedConstants.STATS_PATH_FILENAME_KEY])
 
         uwsgi_script_filepath = os.path.join(self._target_path, UwsgiConstants.ENTRY_POINT_SCRIPT_NAME)
         self._logger.info("Writing uWSGI entry point to: {}".format(uwsgi_script_filepath))
@@ -160,6 +164,7 @@ class UwsgiBroker(Base):
             return
 
         self._monitor = WsgiMonitor(self._ml_engine, self._monitor_info, shared_conf, entry_point_conf)
+        self._logger.debug("Broker uuid: {}".format(self._ml_engine.get_uuid()))
 
         proc = subprocess.Popen(uwsgi_start_cmd,
                                 shell=True,
@@ -180,7 +185,8 @@ class UwsgiBroker(Base):
 # Methods that are accessed from uWSGI worker
 
     @classmethod
-    def uwsgi_entry_point(cls, restful_comp, pipeline_name, model_path, within_uwsgi_context, standalone):
+    def uwsgi_entry_point(cls, restful_comp, pipeline_name, model_path, deputy_id, stats_path_filename,
+                          within_uwsgi_context, standalone):
         cls._wid = 0 if not within_uwsgi_context else uwsgi.worker_id()
 
         cls.w_logger = logging.getLogger("{}.{}".format(cls.__module__, cls.__name__))
@@ -194,6 +200,8 @@ class UwsgiBroker(Base):
         cls.w_logger.info("Standalone mode (wid: {}): {}".format(cls._wid, standalone))
         restful_comp._ml_engine.set_standalone(standalone)
         cls._restful_comp = restful_comp
+        cls._restful_comp._uuid_engine = deputy_id
+        cls._restful_comp._stats_path_filename = stats_path_filename
 
         if within_uwsgi_context:
             UwsgiPostFork.init(cls)
@@ -202,6 +210,8 @@ class UwsgiBroker(Base):
 
         cls.register_model_load_handler(model_path, cls.w_logger, within_uwsgi_context)
 
+        print("Deputy id {}".format(deputy_id))
+        print("Stats path {}".format(stats_path_filename))
         # This should be the last printout in the uwsgi entry point function!!!
         print(WsgiMonitor.SUCCESS_RUN_INDICATION_MSG)
 

@@ -12,7 +12,7 @@ logging.getLogger('{root_logger_name}').setLevel({log_level})
 comp = {restful_comp_cls}(None)
 comp.configure({params})
 
-{cls}.uwsgi_entry_point(comp, '{pipeline_name}', '{model_path}', within_uwsgi_context=True, standalone={standalone})
+{cls}.uwsgi_entry_point(comp, '{pipeline_name}', '{model_path}', '{deputy_id}', '{stats_path_filename}', within_uwsgi_context=True, standalone={standalone})
 
 application = {cls}._application
 """
