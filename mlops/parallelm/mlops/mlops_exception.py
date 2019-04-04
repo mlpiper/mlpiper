@@ -9,6 +9,13 @@ class MLOpsException(Exception):
     pass
 
 
+class MLOpsConnectionException(MLOpsException):
+    """
+    Exception that will be returned by the MLOps class on connection error
+    """
+    pass
+
+
 """
 SuppressException decorator can be used to suppress Exceptions.
 
