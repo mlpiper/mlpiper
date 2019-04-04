@@ -291,7 +291,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
             if r.ok:
                 return r.json()
             else:
-                raise MLOpsException('Call {} with payload {} failed text:[{}]'.format(url, event, r.text))
+                self._error('Call {} with payload {} failed: text:[{}]'.format(url, event, r.text))
         except requests.exceptions.ConnectionError as e:
             self._error(e)
             raise MLOpsException("Connection to MLOps agent [{}:{}] refused".format(self._mlops_server, self._mlops_port))
