@@ -92,12 +92,8 @@ class MLOpsPythonChannel(MLOpsChannel):
 
     def event(self, event):
         stat_str = str(MessageToJson(event)).encode("utf-8")
-
         self._logger.debug("sending: {}".format(stat_str))
-        try:
-            self._rest_helper.post_event(self._pipeline_inst_id, stat_str)
-        except Exception as e:
-            print("Fail to post event - " + str(e))
+        self._rest_helper.post_event(self._pipeline_inst_id, stat_str)
 
     def feature_importance(self, feature_importance_vector=None, feature_names=None, model=None, df=None):
 
