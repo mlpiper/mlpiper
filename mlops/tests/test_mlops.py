@@ -149,6 +149,7 @@ def test_suppress_connection_errors():
         m.get(rest_helper.url_get_model_stats(ION1.MODEL_ID), json=test_model_stats)
 
         m.post(rest_helper.url_post_event(pipeline_instance_id), exc=requests.exceptions.ConnectionError)
+        m.post(rest_helper.url_post_stat(pipeline_instance_id), exc=requests.exceptions.ConnectionError)
 
         pm.init(ctx=None, mlops_mode=MLOpsMode.AGENT)
 
@@ -161,9 +162,13 @@ def test_suppress_connection_errors():
         with pytest.raises(MLOpsConnectionException):
             pm.event(event_obj)
 
+        with pytest.raises(MLOpsConnectionException):
+            pm.set_stat("stat_same", 3)
+
         pm.suppress_connection_errors(True)
         pm.set_event(name="event_name", data="123", type=EventType.System)
         pm.event(event_obj)
+        pm.set_stat("stat_same", 3)
         pm.suppress_connection_errors(False)
 
         pm.done()
