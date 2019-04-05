@@ -384,6 +384,7 @@ class MLOps(object):
         """
         return self._curr_model
 
+    @SuppressException([MLOpsConnectionException])
     def set_stat(self, name, data=None, category=StatCategory.TIME_SERIES, timestamp=None):
         """
         Report this statistic.
