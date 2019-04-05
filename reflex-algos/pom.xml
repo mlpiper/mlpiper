@@ -9,7 +9,7 @@
     <artifactId>reflex-algos</artifactId>
     <name>reflex-algos</name>
     <groupId>com.parallelmachines</groupId>
-    <version>1.5.0</version>
+    <version>1.4.1</version>
 
     <packaging>jar</packaging>
 
@@ -17,7 +17,7 @@
         <jackson.version>2.6.5</jackson.version>
         <shaded.prefix>com.parallelmachines.shaded</shaded.prefix>
         <scala.binary.version>2.11</scala.binary.version>
-        <reflexVersion>1.5.0</reflexVersion>
+        <reflexVersion>1.4.1</reflexVersion>
     </properties>
 
     <dependencies>

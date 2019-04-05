@@ -8,12 +8,12 @@
 	<parent>
 		<groupId>com.parallelmachines.reflex</groupId>
 		<artifactId>mcenter-common</artifactId>
-		<version>1.5.0</version>
+		<version>1.4.1</version>
 		<relativePath>..</relativePath>
 	</parent>
 
 	<properties>
-        <reflexVersion>1.5.0</reflexVersion>
+        <reflexVersion>1.4.1</reflexVersion>
     </properties>
 
 	<groupId>com.parallelmachines.reflex.common</groupId>
