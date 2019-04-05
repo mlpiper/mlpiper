@@ -13,7 +13,7 @@ import json
 import time
 
 from parallelm.mlops.mlops_rest_interfaces import MlOpsRestHelper
-from parallelm.mlops.mlops_exception import MLOpsException
+from parallelm.mlops.mlops_exception import MLOpsException, MLOpsConnectionException
 from parallelm.mlops.constants import Constants, MLOpsRestHandles
 from parallelm.mlops.constants import HTTPStatus
 from parallelm.mlops.models.model import ModelMetadata
@@ -276,6 +276,14 @@ class MlOpsRestConnected(MlOpsRestHelper):
                         start=start_time, end=end_time)
         return self._get_url_request_response_as_json(url)
 
+    def url_post_event(self, pipeline_inst_id):
+        """
+        Create the REST request for posting event
+        :param pipeline_inst_id:    pipeline instance identifier
+        :return:                    the URL for the REST request
+        """
+        return build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.EVENTS, pipeline_inst_id)
+
     def post_event(self, pipeline_inst_id, event):
         """
         Post event using protobuf format
@@ -283,7 +291,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
         :param event:             ReflexEvent based on protobuf
         :return:                  Json response from agent
         """
-        url = build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.EVENTS, pipeline_inst_id)
+        url = self.url_post_event(pipeline_inst_id)
         try:
             payload = encoder(event)
             headers = {"Content-Type": "application/json;charset=UTF-8"}
@@ -293,10 +301,9 @@ class MlOpsRestConnected(MlOpsRestHelper):
             else:
                 self._error('Call {} with payload {} failed: text:[{}]'.format(url, event, r.text))
         except requests.exceptions.ConnectionError as e:
-            self._error(e)
-            raise MLOpsException("Connection to MLOps agent [{}:{}] refused".format(self._mlops_server, self._mlops_port))
+            raise MLOpsConnectionException("Connection to MLOps agent [{}:{}] refused; {}".format(self._mlops_server, self._mlops_port, e))
         except Exception as e:
-            raise MLOpsException('Call ' + str(url) + ' failed with error ' + str(e))
+            raise MLOpsException('Call ' + str(url) + ' failed with error: ' + str(e))
 
     def post_stat(self, pipeline_inst_id, stat):
         """
