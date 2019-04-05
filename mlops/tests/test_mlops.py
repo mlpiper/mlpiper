@@ -15,7 +15,7 @@ from parallelm.mlops import mlops as pm
 from parallelm.mlops.constants import Constants
 from parallelm.mlops.events.event_type import EventType
 from parallelm.mlops.ion.ion import Agent
-from parallelm.mlops.mlops_exception import MLOpsException
+from parallelm.mlops.mlops_exception import MLOpsException, MLOpsConnectionException
 from parallelm.mlops.mlops_mode import MLOpsMode
 from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
 from parallelm.mlops.models.model import ModelFormat
@@ -118,6 +118,53 @@ def test_mlops_structure_api():
         model = pm.current_model()
         assert model is not None
         assert model.metadata.modelId == ION1.MODEL_ID
+
+        pm.done()
+
+
+def test_suppress_connection_errors():
+    import requests
+    from parallelm.mlops.events.event import Event
+    from parallelm.mlops.mlops_env_constants import MLOpsEnvConstants
+
+    ion_instance_id = ION1.ION_INSTANCE_ID
+    ion_node_id = ION1.NODE_1_ID
+    token = ION1.TOKEN
+    pipeline_instance_id = ION1.PIPELINE_INST_ID_1
+
+    set_mlops_env(ion_id=ion_instance_id, ion_node_id=ion_node_id, token=token, model_id=ION1.MODEL_ID)
+
+    os.environ[MLOpsEnvConstants.MLOPS_AGENT_PUBLIC_ADDRESS] = "placeholder"
+    rest_helper = MlOpsRestFactory().get_rest_helper(MLOpsMode.AGENT, mlops_server="localhost",
+                                                     mlops_port="3456", token=token)
+
+    rest_helper.set_prefix(Constants.URL_MLOPS_PREFIX)
+
+    with requests_mock.mock() as m:
+        m.get(rest_helper.url_get_workflow_instance(ion_instance_id), json=test_workflow_instances)
+        m.get(rest_helper.url_get_health_thresholds(ion_instance_id), json=test_health_info)
+        m.get(rest_helper.url_get_ees(), json=test_ee_info)
+        m.get(rest_helper.url_get_agents(), json=test_agents_info)
+        m.get(rest_helper.url_get_model_list(), json=test_models_info)
+        m.get(rest_helper.url_get_model_stats(ION1.MODEL_ID), json=test_model_stats)
+
+        m.post(rest_helper.url_post_event(pipeline_instance_id), exc=requests.exceptions.ConnectionError)
+
+        pm.init(ctx=None, mlops_mode=MLOpsMode.AGENT)
+
+        event_obj = Event(label="event_name", event_type=EventType.System, description=None, data="123",
+                          is_alert=False, timestamp=None)
+
+        with pytest.raises(MLOpsConnectionException):
+            pm.set_event(name="event_name", data="123", type=EventType.System)
+
+        with pytest.raises(MLOpsConnectionException):
+            pm.event(event_obj)
+
+        pm.suppress_connection_errors(True)
+        pm.set_event(name="event_name", data="123", type=EventType.System)
+        pm.event(event_obj)
+        pm.suppress_connection_errors(False)
 
         pm.done()
 
