@@ -79,13 +79,8 @@ class MLOpsPythonChannel(MLOpsChannel):
 
     def stat_object(self, mlops_stat, reflex_event_message_type=ReflexEvent.StatsMessage):
         stat_str = str(mlops_stat.to_semi_json()).encode("utf-8")
-
         self._logger.debug("sending: {}".format(stat_str))
-        try:
-            self._rest_helper.post_stat(self._pipeline_inst_id, stat_str)
-        except Exception as e:
-            self._logger.error("Fail to post stat - " + str(e))
-            pass
+        self._rest_helper.post_stat(self._pipeline_inst_id, stat_str)
 
     def table(self):
         raise MLOpsException("Not implemented")
