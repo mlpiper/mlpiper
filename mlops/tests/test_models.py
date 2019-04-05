@@ -270,6 +270,7 @@ def test_feature_importance():
     num_significant_features = 6
     ion_instance_id = ION1.ION_INSTANCE_ID
     ion_node_id = ION1.NODE_1_ID
+    pipeline_instance_id = ION1.PIPELINE_INST_ID_1
     set_mlops_env(ion_id=ion_instance_id, ion_node_id=ion_node_id, model_id=ION1.MODEL_ID)
     rest_helper = MlOpsRestFactory().get_rest_helper(MLOpsMode.AGENT, mlops_server="localhost",
                                                      mlops_port="3456", token="")
@@ -282,6 +283,7 @@ def test_feature_importance():
         m.get(rest_helper.url_get_health_thresholds(ion_instance_id), json=test_health_info)
         m.get(rest_helper.url_get_model_stats(ION1.MODEL_ID), json=test_model_stats)
         m.get(rest_helper.url_get_uuid("model"), json={"id": "model_5906255e-0a3d-4fef-8653-8d41911264fb"})
+        m.post(rest_helper.url_post_stat(pipeline_instance_id), json={})
 
         # Test Python channel
         mlops.init(ctx=None, mlops_mode=MLOpsMode.AGENT)

@@ -305,6 +305,15 @@ class MlOpsRestConnected(MlOpsRestHelper):
         except Exception as e:
             raise MLOpsException('Call ' + str(url) + ' failed with error: ' + str(e))
 
+    def url_post_stat(self, pipeline_inst_id):
+        """
+        Create the REST request for posting stat
+        :param pipeline_inst_id:    pipeline instance identifier
+        :return:                    the URL for the REST request
+        """
+        return build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.STATS,
+                         pipeline_inst_id, statType="accumulator")
+
     def post_stat(self, pipeline_inst_id, stat):
         """
         Post stat to agent using json formatting
@@ -316,8 +325,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
             self._error("Missing pipeline instance id cannot post stat")
             return
 
-        url = build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.STATS,
-                        pipeline_inst_id, statType="accumulator")
+        url = self.url_post_stat(pipeline_inst_id)
         try:
             payload = encoder(stat)
             headers = {"Content-Type": "application/json;charset=UTF-8"}
@@ -325,7 +333,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
             if r.ok:
                 return r.json()
             else:
-                raise MLOpsException('Call {} with payload {} failed text:[{}]'.format(url, stat, r.text))
+                self._error('Call {} with payload {} failed: text:[{}]'.format(url, stat, r.text))
         except requests.exceptions.ConnectionError as e:
             self._error(e)
             raise MLOpsException("Connection to MLOps agent [{}:{}] refused".format(self._mlops_server, self._mlops_port))
