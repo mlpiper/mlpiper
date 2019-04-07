@@ -72,10 +72,44 @@ class TestCommon:
         for node in sorted_graph1:
             print(node)
 
+        self._validate_sorted_graph(sorted_graph1, n1, n2, n3, n4, n5)
+
         graph_dict = {n3.key: n3, n1.key: n1, n2.key: n2, n4.key: n4, n5.key: n5}
         sorted_graph2 = TopologicalSort(graph_dict, "key", "childs").sort()
         print("\nGraph2:")
         for node in sorted_graph2:
             print(node)
 
-        assert sorted_graph1 == sorted_graph2, "Graphs are not equals!"
+        self._validate_sorted_graph(sorted_graph2, n1, n2, n3, n4, n5)
+
+    def _validate_sorted_graph(self, sorted_graph, n1, n2, n3 , n4, n5):
+        assert len(sorted_graph) == 5, "Unexpected number of nodes in topological sorted graph! " \
+                                       "expected: 5, existing: {}".format(len(sorted_graph))
+
+        assert sorted_graph[0] == n1, \
+            "The first node should be node n1['a']! sorted: {}".format(self._graph_str(sorted_graph))
+
+        index_n1 = sorted_graph.index(n1)
+        index_n2 = sorted_graph.index(n2)
+        index_n3 = sorted_graph.index(n3)
+        index_n4 = sorted_graph.index(n4)
+        index_n5 = sorted_graph.index(n5)
+
+        assert index_n1 < index_n2, \
+            "Node n1['a'] is expected to be before n2['b']! sorted: {} " \
+            .format(self._graph_str(sorted_graph))
+
+        assert index_n1 < index_n3, \
+            "Node n3['b'] is expected to be after n1['a']! sorted: {} " \
+            .format(self._graph_str(sorted_graph))
+
+        assert index_n2 < index_n4 and index_n3 < index_n4, \
+            "Node n4['d'] is expected to be after n2['b'] and n3['c']! sorted: {} " \
+            .format(self._graph_str(sorted_graph))
+
+        assert index_n3 < index_n5, \
+            "Node n5['e'] is expected to be after n3['c']! sorted: {} " \
+            .format(self._graph_str(sorted_graph))
+
+    def _graph_str(self, graph):
+        return " <= ".join([str(n) for n in graph])
