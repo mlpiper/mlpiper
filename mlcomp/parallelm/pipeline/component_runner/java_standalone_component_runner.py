@@ -1,5 +1,6 @@
-import subprocess
+import glob
 import os
+import subprocess
 import sys
 
 from parallelm.pipeline.component_runner.standalone_component_runner import StandaloneComponentRunner
@@ -35,11 +36,14 @@ class JavaStandaloneComponentRunner(StandaloneComponentRunner):
 
         comp_dir = self._dag_node.comp_root_path()
         print("comp_dir: {}".format(comp_dir))
-        jar_file = self._dag_node.comp_program()
-        self._logger.info("jar_file: {}".format(jar_file))
+
+        jar_files = glob.glob(os.path.join(comp_dir, "*.jar"))
+        self._logger.info("Java classpath files: {}".format(jar_files))
+
+        class_path = ":".join(jar_files)
         class_name = self._dag_node.comp_class()
         cmd = []
-        cmd.extend([JavaStandaloneComponentRunner.JAVA_PROGRAM, "-cp", jar_file, class_name])
+        cmd.extend([JavaStandaloneComponentRunner.JAVA_PROGRAM, "-cp", class_path, class_name])
 
         component_cmdline = assemble_cmdline_from_args(self._params)
         self._logger.debug("cmdline: {}".format(component_cmdline))
