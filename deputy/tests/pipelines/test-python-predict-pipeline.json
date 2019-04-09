@@ -1,6 +1,6 @@
 {
     "name": "stand_alone_test",
-    "engineType": "Python",
+    "engineType": "Generic",
     "systemConfig": {
         "statsDBHost": "localhost",
         "statsDBPort": 8086,

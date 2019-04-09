@@ -1,6 +1,6 @@
 {
     "name": "test_r_pipeline",
-    "engineType": "Python",
+    "engineType": "Generic",
     "systemConfig": {
         "statsDBHost": "localhost",
         "statsDBPort": 8086,

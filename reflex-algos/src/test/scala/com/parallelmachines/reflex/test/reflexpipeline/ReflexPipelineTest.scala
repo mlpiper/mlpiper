@@ -1809,7 +1809,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers {
     val compJson =
       s"""
          |{
-         |    "engineType": "Python",
+         |    "engineType": "Generic",
          |    "name": "MnistCnnLayers",
          |    "label": "MnistCNN",
          |    "program": "cnn_mnist.py",

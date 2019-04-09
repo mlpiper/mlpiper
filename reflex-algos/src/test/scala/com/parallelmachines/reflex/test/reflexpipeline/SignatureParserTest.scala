@@ -230,7 +230,7 @@ class SignatureParserTest extends FlatSpec {
     val sig4 =
       """
         |{
-        |  "engineType": "Python",
+        |  "engineType": "Generic",
         |  "language": "Python",
         |  "name": "user-algorithm",
         |  "label": "user-algorithm",
