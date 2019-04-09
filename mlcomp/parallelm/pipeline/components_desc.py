@@ -129,6 +129,7 @@ class ComponentsDesc(Base):
             # Try to find any valid component's description file
             comp_desc_gen = ComponentsDesc.next_comp_desc(comp_path)
             try:
+                # next() is called only once, because only one component JSON file is expected.
                 _, comp_desc = next(comp_desc_gen)
             except StopIteration:
                 comp_desc = None

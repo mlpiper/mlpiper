@@ -54,11 +54,20 @@ class ComponentScanner(object):
         init_py_found = False
         for root, _, files in os.walk(comp_root):
             for f in files:
-                rltv_path = os.path.relpath(root,  comp_root)
+                rltv_path = os.path.relpath(root, comp_root)
                 filepath = os.path.join(rltv_path, f) if rltv_path != "." else f
                 if self._path_included(filepath, include_patterns, exclude_patterns):
                     if filepath == "__init__.py":
                         init_py_found = True
+
+                    # There can be several comp JSONs in one folder.
+                    # Only one, related to the current component has to be included.
+                    # (others should not be included)
+                    comp_desc_tmp = ComponentsDesc._load_comp_desc(comp_root, f)
+                    key_name = json_fields.COMPONENT_DESC_NAME_FIELD
+                    if comp_desc_tmp and comp_desc[key_name] != comp_desc_tmp[key_name]:
+                        continue
+
                     included_files.append(filepath)
 
         if not init_py_found:
