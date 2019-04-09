@@ -3,13 +3,13 @@ Scan a directory recursively and detect components
 """
 
 import fnmatch
-import json
 import logging
 import os
 import re
 
-from parallelm.pipeline.components_desc import ComponentsDesc
 from parallelm.pipeline import json_fields
+from parallelm.pipeline.components_desc import ComponentsDesc
+from parallelm.pipeline.component_language import ComponentLanguage
 
 
 class ComponentScanner(object):
@@ -70,7 +70,7 @@ class ComponentScanner(object):
 
                     included_files.append(filepath)
 
-        if not init_py_found:
+        if comp_desc[json_fields.COMPONENT_DESC_LANGUAGE_FIELD] == ComponentLanguage.PYTHON and not init_py_found:
             comp_name = comp_desc[json_fields.COMPONENT_DESC_NAME_FIELD]
             raise Exception("Missing '__init__.py' in component's root folder or it is not included"
                             " by 'glob' pattern! Please make sure to add it! name: {}, path: {}"
