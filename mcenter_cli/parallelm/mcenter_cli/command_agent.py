@@ -4,7 +4,7 @@ from cliff.command import Command
 class AgentRegisterCommand(Command):
     def get_parser(self, prog_name):
         parser = super(AgentRegisterCommand, self).get_parser(prog_name)
-        parser.add_argument('agent', action='store', help='Agent address to register')
+        parser.add_argument('agent', action='store', help='Agent address to register (e.g. localhost)')
         return parser
 
     def take_action(self, parsed_args):
