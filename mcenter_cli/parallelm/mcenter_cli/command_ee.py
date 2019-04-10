@@ -28,7 +28,7 @@ class EEUploadCommand(Command):
         parser.add_argument("--agent", action="store", default=None,
                             help="Name of agent to use when uploading the EE. Existing agent name is overwritten")
         parser.add_argument('--force', action='store_true',
-                            help='force loading of EE, if EE already exists remove it first')
+                            help='Force loading of the EE. If EE already exists, then remove it first')
         return parser
 
     def take_action(self, parsed_args):
@@ -38,8 +38,8 @@ class EEUploadCommand(Command):
 class EEDownloadCommand(Command):
     def get_parser(self, prog_name):
         parser = super(EEDownloadCommand, self).get_parser(prog_name)
-        parser.add_argument('name', action='store', help='name of EE to download')
-        parser.add_argument('eefile', action='store', help='file to use for saving the EE to')
+        parser.add_argument('name', action='store', help='Name of EE to download')
+        parser.add_argument('eefile', action='store', help='File to use for saving the EE')
         return parser
 
     def take_action(self, parsed_args):

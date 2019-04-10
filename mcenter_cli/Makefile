@@ -41,7 +41,7 @@ install-client: build-client
 	. ~/venv/bin/activate && pip install -U ../mcenter_client_v0/dist/mcenter_client_v0-0-py3-none-any.whl
 
 install: wheel
-	. ~/venv/bin/activate && pip install -U ./dist/mcenter_cli-1.2.3-py3-none-any.whl
+	. ~/venv/bin/activate && env PYTHONPATH=./ bin/install_locally.py
 
 install-all: install-client install
 

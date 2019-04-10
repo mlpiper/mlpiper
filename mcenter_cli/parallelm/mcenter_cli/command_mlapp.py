@@ -46,13 +46,13 @@ class MLAppUploadCommand(Command):
         parser = super(MLAppUploadCommand, self).get_parser(prog_name)
         parser.add_argument('name', action='store', help='Name of MLApp to query for info')
 
-        parser.add_argument('appdir', action='store', help='directory to use for loading the MLApp')
+        parser.add_argument('appdir', action='store', help='Directory to use for loading the MLApp')
         parser.add_argument("--mlapp-version", default=MLAppVersions.V2,
-                            help='provide the version of the MLApp format to load')
+                            help='Provide the version of the MLApp format to load')
         parser.add_argument('--force', action='store_true',
-                            help='force loading of MLApp, if MLApp already exists remove it first')
+                            help='Force loading of MLApp, if MLApp already exists remove it first')
         parser.add_argument('--ee', action='store',
-                            help='use the given ee (Execution Environment) when creating the MLApp')
+                            help='Use the given ee (Execution Environment) when creating the MLApp')
 
         return parser
 
@@ -66,6 +66,8 @@ class MLAppUploadCommand(Command):
                             ee=parsed_args.ee)
         elif parsed_args.mlapp_version == MLAppVersions.V1:
             upload_mlapp(self.app.mclient, parsed_args.appdir)
+        else:
+            raise Exception("MLApp version {} is not supported".format(parsed_args.mlapp_version))
 
 
 class MLAppDeleteCommand(Command):
@@ -82,8 +84,8 @@ class MLAppDeleteCommand(Command):
 class MLAppDownloadCommand(Command):
     def get_parser(self, prog_name):
         parser = super(MLAppDownloadCommand, self).get_parser(prog_name)
-        parser.add_argument('name', action='store', help='name of MLApp to download')
-        parser.add_argument('appdir', action='store', help='directory to use for saving the MLApp to')
+        parser.add_argument('name', action='store', help='Name of MLApp to download')
+        parser.add_argument('appdir', action='store', help='Directory to use for saving the MLApp')
         return parser
 
     def take_action(self, parsed_args):

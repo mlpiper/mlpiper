@@ -5,12 +5,13 @@ from cliff.app import App
 from cliff.commandmanager import CommandManager
 
 from parallelm.mcenter_cli import version
-from parallelm.mcenter_client.mcenter_client import MCenterClient
+
 
 
 class MCli(App):
 
-    DEFAULT_LOG_LEVEL = "error"
+    DEFAULT_LOG_LEVEL = "warning"
+    SUPPORTED_APIS = ["0"]
 
     def __init__(self, prog_name):
 
@@ -24,7 +25,7 @@ class MCli(App):
         self._prog_name = prog_name
         self._options = None
         self.mclient = None
-        self._logging_level = logging.ERROR
+        self._logging_level = logging.WARNING
         self._commands = {}
         self._example_text = '''Examples:
             {prog_name} --server localhost mlapp-load /opt/mlapps/regression-prod-v32 
@@ -34,19 +35,22 @@ class MCli(App):
             '''.format(prog_name=prog_name)
         self._argv_0 = sys.argv[0]
 
-        # self._init_parser(logo)
-        # self._add_mlapp_commands()
-        # self._add_ee_commands()
-        # self._add_component_commands()
-        # self._add_model_commands()
-        # self._add_action_log_commands()
-        # self._add_agent_commands()
-        # self._parse_args()
-        # self._general_actions()
-        # self._handle_command()
+    def _create_client_object(self):
+        if self.options.api == "0":
+            from parallelm.mcenter_client.mcenter_client import MCenterClient
+            self.mclient = MCenterClient(server=self.options.server,
+                                         user=self.options.user,
+                                         password=self.options.password)
+            res = self.mclient.login()
+            if res is None:
+                print("Unable to connect to MCenter. Please check server address, user name and password")
+                sys.exit(1)
+        else:
+            self.stderr.write("Error: API version [{}] is not recognized. Supported APIS are {}"
+                              .format(self.options.api, MCli.SUPPORTED_APIS))
+            sys.exit(1)
 
-    def _general_actions(self):
-
+    def _init_logging(self):
         if self.options.log in ("INFO", "info") or self.options.verbose_level:
             self.logging_level = logging.INFO
         elif self.options.log in ("DEBUG", "debug"):
@@ -58,14 +62,11 @@ class MCli(App):
 
         logging.basicConfig(level=self._logging_level)
 
+    def _general_actions(self):
+        self._init_logging()
+
         if not self.options.deferred_help:
-            self.mclient = MCenterClient(server=self.options.server,
-                                         user=self.options.user,
-                                         password=self.options.password)
-            res = self.mclient.login()
-            if res is None:
-                print("Unable to connect to MCenter. Please check server address, user name and password provided")
-                sys.exit(1)
+            self._create_client_object()
 
     def build_option_parser(self, description, version, argparse_kwargs=None):
         parser = super(MCli, self).build_option_parser(description, version)
@@ -76,6 +77,8 @@ class MCli(App):
         parser.add_argument('-s', '--server', default='localhost', help='address of MCenter server')
         parser.add_argument('-u', '--user', default='admin', help='username to use to connect to MCenter')
         parser.add_argument("-p", '--password', default='admin', help='password to use for authenticating with MCenter')
+        parser.add_argument('--api', default='0', help='API version to use when connecting to MCenter')
+
         return parser
 
     def initialize_app(self, argv):
@@ -88,7 +91,7 @@ class MCli(App):
     def clean_up(self, cmd, result, err):
         self.LOG.debug('clean_up %s', cmd.__class__.__name__)
         if err:
-            self.LOG.debug('got an error: %s', err)
+            self.LOG.debug("*** Error: %s", err)
 
 
 def main(argv=sys.argv[1:]):
