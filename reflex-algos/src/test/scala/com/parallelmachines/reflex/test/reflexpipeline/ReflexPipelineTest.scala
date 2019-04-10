@@ -1888,7 +1888,7 @@ class ReflexPipelineTest extends FlatSpec with Matchers {
 
     val p = ComponentJSONSignatureParser
     val compMeta = p.parseSignature(compJson)
-    assert(compMeta.engineType == "Python")
+    assert(compMeta.engineType == "Generic")
     assert(compMeta.arguments.length == 8)
   }
 

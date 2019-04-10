@@ -277,7 +277,7 @@ class SignatureParserTest extends FlatSpec {
 
     val parser = ComponentJSONSignatureParser
     val compMeta = parser.parseSignature(sig4)
-    assert(compMeta.engineType == "Python", "sig4 engine is not correct")
+    assert(compMeta.engineType == "Generic", "sig4 engine is not correct")
     assert(compMeta.language.getOrElse("bb") == "Python", "sig4 is not valid")
   }
 
