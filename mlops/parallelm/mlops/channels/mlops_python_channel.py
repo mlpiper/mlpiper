@@ -2,16 +2,18 @@ import logging
 
 import numpy as np
 import pandas as pd
+from google.protobuf.json_format import MessageToJson
 from numpy.core.multiarray import ndarray
 
 from parallelm.mlops.channels.mlops_channel import MLOpsChannel
 from parallelm.mlops.channels.python_channel_health import PythonChannelHealth
 from parallelm.mlops.constants import Constants
+from parallelm.mlops.metrics.confusion_matrix import ConfusionMatrix
+from parallelm.mlops.metrics_constants import ClassificationMetrics
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.stats.single_value import SingleValue
 from parallelm.mlops.stats_category import StatCategory
 from parallelm.protobuf.ReflexEvent_pb2 import ReflexEvent
-from google.protobuf.json_format import MessageToJson
 
 
 class MLOpsPythonChannel(MLOpsChannel):
@@ -27,9 +29,12 @@ class MLOpsPythonChannel(MLOpsChannel):
     def done(self):
         pass
 
-    def stat(self, name, data, model_id, category=None, model=None, model_stat=None):
+    def stat(self, name, data, model_id, category=None, model=None, model_stat=None, **kwargs):
 
-        if category in (StatCategory.CONFIG, StatCategory.TIME_SERIES):
+        if name in ClassificationMetrics:
+            self.set_classification_stat(name=name, data=data, model_id=model_id, **kwargs)
+
+        elif category in (StatCategory.CONFIG, StatCategory.TIME_SERIES):
             self._logger.debug("{} stat called: name: {} data_type: {} class: {}".
                                format(Constants.OFFICIAL_NAME, name, type(data), category))
 
@@ -104,12 +109,14 @@ class MLOpsPythonChannel(MLOpsChannel):
                 raise MLOpsException("Got an exception:{}".format(e))
 
         if feature_names:
-            important_named_features = [[name, feature_importance_vector_final[imp_idx]] for imp_idx,name in enumerate(feature_names)]
+            important_named_features = [[name, feature_importance_vector_final[imp_idx]] for imp_idx, name in
+                                        enumerate(feature_names)]
             return important_named_features
         else:
             try:
                 feature_names = df.columns[1:]
-                important_named_features = [[name, feature_importance_vector_final[imp_idx]] for imp_idx,name in enumerate(feature_names)]
+                important_named_features = [[name, feature_importance_vector_final[imp_idx]] for imp_idx, name in
+                                            enumerate(feature_names)]
                 return important_named_features
             except Exception as e:
                 raise MLOpsException("Got an exception:{}".format(e))
@@ -123,3 +130,11 @@ class MLOpsPythonChannel(MLOpsChannel):
 
         if df is not None and not isinstance(df, pd.DataFrame):
             raise MLOpsException("Got an Exception. should be a pandas dataframe")
+
+    def set_classification_stat(self, name, data, model_id, **kwargs):
+
+        if name == ClassificationMetrics.CONFUSION_MATRIX:
+            ConfusionMatrix._set_confusion_matrix(cm_nd_array=data,
+                                                  model_id=model_id,
+                                                  stat_object_method=self.stat_object,
+                                                  **kwargs)

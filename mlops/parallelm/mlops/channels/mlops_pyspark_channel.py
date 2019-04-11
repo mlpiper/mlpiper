@@ -1,18 +1,18 @@
 import json
 import os
+
 import pyspark
 import pyspark.mllib.common as ml
-import socket
-from google.protobuf.internal import encoder
+from google.protobuf.json_format import MessageToJson
+from pyspark.ml.pipeline import PipelineModel
+from pyspark.sql import DataFrame
+
 from parallelm.mlops.channels.mlops_channel import MLOpsChannel
 from parallelm.mlops.constants import Constants
 from parallelm.mlops.data_to_json import DataToJson
 from parallelm.mlops.mlops_env_constants import MLOpsEnvConstants
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.stats_category import StatCategory, StatGraphType
-from pyspark.ml.pipeline import PipelineModel
-from pyspark.sql import DataFrame
-from google.protobuf.json_format import MessageToJson
 
 
 def str2bool(v):
@@ -66,7 +66,7 @@ class MLOpsPySparkChannel(MLOpsChannel):
     def done(self):
         self._jvm_mlops.done()
 
-    def stat(self, name, data, modelId, category=None, model=None, model_stat=None):
+    def stat(self, name, data, modelId, category=None, model=None, model_stat=None, **kwargs):
         if category in (StatCategory.CONFIG, StatCategory.TIME_SERIES):
             self._logger.info("{} stat called: name: {} data_type: {} class: {}".
                               format(Constants.OFFICIAL_NAME, name, type(data), category))

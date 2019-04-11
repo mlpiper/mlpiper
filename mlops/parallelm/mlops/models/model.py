@@ -1,5 +1,6 @@
 import os
 from enum import Enum
+
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.models.mlobject import MLObject
 from parallelm.mlops.models.mlobject import MLObjectType
@@ -132,7 +133,7 @@ class Model(MLObject):
     def get_model_path(self):
         return self.model_path
 
-    def set_stat(self, name, data=None, category=StatCategory.TIME_SERIES, timestamp=None):
+    def set_stat(self, name, data=None, category=StatCategory.TIME_SERIES, timestamp=None, **kwargs):
         """
         Report this statistic.
         Statistic is attached to the current model and can be fetched later for this model.

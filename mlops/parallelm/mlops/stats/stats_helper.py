@@ -1,12 +1,13 @@
+import numpy as np
 import six
 
 from parallelm.mlops.base_obj import BaseObj
 from parallelm.mlops.constants import Constants
 from parallelm.mlops.mlops_exception import MLOpsException
-from parallelm.mlops.stats_category import StatCategory
+from parallelm.mlops.stats.bar_graph import BarGraph
 from parallelm.mlops.stats.kpi_value import KpiValue
 from parallelm.mlops.stats.mlops_stat_getter import MLOpsStatGetter
-from parallelm.mlops.stats.bar_graph import BarGraph
+from parallelm.mlops.stats_category import StatCategory
 
 
 class StatsHelper(BaseObj):
@@ -29,22 +30,26 @@ class StatsHelper(BaseObj):
                 raise MLOpsException("Only arrays of int or float are supported")
         elif isinstance(data, dict):
             pass
+        elif isinstance(data, np.ndarray):
+            pass
         else:
             raise MLOpsException("Type : {} is not yet supported by {}".
                                  format(type(data).__name__, Constants.OFFICIAL_NAME))
 
-    def set_stat(self, name, data, model_id, category, timestamp):
+    def set_stat(self, name, data, model_id, category, timestamp, **kwargs):
+
         # If it supports the stat_object API, return the object.
         if isinstance(name, MLOpsStatGetter):
             self._output_channel.stat_object(name.get_mlops_stat(model_id))
             return self
 
         if category in (StatCategory.CONFIG, StatCategory.TIME_SERIES):
+
             self._logger.debug("{} stat called: name: {} data_type: {} class: {}".
                                format(Constants.OFFICIAL_NAME, name, type(data), category))
 
             self._validate_supported_conf_ts_data_type(data)
-            self._output_channel.stat(name, data, model_id, category)
+            self._output_channel.stat(name, data, model_id, category, **kwargs)
         else:
             raise MLOpsException("stat_class: {} not supported in set_stat call".format(category))
 
@@ -66,7 +71,8 @@ class StatsHelper(BaseObj):
 
         self._output_channel.stat_object(kpi_value.get_mlops_stat(model_id))
 
-    def feature_importance(self, model_obj, feature_importance_vector=None, feature_names=None, model=None, df=None, num_significant_features=100):
+    def feature_importance(self, model_obj, feature_importance_vector=None, feature_names=None, model=None, df=None,
+                           num_significant_features=100):
         """
          present feature importance, either according to the provided vector or generated from
          the provided model if available.
@@ -95,7 +101,8 @@ class StatsHelper(BaseObj):
 
         self._validate_feature_importance_inputs(feature_importance_vector, feature_names, model, df)
 
-        important_named_features = self._output_channel.feature_importance(feature_importance_vector, feature_names, model, df)
+        important_named_features = self._output_channel.feature_importance(feature_importance_vector, feature_names,
+                                                                           model, df)
 
         if important_named_features:
             # Sort the feature importance vector
@@ -116,7 +123,8 @@ class StatsHelper(BaseObj):
             bar = BarGraph().name("Feature Importance").cols(col_names).data(col_value)
             model_obj.set_stat(bar)
 
-    def _validate_feature_importance_inputs(self, feature_importance_vector=None, feature_names=None, model=None, df=None):
+    def _validate_feature_importance_inputs(self, feature_importance_vector=None, feature_names=None, model=None,
+                                            df=None):
         """
         verify common parameters. specific parameters are verified in each output channel
         :param feature_importance_vector: feature importance vector optional
@@ -138,11 +146,12 @@ class StatsHelper(BaseObj):
                 raise MLOpsException("features importance vector must be a list")
             for feature_importance_element in feature_importance_vector:
                 if not isinstance(feature_importance_element, (six.integer_types, float)):
-                    raise MLOpsException("features importance elements must be a number. got: {} ".format(feature_importance_element))
+                    raise MLOpsException(
+                        "features importance elements must be a number. got: {} ".format(feature_importance_element))
         if feature_names:
             if not isinstance(feature_names, list):
                 raise MLOpsException("features names vector must be a list")
             for feature_names_element in feature_names:
                 if not isinstance(feature_names_element, six.string_types):
-                    raise MLOpsException("features name elements must be a string. got: {} ".format(feature_names_element))
-
+                    raise MLOpsException(
+                        "features name elements must be a string. got: {} ".format(feature_names_element))

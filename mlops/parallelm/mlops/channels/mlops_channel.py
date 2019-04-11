@@ -3,8 +3,10 @@ Class representing the output channel to be used to report statistics/operations
 """
 
 import abc
-from parallelm.mlops.stats_category import StatCategory, StatsMode, StatGraphType
+
 from parallelm.mlops.stats.table import is_list_of_lists
+from parallelm.mlops.stats_category import StatCategory, StatsMode, StatGraphType
+
 
 class MLOpsChannel:
     """
@@ -17,7 +19,7 @@ class MLOpsChannel:
         pass
 
     @abc.abstractmethod
-    def stat(self, name, data, model_id, category=None, sparkml_model=None, model_stat=None):
+    def stat(self, name, data, model_id, category=None, sparkml_model=None, model_stat=None, **kwargs):
         """
         methods to submit a stat to a specific channel (pyspark/python/file etc) each channel is
         required to implement the method to support posting of statistics to that channel

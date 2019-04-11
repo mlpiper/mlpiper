@@ -30,7 +30,10 @@ from parallelm.mlops.events.system_alert import SystemAlert
 from parallelm.mlops.ion.ion import Agent
 from parallelm.mlops.logger_factory import logger_factory
 from parallelm.mlops.mlops_ctx import MLOpsCtx
-from parallelm.mlops.mlops_exception import MLOpsException, MLOpsConnectionException, SuppressException
+from parallelm.mlops.mlops_exception import MLOpsConnectionException, SuppressException
+from parallelm.mlops.mlops_exception import MLOpsException
+from parallelm.mlops.mlops_mode import MLOpsMode, OutputChannel
+from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
 from parallelm.mlops.models.model import Model
 from parallelm.mlops.models.model import ModelFormat
 from parallelm.mlops.models.model_filter import ModelFilter
@@ -40,8 +43,7 @@ from parallelm.mlops.stats.stats_helper import StatsHelper
 from parallelm.mlops.stats_category import StatCategory
 from parallelm.mlops.utils import time_to_str_timestamp_milli
 from parallelm.mlops.versions_info import mlops_version_info
-from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
-from parallelm.mlops.mlops_mode import MLOpsMode, OutputChannel
+
 
 # TODO: need to make the code thread safe - so in case of multiple threads this will not crash
 
@@ -384,8 +386,7 @@ class MLOps(object):
         """
         return self._curr_model
 
-    @SuppressException([MLOpsConnectionException])
-    def set_stat(self, name, data=None, category=StatCategory.TIME_SERIES, timestamp=None):
+    def set_stat(self, name, data=None, category=StatCategory.TIME_SERIES, timestamp=None, **kwargs):
         """
         Report this statistic.
 
@@ -396,7 +397,8 @@ class MLOps(object):
         :raises: MLOpsException
         """
         self._verify_mlops_is_ready()
-        self._stats_helper.set_stat(name, data, None, category, timestamp)
+        self._stats_helper.set_stat(name=name, data=data, model_id=None, category=category, timestamp=timestamp,
+                                    **kwargs)
 
     def set_kpi(self, name, data, timestamp=None, units=None):
         """
@@ -989,7 +991,6 @@ class MLOps(object):
 
         # calling init
         self.init(ctx=None, mlops_mode=MLOpsMode.ATTACH)
-
 
 
 # An instance of the MLOps to be used when importing the pm library.
