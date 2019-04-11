@@ -42,7 +42,7 @@ setup(
         "kazoo",
         "protobuf",
         "requests",
-        "py4j"
+        "py4j", 'scikit-learn'
     ],
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     entry_points={
