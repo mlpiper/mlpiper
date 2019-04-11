@@ -1,7 +1,8 @@
-import os
+import glob
 import math
-import sys
+import os
 import psutil
+import sys
 
 from py4j.java_gateway import JavaGateway
 from py4j.java_gateway import GatewayParameters, CallbackServerParameters, launch_gateway
@@ -52,11 +53,11 @@ class JavaConnectedComponentRunner(ComponentRunner):
         comp_dir = self._dag_node.comp_root_path()
         self._logger.info("comp_dir: {}".format(comp_dir))
 
-        component_jar = os.path.join(comp_dir, self._dag_node.comp_program())
-        self._logger.info("jar_file: {}".format(component_jar))
+        jar_files = glob.glob(os.path.join(comp_dir, "*.jar"))
+        self._logger.info("Java classpath files: {}".format(jar_files))
         component_class = self._dag_node.comp_class()
 
-        java_jars = [self._mlcomp_jar, component_jar]
+        java_jars = [self._mlcomp_jar] + jar_files
         class_path = ":".join(java_jars)
         java_gateway = None
         all_ok = False
