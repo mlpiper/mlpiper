@@ -7,15 +7,17 @@ import numpy as np
 import pandas as pd
 import pytest
 import requests_mock
-
 from ion_test_helper import set_mlops_env, ION1, test_models_info, test_health_info
 from ion_test_helper import test_workflow_instances, test_ee_info, test_agents_info
+from sklearn import metrics
+
 from parallelm.mlops import Versions
 from parallelm.mlops import mlops as pm
 from parallelm.mlops.constants import Constants
 from parallelm.mlops.events.event_type import EventType
 from parallelm.mlops.ion.ion import Agent
-from parallelm.mlops.mlops_exception import MLOpsException, MLOpsConnectionException
+from parallelm.mlops.metrics_constants import ClassificationMetrics
+from parallelm.mlops.mlops_exception import MLOpsException, MLOpsConnectionException, MLOpsStatisticsException
 from parallelm.mlops.mlops_mode import MLOpsMode
 from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
 from parallelm.mlops.models.model import ModelFormat
@@ -291,6 +293,43 @@ def test_general_graph():
 
     gg = Graph().name("gg").set_x_series(x_series).add_y_series(label="y1", data=y1)
     pm.set_stat(gg)
+    pm.done()
+
+
+def test_mlops_confusion_metrics_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 1, 1, 0]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+    labels_ordered = [0, 1]
+
+    cm = metrics.confusion_matrix(labels_actual, labels_pred, labels=labels_ordered)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.CONFUSION_MATRIX, cm, labels=labels_ordered)
+
+    # second way
+    pm.metrics.confusion_matrix(y_true=labels_actual, y_pred=labels_pred, labels=labels_ordered)
+
+    # should throw error if labels are not provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.CONFUSION_MATRIX, cm)
+
+    with pytest.raises(MLOpsStatisticsException):
+        pm.metrics.confusion_matrix(y_true=labels_actual, y_pred=labels_pred, labels=None)
+
+    with pytest.raises(ValueError):
+        labels_pred_missing_values = [0, 0, 0, 1]
+        pm.metrics.confusion_matrix(y_true=labels_actual, y_pred=labels_pred_missing_values, labels=None)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.confusion_matrix(y_true=labels_actual,
+                                y_pred=labels_pred,
+                                labels=labels_ordered,
+                                sample_weight=sample_weight)
+
     pm.done()
 
 

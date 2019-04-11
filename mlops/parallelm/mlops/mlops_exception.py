@@ -16,6 +16,13 @@ class MLOpsConnectionException(MLOpsException):
     pass
 
 
+class MLOpsStatisticsException(MLOpsException):
+    """
+    Exception that will be returned by the MLOps class on ML stat creation error
+    """
+    pass
+
+
 """
 SuppressException decorator can be used to suppress Exceptions.
 
@@ -45,8 +52,8 @@ SuppressException.exclude([B]) # only A will be suppressed
 
 + maybe add return value for suppression definition.
 """
-    
-    
+
+
 class SuppressException(object):
     _suppress = False
 

@@ -30,7 +30,11 @@ from parallelm.mlops.events.system_alert import SystemAlert
 from parallelm.mlops.ion.ion import Agent
 from parallelm.mlops.logger_factory import logger_factory
 from parallelm.mlops.mlops_ctx import MLOpsCtx
-from parallelm.mlops.mlops_exception import MLOpsException, MLOpsConnectionException, SuppressException
+from parallelm.mlops.mlops_exception import MLOpsConnectionException, SuppressException
+from parallelm.mlops.mlops_exception import MLOpsException
+from parallelm.mlops.mlops_metrics import MLOpsMetrics
+from parallelm.mlops.mlops_mode import MLOpsMode, OutputChannel
+from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
 from parallelm.mlops.models.model import Model
 from parallelm.mlops.models.model import ModelFormat
 from parallelm.mlops.models.model_filter import ModelFilter
@@ -40,8 +44,7 @@ from parallelm.mlops.stats.stats_helper import StatsHelper
 from parallelm.mlops.stats_category import StatCategory
 from parallelm.mlops.utils import time_to_str_timestamp_milli
 from parallelm.mlops.versions_info import mlops_version_info
-from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
-from parallelm.mlops.mlops_mode import MLOpsMode, OutputChannel
+
 
 # TODO: need to make the code thread safe - so in case of multiple threads this will not crash
 
@@ -385,7 +388,7 @@ class MLOps(object):
         return self._curr_model
 
     @SuppressException([MLOpsConnectionException])
-    def set_stat(self, name, data=None, category=StatCategory.TIME_SERIES, timestamp=None):
+    def set_stat(self, name, data=None, category=StatCategory.TIME_SERIES, timestamp=None, **kwargs):
         """
         Report this statistic.
 
@@ -393,10 +396,43 @@ class MLOps(object):
         :param data: data object to export
         :param category: category of the statistic. One of :class:`StatsCategory`
         :param timestamp: optional timestamp
+        :param kwargs: key word arguments is supporting list of arguments for outputing stats correctly. i.e. For outputting Confusion Matrix, user has to provide list of `labels` used.
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> from parallelm.mlops.metrics_constants import ClassificationMetrics
+
+        >>> # Output Time Series Data
+        >>> mlops.set_stat("TimeSeries", 1.0) # outputing time series data
+
+        >>> # Output ML Stat - For Example Confusion Matrix as Table
+        >>> labels_pred = [1, 0 , 1, 1, 1, 0]
+        >>> labels_actual = [0, 1, 0, 0, 0, 1]
+        >>> labels_ordered = [0, 1]
+
+        >>> ## First Way ##
+        >>> import sklearn
+        >>> from parallelm.mlops.stats.table import Table
+
+        >>> cm = sklearn.metrics.confusion_matrix(labels_actual, labels_pred, labels=labels_ordered)
+        >>> labels_string = [str(i) for i in labels_ordered]
+        >>> cm_matrix = Table().name("User Given Confusion Matrix").cols(labels_string)
+        >>> for index in range(len(cm)):
+        >>>     cm_matrix.add_row(labels_string[index], list(cm[index]))
+        >>> mlops.set_stat(cm_matrix)
+
+        >>> ## OR - Second Way ##
+        >>> mlops.set_stat(ClassificationMetrics.CONFUSION_MATRIX, cm, labels=labels_ordered)
+
+        >>> ## OR - Third Way ##
+        >>> mlops.metrics.confusion_matrix(y_true=labels_actual, y_pred=labels_pred, labels=labels_ordered)
+
+
         :raises: MLOpsException
         """
         self._verify_mlops_is_ready()
-        self._stats_helper.set_stat(name, data, None, category, timestamp)
+        self._stats_helper.set_stat(name=name, data=data, model_id=None, category=category, timestamp=timestamp,
+                                    **kwargs)
 
     def set_kpi(self, name, data, timestamp=None, units=None):
         """
@@ -991,10 +1027,11 @@ class MLOps(object):
         self.init(ctx=None, mlops_mode=MLOpsMode.ATTACH)
 
 
-
 # An instance of the MLOps to be used when importing the pm library.
 @Singleton
 class MLOpsSingleton(MLOps):
+    metrics = MLOpsMetrics.Instance()
+
     pass
 
 
