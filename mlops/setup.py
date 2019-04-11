@@ -1,7 +1,9 @@
 import os
+
 from setuptools import setup, find_packages
 
 import protobuf_dep
+
 protobuf_dep.copy_protobuf_sources()
 
 from parallelm.mlops.constants import Constants
@@ -42,7 +44,8 @@ setup(
         "kazoo",
         "protobuf",
         "requests",
-        "py4j"
+        "py4j",
+        "scikit-learn"
     ],
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     entry_points={

@@ -2,6 +2,7 @@ import logging
 
 import numpy as np
 import pandas as pd
+from google.protobuf.json_format import MessageToJson
 from numpy.core.multiarray import ndarray
 
 from parallelm.mlops.channels.mlops_channel import MLOpsChannel
@@ -11,7 +12,6 @@ from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.stats.single_value import SingleValue
 from parallelm.mlops.stats_category import StatCategory
 from parallelm.protobuf.ReflexEvent_pb2 import ReflexEvent
-from google.protobuf.json_format import MessageToJson
 
 
 class MLOpsPythonChannel(MLOpsChannel):
@@ -28,7 +28,6 @@ class MLOpsPythonChannel(MLOpsChannel):
         pass
 
     def stat(self, name, data, model_id, category=None, model=None, model_stat=None):
-
         if category in (StatCategory.CONFIG, StatCategory.TIME_SERIES):
             self._logger.debug("{} stat called: name: {} data_type: {} class: {}".
                                format(Constants.OFFICIAL_NAME, name, type(data), category))
@@ -104,12 +103,14 @@ class MLOpsPythonChannel(MLOpsChannel):
                 raise MLOpsException("Got an exception:{}".format(e))
 
         if feature_names:
-            important_named_features = [[name, feature_importance_vector_final[imp_idx]] for imp_idx,name in enumerate(feature_names)]
+            important_named_features = [[name, feature_importance_vector_final[imp_idx]]
+                                        for imp_idx, name in enumerate(feature_names)]
             return important_named_features
         else:
             try:
                 feature_names = df.columns[1:]
-                important_named_features = [[name, feature_importance_vector_final[imp_idx]] for imp_idx,name in enumerate(feature_names)]
+                important_named_features = [[name, feature_importance_vector_final[imp_idx]] for imp_idx, name in
+                                            enumerate(feature_names)]
                 return important_named_features
             except Exception as e:
                 raise MLOpsException("Got an exception:{}".format(e))
