@@ -5,14 +5,14 @@
     <artifactId>test-java-standalone</artifactId>
     <packaging>jar</packaging>
     <build>
-        <finalName>${artifactId}</finalName>
+        <finalName>${project.artifactId}</finalName>
     </build>
 
     <version>1.0</version>
     <name>test-java-standalone</name>
     <url>http://maven.apache.org</url>
     <properties>
-        <componentDirectory>${project.build.directory}/${artifactId}</componentDirectory>
+        <componentDirectory>${project.build.directory}/${project.artifactId}</componentDirectory>
     </properties>
 
     <dependencies>
@@ -47,12 +47,12 @@
                                     <goal>single</goal>
                                 </goals>
                                 <configuration>
-                                    <finalName>${artifactId}</finalName>
+                                    <finalName>${project.artifactId}</finalName>
                                     <outputDirectory>${componentDirectory}</outputDirectory>
                                     <archive>
                                         <manifest>
                                             <mainClass>
-                                                ${groupId}.JavaStandaloneComponent
+                                                ${project.groupId}.JavaStandaloneComponent
                                             </mainClass>
                                         </manifest>
                                     </archive>
