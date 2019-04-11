@@ -298,6 +298,26 @@ class TestPythonEngine:
         finally:
             os.remove(model_file)
 
+
+    def test_execute_java_connected_multiple_jars(self):
+        pipeline = {
+            "name": "stand_alone_with_multiple_jars_test",
+            "engineType": "Generic",
+            "pipe": [
+                {
+                    "name": "Java",
+                    "id": 1,
+                    "type": "test-java-connected-multiple-jars",
+                    "parents": [],
+                    "arguments": {}
+                }
+            ]
+        }
+        system_config = TestPythonEngine.system_config
+        pipeline["systemConfig"] = system_config
+        config = self._get_executor_config(pipeline)
+        Executor(config).go()
+
     # @pytest.mark.skip(reason="skipping this test for now - debugging")
     def test_execute_java_connected_error(self, caplog):
         pipeline = {
