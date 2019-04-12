@@ -30,7 +30,7 @@ class ComponentsDesc(Base):
             for filename in files:
                 comp_desc = ComponentsDesc._load_comp_desc(root, filename)
                 if comp_desc:
-                    yield root, comp_desc
+                    yield root, comp_desc, filename
 
     @staticmethod
     def _load_comp_desc(root, filename):
@@ -130,7 +130,7 @@ class ComponentsDesc(Base):
             comp_desc_gen = ComponentsDesc.next_comp_desc(comp_path)
             try:
                 # next() is called only once, because only one component JSON file is expected.
-                _, comp_desc = next(comp_desc_gen)
+                _, comp_desc, _ = next(comp_desc_gen)
             except StopIteration:
                 comp_desc = None
 

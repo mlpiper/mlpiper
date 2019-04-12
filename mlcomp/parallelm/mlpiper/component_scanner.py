@@ -29,7 +29,7 @@ class ComponentScanner(object):
         """
         comps = {}
         logging.debug("Scanning {}".format(root_dir))
-        for root, comp_desc in ComponentsDesc.next_comp_desc(root_dir):
+        for root, comp_desc, comp_filename in ComponentsDesc.next_comp_desc(root_dir):
             engine_type = comp_desc[json_fields.COMPONENT_DESC_ENGINE_TYPE_FIELD]
             comps.setdefault(engine_type, {})
 
@@ -42,6 +42,8 @@ class ComponentScanner(object):
             comps[engine_type][comp_name]["comp_desc"] = comp_desc
             comps[engine_type][comp_name]["root"] = root
             comps[engine_type][comp_name]["files"] = self._include_files(root, comp_desc)
+            # Always include current component json file regardless of its name.
+            comps[engine_type][comp_name]["files"].append(comp_filename)
 
             logging.debug("Found component, root: {}, engine: {}, name: ".format(root, engine_type, comp_name))
         return comps
@@ -61,11 +63,9 @@ class ComponentScanner(object):
                         init_py_found = True
 
                     # There can be several comp JSONs in one folder.
-                    # Only one, related to the current component has to be included.
-                    # (others should not be included)
-                    comp_desc_tmp = ComponentsDesc._load_comp_desc(comp_root, f)
-                    key_name = json_fields.COMPONENT_DESC_NAME_FIELD
-                    if comp_desc_tmp and comp_desc[key_name] != comp_desc_tmp[key_name]:
+                    # Don't include any of them, even related to current component,
+                    # it will be included automatically
+                    if ComponentsDesc._load_comp_desc(comp_root, f):
                         continue
 
                     included_files.append(filepath)
