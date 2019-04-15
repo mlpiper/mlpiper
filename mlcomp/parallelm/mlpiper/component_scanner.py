@@ -1,3 +1,4 @@
+
 """
 Scan a directory recursively and detect components
 """
@@ -6,6 +7,7 @@ import fnmatch
 import logging
 import os
 import re
+import parallelm.common.constants as MLCompConstants
 
 from parallelm.pipeline import json_fields
 from parallelm.pipeline.components_desc import ComponentsDesc
@@ -44,6 +46,10 @@ class ComponentScanner(object):
             comps[engine_type][comp_name]["files"] = self._include_files(root, comp_desc)
             # Always include current component json file regardless of its name.
             comps[engine_type][comp_name]["files"].append(comp_filename)
+
+            # Always include "requirements.txt"
+            if os.path.exists(os.path.join(root, MLCompConstants.REQUIREMENTS_FILENAME)):
+                comps[engine_type][comp_name]["files"].append(MLCompConstants.REQUIREMENTS_FILENAME)
 
             logging.debug("Found component, root: {}, engine: {}, name: ".format(root, engine_type, comp_name))
         return comps

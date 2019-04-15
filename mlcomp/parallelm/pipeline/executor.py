@@ -3,6 +3,7 @@ import os
 import six
 import sys
 import traceback
+import parallelm.common.constants as MLCompConstants
 
 from parallelm.common.base import Base
 from parallelm.common.mlcomp_exception import MLCompException
@@ -103,12 +104,22 @@ class Executor(Base):
         accumulated_py_deps = set()
 
         comps_desc_list = components_desc.ComponentsDesc(pipeline=self.pipeline,
-                                                         comp_root_path=self._comp_root_path).load()
+                                                         comp_root_path=self._comp_root_path).load(extended=True)
         for comp_desc in comps_desc_list:
             if comp_desc[json_fields.PIPELINE_LANGUAGE_FIELD] == lang:
                 deps = comp_desc.get(json_fields.COMPONENT_DESC_PYTHON_DEPS, None)
                 if deps:
                     accumulated_py_deps.update(deps)
+
+                # for Python fetch deps from requirements.txt file
+                if lang == ComponentLanguage.PYTHON:
+                    req_file = os.path.join(comp_desc[json_fields.COMPONENT_DESC_ROOT_PATH_FIELD],
+                                            MLCompConstants.REQUIREMENTS_FILENAME)
+                    if os.path.exists(req_file):
+                        with open(req_file) as f:
+                            content = f.readlines()
+                            content = [x.strip() for x in content]
+                            accumulated_py_deps.update(content)
 
         return accumulated_py_deps
 
