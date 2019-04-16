@@ -14,6 +14,7 @@ from parallelm.pipeline import json_fields
 from parallelm.common.base import Base
 from parallelm.pipeline import java_mapping
 from parallelm.pipeline.executor import Executor
+from parallelm.pipeline.component_language import ComponentLanguage
 
 
 class MLPiper(Base):
@@ -87,7 +88,7 @@ class MLPiper(Base):
         if not os.path.exists(model_filepath):
             raise Exception("Input model file path not exists! " + model_filepath)
 
-        self._input_model_filepath =  model_filepath
+        self._input_model_filepath = model_filepath
 
     def output_model(self, model_filepath):
         self._output_model_filepath = model_filepath
@@ -207,7 +208,7 @@ class MLPiper(Base):
         os.write(fd, "\n".join(py_deps).encode())
         os.close(fd)
 
-        cmd = "yes | {} -m pip install --disable-pip-version-check --requirement {}"\
+        cmd = "yes | {} -m pip install --disable-pip-version-check --requirement {}" \
             .format(sys.executable, reqs_pathname)
 
         self._logger.info("cmd: " + cmd)
@@ -247,3 +248,30 @@ class MLPiper(Base):
 
         pipeline_runner.go()
 
+    def deps(self, lang):
+        self._logger.info("Showing dependencies information...")
+
+        self.deploy()
+        pipeline_file = os.path.join(self._deploy_dir, MLPiper.DEPLOYMENT_PIPELINE)
+
+        pipeline_runner = Executor() \
+            .comp_root_path(self._comp_root_path) \
+            .pipeline_file(open(pipeline_file)) \
+            .use_color(self._use_color)
+
+        deps = None
+        if lang == ComponentLanguage.PYTHON:
+            deps = pipeline_runner.all_py_component_dependencies()
+        elif lang == ComponentLanguage.R:
+            deps = pipeline_runner.all_r_component_dependencies()
+        else:
+            pass
+
+        print("----- Dependencies -----")
+        if deps:
+            for dep in sorted(deps):
+                print(dep)
+        else:
+            print(
+                "No dependencies found for {} components.\nOr there are no {} components in the pipeline.".format(
+                    lang, lang))

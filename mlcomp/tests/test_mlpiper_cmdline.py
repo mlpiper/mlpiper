@@ -87,6 +87,20 @@ model_src_sink_pipeline = {
     ]
 }
 
+deps_show_pipeline = {
+    "name": "Deps Show Pipeline",
+    "engineType": "Generic",
+    "pipe": [
+        {
+            "name": "Test source model",
+            "id": 1,
+            "type": "test-component-deps",
+            "parents": [],
+            "arguments": {}
+        }
+    ]
+}
+
 
 class TestMLPiper:
     mlpiper_script = None
@@ -157,6 +171,8 @@ class TestMLPiper:
             print("stderr: {}".format(stderr))
             assert p.returncode == 0, err_msg
 
+        return (stdout, stderr)
+
     def _exec_deploy_or_run_cmdline(self, cmdline_action):
         for pipeline_filepath in TestMLPiper._next_pipeline():
             self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
@@ -210,3 +226,25 @@ class TestMLPiper:
             os.remove(pipeline_file)
             os.remove(output_model)
             os.remove(input_model)
+
+    def test_run_show_deps(self):
+        cmdline_action = "deps"
+        comp_dir = os.path.join(os.path.dirname(__file__), COMPONENTS_PATH)
+
+        fd, pipeline_file = mkstemp(prefix='test_deps_pipeline_', dir='/tmp')
+        os.write(fd, json.dumps(deps_show_pipeline).encode())
+        os.close(fd)
+
+        cmd = "{} {} -r {} -f {} Python".format(TestMLPiper.mlpiper_script, cmdline_action, comp_dir,
+                                                pipeline_file)
+        try:
+            stdout, stderr = self._exec_shell_cmd(cmd, "Failed in '{}' mlpiper command line! {}".format(cmdline_action, cmd))
+            l_deps = stdout.decode().split("\n")[1:]
+            l_deps = [l for l in l_deps if len(l) > 0]
+            assert (len(l_deps) == 4)
+            assert ("dep1" in l_deps)
+            assert ("dep2" in l_deps)
+            assert ("dep345" in l_deps)
+            assert ("dep456" in l_deps)
+        finally:
+            os.remove(pipeline_file)
