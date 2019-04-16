@@ -34,7 +34,10 @@ Examples:
 
 import logging
 import argparse
+import os
+import shutil
 import sys
+import tempfile
 
 from parallelm.mlpiper.mlpiper import MLPiper
 from parallelm.pipeline.component_language import ComponentLanguage
@@ -117,7 +120,7 @@ def _add_run_deployment_sub_parser(subparsers):
 def _add_deps_sub_parser(subparsers):
     # Get Python/R modules dependencies for the given pipeline or component
     deps = subparsers.add_parser('deps',
-                                 help='Return a list of module dependencies for a given pipeline, depending on '
+                                 help='Show a list of module dependencies for a given pipeline, depending on '
                                       'the components programming language')
     deps.add_argument('lang', choices=[ComponentLanguage.PYTHON, ComponentLanguage.R],
                       help='The programming language')
@@ -126,6 +129,9 @@ def _add_deps_sub_parser(subparsers):
                        help='A json string, which represents a pipeline.')
     group.add_argument('-f', '--file', type=argparse.FileType('r'),
                        help='A json file path, whose content is a pipeline. Or component JSON')
+
+    deps.add_argument('-r', '--comp-root', default=None, required=True,
+                                help='MLPiper components root dir. Recursively detecting components')
 
 
 def main(bin_dir=None):
@@ -161,6 +167,21 @@ def main(bin_dir=None):
     elif options.subparser_name in ("run-deployment"):
         ml_piper = MLPiper(options).deployment_dir(options.deployment_dir).skip_mlpiper_deps_install(True)
         ml_piper.run_deployment()
+
+    elif options.subparser_name in ("deps"):
+        tmp_dir = tempfile.mkdtemp()
+        try:
+            ml_piper = MLPiper(options) \
+                .comp_repo(options.comp_root) \
+                .deployment_dir(tmp_dir) \
+                .bin_dir(bin_dir) \
+                .pipeline(options.pipeline if options.pipeline else options.file) \
+                .use_color(not options.no_color) \
+                .force(True)
+
+            ml_piper.deps(options.lang)
+        finally:
+            shutil.rmtree(tmp_dir)
 
     else:
         raise Exception("subcommand: {} is not supported".format(options.subparser_name))
