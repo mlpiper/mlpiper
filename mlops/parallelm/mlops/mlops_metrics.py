@@ -21,6 +21,17 @@ class MLOpsMetrics(object):
 
     # classification stats
     @staticmethod
+    def accuracy_score(y_true, y_pred, normalize=True, sample_weight=None):
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        accuracy_score = sklearn.metrics.accuracy_score(y_true=y_true, y_pred=y_pred, normalize=normalize,
+                                                        sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.ACCURACY_SCORE, data=accuracy_score)
+
+    @staticmethod
     def confusion_matrix(y_true, y_pred, labels, sample_weight=None):
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -28,4 +39,4 @@ class MLOpsMetrics(object):
 
         cm = sklearn.metrics.confusion_matrix(y_true, y_pred, labels, sample_weight)
 
-        mlops.set_stat(ClassificationMetrics.CONFUSION_MATRIX, cm, labels=labels)
+        mlops.set_stat(ClassificationMetrics.CONFUSION_MATRIX, data=cm, labels=labels)
