@@ -63,6 +63,32 @@ def test_mlops_auc_apis():
     pm.done()
 
 
+def test_mlops_aps_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 1, 1, 0]
+    labels_decision_score = [0.9, 0.1, 0.9, 0.5, 0.1, 0.1]
+
+    aps = sklearn.metrics.average_precision_score(labels_pred, labels_decision_score)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.AVERAGE_PRECISION_SCORE, aps)
+
+    # second way
+    pm.metrics.average_precision_score(y_true=labels_pred, y_score=labels_decision_score)
+
+    # should throw error if not numeric number is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.AVERAGE_PRECISION_SCORE, [1, 2, 3])
+
+    # should throw error if labels decision values' length is different length than actuals
+    with pytest.raises(ValueError):
+        labels_decision_score_some_missing = [0.9, 0.1, 0.9, 0.5, 0.1]
+        pm.metrics.average_precision_score(y_true=labels_pred, y_score=labels_decision_score_some_missing)
+
+    pm.done()
+
+
 def test_mlops_confusion_metrics_apis():
     pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
 

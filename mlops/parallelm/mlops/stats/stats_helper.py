@@ -6,6 +6,7 @@ from parallelm.mlops.constants import Constants
 from parallelm.mlops.metrics_constants import ClassificationMetrics
 from parallelm.mlops.ml_metrics_stat.accuracy_score import AccuracyScore
 from parallelm.mlops.ml_metrics_stat.auc import AUC
+from parallelm.mlops.ml_metrics_stat.average_precision_score import AveragePrecisionScore
 from parallelm.mlops.ml_metrics_stat.confusion_matrix import ConfusionMatrix
 from parallelm.mlops.mlops_exception import MLOpsException, MLOpsStatisticsException
 from parallelm.mlops.stats.bar_graph import BarGraph
@@ -59,6 +60,11 @@ class StatsHelper(BaseObj):
         elif name == ClassificationMetrics.AUC:
             mlops_stat_object = \
                 AUC.get_mlops_auc_stat_object(auc=data)
+            category = StatCategory.TIME_SERIES
+
+        elif name == ClassificationMetrics.AVERAGE_PRECISION_SCORE:
+            mlops_stat_object = \
+                AveragePrecisionScore.get_mlops_aps_stat_object(aps=data)
             category = StatCategory.TIME_SERIES
 
         if mlops_stat_object is not None:
