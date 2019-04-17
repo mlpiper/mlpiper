@@ -7,4 +7,5 @@ class ClassificationMetrics(Enum):
     """
     ACCURACY_SCORE = "Accuracy Score"
     AUC = "AUC(Area Under the Curve)"
+    AVERAGE_PRECISION_SCORE = "Average Precision Score"
     CONFUSION_MATRIX = "Confusion Matrix"
