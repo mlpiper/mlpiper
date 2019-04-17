@@ -4,6 +4,7 @@ import six
 from parallelm.mlops.base_obj import BaseObj
 from parallelm.mlops.constants import Constants
 from parallelm.mlops.metrics_constants import ClassificationMetrics
+from parallelm.mlops.ml_metrics_stat.accuracy_score import AccuracyScore
 from parallelm.mlops.ml_metrics_stat.confusion_matrix import ConfusionMatrix
 from parallelm.mlops.mlops_exception import MLOpsException, MLOpsStatisticsException
 from parallelm.mlops.stats.bar_graph import BarGraph
@@ -40,6 +41,8 @@ class StatsHelper(BaseObj):
 
     def _set_classification_stat(self, name, data, model_id, timestamp, **kwargs):
         mlops_stat_object = None
+        category = StatCategory.GENERAL
+
         self._logger.debug("{} predefined stat called: name: {} data_type: {}".
                            format(Constants.OFFICIAL_NAME, name, type(data)))
 
@@ -47,16 +50,23 @@ class StatsHelper(BaseObj):
             mlops_stat_object = \
                 ConfusionMatrix.get_mlops_cm_table_object(cm_nd_array=data, **kwargs)
 
+        elif name == ClassificationMetrics.ACCURACY_SCORE:
+            mlops_stat_object = \
+                AccuracyScore.get_mlops_accuracy_stat_object(accuracy_score=data)
+            category = StatCategory.TIME_SERIES
+
         if mlops_stat_object is not None:
             self.set_stat(name=name,
                           data=mlops_stat_object,
                           model_id=model_id,
                           # type of stat will be General
-                          category=StatCategory.GENERAL,
-                          timestamp=timestamp, **kwargs)
+                          category=category,
+                          timestamp=timestamp,
+                          **kwargs)
         else:
-            error = "{} predefined stat cannot be output as error happened in creating mlops stat object from {}".format(
-                name, data)
+            error = "{} predefined stat cannot be output as error happened in creating mlops stat object from {}" \
+                .format(name, data)
+
             raise MLOpsStatisticsException(error)
 
     def set_stat(self, name, data, model_id, category, timestamp, **kwargs):
