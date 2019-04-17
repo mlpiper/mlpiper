@@ -1,4 +1,5 @@
 import pytest
+import sklearn
 from sklearn import metrics
 
 from parallelm.mlops import mlops as pm
@@ -36,6 +37,28 @@ def test_mlops_accuracy_score_apis():
     pm.metrics.accuracy_score(y_true=labels_actual,
                               y_pred=labels_pred,
                               sample_weight=sample_weight)
+
+    pm.done()
+
+
+def test_mlops_auc_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 1, 1, 0]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    fpr, tpr, thresholds = sklearn.metrics.roc_curve(labels_actual, labels_pred, pos_label=2)
+    auc = sklearn.metrics.auc(fpr, tpr)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.AUC, auc)
+
+    # second way
+    pm.metrics.auc(x=fpr, y=tpr)
+
+    # should throw error if not numeric number is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.AUC, [1, 2, 3])
 
     pm.done()
 
