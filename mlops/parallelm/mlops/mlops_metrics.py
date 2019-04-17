@@ -16,6 +16,12 @@ class MLOpsMetrics(object):
     >>> labels = [0, 1, 0] # actual labels
     >>> labels_ordered = [0, 1] # order of labels to use for creating confusion matrix.
 
+    >>> mlops.metrics.accuracy_score(y_true=labels, y_pred=labels_pred)
+
+    >>> fpr, tpr, thresholds = sklearn.metrics.roc_curve(labels, labels_pred, pos_label=2)
+
+    >>> mlops.metrics.auc(x=fpr, y=tpr)
+
     >>> mlops.metrics.confusion_matrix(y_true=labels, y_pred=labels_pred, labels=labels_ordered)
     """
 
@@ -30,6 +36,16 @@ class MLOpsMetrics(object):
                                                         sample_weight=sample_weight)
 
         mlops.set_stat(ClassificationMetrics.ACCURACY_SCORE, data=accuracy_score)
+
+    @staticmethod
+    def auc(x, y):
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        auc = sklearn.metrics.auc(x=x, y=y)
+
+        mlops.set_stat(ClassificationMetrics.AUC, data=auc)
 
     @staticmethod
     def confusion_matrix(y_true, y_pred, labels, sample_weight=None):
