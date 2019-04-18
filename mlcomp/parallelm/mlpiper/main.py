@@ -170,18 +170,16 @@ def main(bin_dir=None):
 
     elif options.subparser_name in ("deps"):
         tmp_dir = tempfile.mkdtemp()
-        try:
-            ml_piper = MLPiper(options) \
-                .comp_repo(options.comp_root) \
-                .deployment_dir(tmp_dir) \
-                .bin_dir(bin_dir) \
-                .pipeline(options.pipeline if options.pipeline else options.file) \
-                .use_color(not options.no_color) \
-                .force(True)
+        ml_piper = MLPiper(options) \
+            .comp_repo(options.comp_root) \
+            .deployment_dir(tmp_dir) \
+            .bin_dir(bin_dir) \
+            .pipeline(options.pipeline if options.pipeline else options.file) \
+            .use_color(not options.no_color) \
+            .force(True)
 
-            ml_piper.deps(options.lang)
-        finally:
-            shutil.rmtree(tmp_dir)
+        ml_piper.deps(options.lang)
+        shutil.rmtree(tmp_dir)
 
     else:
         raise Exception("subcommand: {} is not supported".format(options.subparser_name))
