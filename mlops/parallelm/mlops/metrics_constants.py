@@ -17,3 +17,4 @@ class RegressionMetrics(Enum):
     """
     EXPLAINED_VARIANCE_SCORE = "Explained Variance Score"
     MEAN_ABSOLUTE_ERROR = "Mean Absolute Error"
+    MEAN_SQUARED_ERROR = "Mean Squared Error"
