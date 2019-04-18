@@ -14,6 +14,7 @@ from parallelm.pipeline import json_fields
 from parallelm.common.base import Base
 from parallelm.pipeline import java_mapping
 from parallelm.pipeline.executor import Executor
+from parallelm.pipeline.executor_config import ExecutorConfig
 from parallelm.pipeline.component_language import ComponentLanguage
 
 
@@ -43,6 +44,7 @@ class MLPiper(Base):
         self._input_model_filepath = None
         self._output_model_filepath = None
         self._force = False
+        self._test_mode = False
 
     def _print_info(self):
         self._logger.info("comp_root_path: {}".format(self._comp_root_path))
@@ -101,6 +103,10 @@ class MLPiper(Base):
 
     def force(self, force):
         self._force = force
+        return self
+
+    def test_mode(self, test_mode):
+        self._test_mode = test_mode
         return self
 
     def deploy(self):
@@ -242,7 +248,19 @@ class MLPiper(Base):
         if not os.path.exists(pipeline_file):
             raise Exception("Pipeline file not exists! path: {}".format(pipeline_file))
 
-        pipeline_runner = Executor() \
+        pipeline_json = None
+        with open(pipeline_file, 'r') as f:
+            pipeline_json = json.load(f)
+
+        pipeline_json[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD] \
+            [json_fields.PIPELINE_SYSTEM_CONFIG_TEST_MODE_PARAM] = self._test_mode
+
+        config = ExecutorConfig(pipeline=json.dumps(pipeline_json),
+                                pipeline_file=None,
+                                run_locally=False,
+                                mlcomp_jar=None)
+
+        pipeline_runner = Executor(config) \
             .comp_root_path(self._comp_root_path) \
             .pipeline_file(open(pipeline_file)) \
             .use_color(self._use_color) \
