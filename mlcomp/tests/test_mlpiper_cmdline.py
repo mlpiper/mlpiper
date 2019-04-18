@@ -28,7 +28,8 @@ simple_pipelines_for_testing = [
                 "type": "string-sink",
                 "parents": [{"parent": 1, "output": 0}],
                 "arguments": {
-                    "expected-value": "Hello World: testing string source and sink"
+                    "expected-value": "Hello World: testing string source and sink",
+                    "check-test-mode": True
                 }
             }
         ]
@@ -211,8 +212,8 @@ class TestMLPiper:
 
             comp_dir = os.path.join(os.path.dirname(__file__), PYTHON_COMPONENTS_PATH)
 
-            cmd = "{} {} -r {} -f {} --deployment-dir {}".format(TestMLPiper.mlpiper_script, cmdline_action, comp_dir,
-                                                                 pipeline_filepath, self._deployment_dir)
+            cmd = "{} {} -r {} -f {} --deployment-dir {} --test-mode".format(TestMLPiper.mlpiper_script, cmdline_action, comp_dir,
+                                                                    pipeline_filepath, self._deployment_dir)
 
             self._exec_shell_cmd(cmd, "Failed in '{}' mlpiper command line! {}".format(cmdline_action, cmd))
 
