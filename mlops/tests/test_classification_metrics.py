@@ -63,28 +63,35 @@ def test_mlops_auc_apis():
     pm.done()
 
 
-def test_mlops_aps_apis():
+def test_mlops_bas_apis():
     pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
 
     labels_pred = [1, 0, 1, 1, 1, 0]
-    labels_decision_score = [0.9, 0.1, 0.9, 0.5, 0.1, 0.1]
+    labels_actual = [0, 1, 0, 0, 0, 1]
 
-    aps = sklearn.metrics.average_precision_score(labels_pred, labels_decision_score)
+    bas = sklearn.metrics.balanced_accuracy_score(labels_actual, labels_pred)
 
     # first way
-    pm.set_stat(ClassificationMetrics.AVERAGE_PRECISION_SCORE, aps)
+    pm.set_stat(ClassificationMetrics.BALANCED_ACCURACY_SCORE, bas)
 
     # second way
-    pm.metrics.average_precision_score(y_true=labels_pred, y_score=labels_decision_score)
+    pm.metrics.balanced_accuracy_score(y_true=labels_actual, y_pred=labels_pred)
 
     # should throw error if not numeric number is provided
     with pytest.raises(MLOpsStatisticsException):
-        pm.set_stat(ClassificationMetrics.AVERAGE_PRECISION_SCORE, [1, 2, 3])
+        pm.set_stat(ClassificationMetrics.BALANCED_ACCURACY_SCORE, [1, 2, 3])
 
-    # should throw error if labels decision values' length is different length than actuals
+    # should throw error if labels predicted is different length than actuals
     with pytest.raises(ValueError):
-        labels_decision_score_some_missing = [0.9, 0.1, 0.9, 0.5, 0.1]
-        pm.metrics.average_precision_score(y_true=labels_pred, y_score=labels_decision_score_some_missing)
+        labels_pred_missing_values = [0, 0, 0, 1]
+        pm.metrics.balanced_accuracy_score(y_true=labels_actual, y_pred=labels_pred_missing_values)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.balanced_accuracy_score(y_true=labels_actual,
+                                       y_pred=labels_pred,
+                                       sample_weight=sample_weight)
 
     pm.done()
 
