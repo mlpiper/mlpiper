@@ -9,6 +9,7 @@ class ClassificationMetrics(Enum):
     AUC = "AUC(Area Under the Curve)"
     AVERAGE_PRECISION_SCORE = "Average Precision Score"
     BALANCED_ACCURACY_SCORE = "Balanced Accuracy Score"
+    BRIER_SCORE_LOSS = "Brier Score Loss"
     CONFUSION_MATRIX = "Confusion Matrix"
 
 
