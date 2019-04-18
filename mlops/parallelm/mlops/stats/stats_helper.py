@@ -7,6 +7,7 @@ from parallelm.mlops.metrics_constants import ClassificationMetrics, RegressionM
 from parallelm.mlops.ml_metrics_stat.classification.accuracy_score import AccuracyScore
 from parallelm.mlops.ml_metrics_stat.classification.auc import AUC
 from parallelm.mlops.ml_metrics_stat.classification.average_precision_score import AveragePrecisionScore
+from parallelm.mlops.ml_metrics_stat.classification.balanced_accuracy_score import BalancedAccuracyScore
 from parallelm.mlops.ml_metrics_stat.classification.confusion_matrix import ConfusionMatrix
 from parallelm.mlops.ml_metrics_stat.regression.explained_variance_score import ExplainedVarianceScore
 from parallelm.mlops.ml_metrics_stat.regression.mean_absolute_error import MeanAbsoluteError
@@ -54,11 +55,7 @@ class StatsHelper(BaseObj):
         self._logger.debug("{} predefined stat called: name: {} data_type: {}".
                            format(Constants.OFFICIAL_NAME, name, type(data)))
 
-        if name == ClassificationMetrics.CONFUSION_MATRIX:
-            mlops_stat_object = \
-                ConfusionMatrix.get_mlops_cm_table_object(cm_nd_array=data, **kwargs)
-
-        elif name == ClassificationMetrics.ACCURACY_SCORE:
+        if name == ClassificationMetrics.ACCURACY_SCORE:
             mlops_stat_object = \
                 AccuracyScore.get_mlops_accuracy_stat_object(accuracy_score=data)
             category = StatCategory.TIME_SERIES
@@ -72,6 +69,15 @@ class StatsHelper(BaseObj):
             mlops_stat_object = \
                 AveragePrecisionScore.get_mlops_aps_stat_object(aps=data)
             category = StatCategory.TIME_SERIES
+
+        elif name == ClassificationMetrics.BALANCED_ACCURACY_SCORE:
+            mlops_stat_object = \
+                BalancedAccuracyScore.get_mlops_balanced_accuracy_stat_object(balanced_accuracy_score=data)
+            category = StatCategory.TIME_SERIES
+
+        elif name == ClassificationMetrics.CONFUSION_MATRIX:
+            mlops_stat_object = \
+                ConfusionMatrix.get_mlops_cm_table_object(cm_nd_array=data, **kwargs)
 
         if mlops_stat_object is not None:
             self.set_stat(name=name,
