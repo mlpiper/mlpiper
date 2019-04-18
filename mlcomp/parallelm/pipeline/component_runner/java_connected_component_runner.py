@@ -43,7 +43,7 @@ class JavaConnectedComponentRunner(ComponentRunner):
     def __init__(self, ml_engine, dag_node, mlcomp_jar):
         super(JavaConnectedComponentRunner, self).__init__(ml_engine, dag_node)
 
-        if not os.path.exists(mlcomp_jar):
+        if not mlcomp_jar or not os.path.exists(mlcomp_jar):
             raise Exception("mlcomp_jar does not exists: {}".format(mlcomp_jar))
         self._mlcomp_jar = mlcomp_jar
 
