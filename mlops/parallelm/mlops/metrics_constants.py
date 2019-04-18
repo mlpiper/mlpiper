@@ -16,3 +16,4 @@ class RegressionMetrics(Enum):
     Class will hold predefined naming of all regression ML Metrics supported by ParallelM.
     """
     EXPLAINED_VARIANCE_SCORE = "Explained Variance Score"
+    MEAN_ABSOLUTE_ERROR = "Mean Absolute Error"
