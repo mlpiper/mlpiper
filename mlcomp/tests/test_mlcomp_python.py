@@ -347,6 +347,7 @@ class TestPythonEngine:
             ]
         }
         system_config = TestPythonEngine.system_config
+        system_config["__test_mode__"] = True
         pipeline["systemConfig"] = system_config
         config = self._get_executor_config(pipeline)
         Executor(config).go()

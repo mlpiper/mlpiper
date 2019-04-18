@@ -30,6 +30,13 @@ class MLOpsPY4JWrapper(object):
         else:
             print("no-mlops: stat {} {}".format(stat_name, stat_value))
 
+    def isTestMode(self):
+        if mlops_loaded:
+            return mlops.test_mode
+        else:
+            print("mlops is not loaded: test_mode is not available")
+        return False
+
     class Java:
         implements = ["com.parallelm.mlcomp.MLOps"]
 
