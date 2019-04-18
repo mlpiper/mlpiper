@@ -152,3 +152,16 @@ class MLOpsMetrics(object):
                                                     y_pred=y_pred)
 
         mlops.set_stat(RegressionMetrics.MEDIAN_ABSOLUTE_ERROR, data=mae)
+
+    @staticmethod
+    def r2_score(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        r2_score = sklearn.metrics.r2_score(y_true=y_true,
+                                            y_pred=y_pred,
+                                            sample_weight=sample_weight,
+                                            multioutput=multioutput)
+
+        mlops.set_stat(RegressionMetrics.R2_SCORE, data=r2_score)

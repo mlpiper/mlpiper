@@ -13,6 +13,7 @@ from parallelm.mlops.ml_metrics_stat.regression.mean_absolute_error import MeanA
 from parallelm.mlops.ml_metrics_stat.regression.mean_squared_error import MeanSquaredError
 from parallelm.mlops.ml_metrics_stat.regression.mean_squared_log_error import MeanSquaredLogError
 from parallelm.mlops.ml_metrics_stat.regression.median_absolute_error import MedianAbsoluteError
+from parallelm.mlops.ml_metrics_stat.regression.r2_score import R2Score
 from parallelm.mlops.mlops_exception import MLOpsException, MLOpsStatisticsException
 from parallelm.mlops.stats.bar_graph import BarGraph
 from parallelm.mlops.stats.kpi_value import KpiValue
@@ -112,6 +113,10 @@ class StatsHelper(BaseObj):
         elif name == RegressionMetrics.MEDIAN_ABSOLUTE_ERROR:
             mlops_stat_object = \
                 MedianAbsoluteError.get_mlops_mae_stat_object(mae=data)
+
+        elif name == RegressionMetrics.R2_SCORE:
+            mlops_stat_object = \
+                R2Score.get_mlops_r2_score_stat_object(r2_score=data)
 
         if mlops_stat_object is not None:
             self.set_stat(name=name,
