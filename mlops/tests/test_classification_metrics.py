@@ -96,6 +96,39 @@ def test_mlops_bas_apis():
     pm.done()
 
 
+def test_mlops_bsl_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_actual = [1, 0, 1, 1, 1, 0]
+    labels_pred_prob = [0.9, 0.8, 0.7, 0.9, 0.75, 1]
+
+    bsl = sklearn.metrics.brier_score_loss(labels_actual, labels_pred_prob)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.BRIER_SCORE_LOSS, bsl)
+
+    # second way
+    pm.metrics.brier_score_loss(y_true=labels_actual, y_prob=labels_pred_prob)
+
+    # should throw error if not numeric number is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.BRIER_SCORE_LOSS, [1, 2, 3])
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_prob_missing_values = [0, 0, 0, 1]
+        pm.metrics.brier_score_loss(y_true=labels_actual, y_prob=labels_prob_missing_values)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.brier_score_loss(y_true=labels_actual,
+                                y_prob=labels_pred_prob,
+                                sample_weight=sample_weight)
+
+    pm.done()
+
+
 def test_mlops_confusion_metrics_apis():
     pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
 
