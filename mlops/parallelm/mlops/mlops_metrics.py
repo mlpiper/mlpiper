@@ -1,4 +1,4 @@
-from parallelm.mlops.metrics_constants import ClassificationMetrics
+from parallelm.mlops.metrics_constants import ClassificationMetrics, RegressionMetrics
 from parallelm.mlops.singelton import Singleton
 
 
@@ -8,6 +8,7 @@ class MLOpsMetrics(object):
     Class is responsible for giving user sklearn alike code representation for using ParallelM's mlops apis.
     Class will support classification, regression and clustering stats.
     :Example:
+    For Classification
 
     >>> from parallelm.mlops import mlops
 
@@ -26,9 +27,21 @@ class MLOpsMetrics(object):
     >>> pm.metrics.average_precision_score(y_true=labels_pred, y_score=labels_decision_values)
 
     >>> mlops.metrics.confusion_matrix(y_true=labels, y_pred=labels_pred, labels=labels_ordered)
+
+
+    For Regression
+    >>> from parallelm.mlops import mlops
+
+    >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75]
+    >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25]
+
+    >>> mlops.metrics.explained_variance_score(y_true=labels_actual, y_pred=labels_pred)
+
     """
 
-    # classification stats
+    ##################################################################
+    ###################### classification stats ######################
+    ##################################################################
     @staticmethod
     def accuracy_score(y_true, y_pred, normalize=True, sample_weight=None):
         # need to import only on run time.
@@ -72,3 +85,20 @@ class MLOpsMetrics(object):
         cm = sklearn.metrics.confusion_matrix(y_true, y_pred, labels, sample_weight)
 
         mlops.set_stat(ClassificationMetrics.CONFUSION_MATRIX, data=cm, labels=labels)
+
+    ##################################################################
+    ######################## regression stats ########################
+    ##################################################################
+
+    @staticmethod
+    def explained_variance_score(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        evs = sklearn.metrics.explained_variance_score(y_true=y_true,
+                                                       y_pred=y_pred,
+                                                       sample_weight=sample_weight,
+                                                       multioutput=multioutput)
+
+        mlops.set_stat(RegressionMetrics.EXPLAINED_VARIANCE_SCORE, data=evs)
