@@ -45,9 +45,11 @@ class TestPythonEngine:
         return model_file
 
     @staticmethod
-    def _fix_pipeline(pipeline, model_file):
+    def _fix_pipeline(pipeline, model_file, **kwargs):
         system_config = TestPythonEngine.system_config
         system_config["modelFileSourcePath"] = model_file
+        for key, value in kwargs.items():
+            system_config[key] = value
         pipeline["systemConfig"] = system_config
 
     def _get_executor_config(self, pipeline):
@@ -206,6 +208,37 @@ class TestPythonEngine:
             ]
         }
         self._fix_pipeline(pipeline, None)
+        config = self._get_executor_config(pipeline)
+        Executor(config).go()
+
+    def test_execute_python_connected_test_mode(self, caplog):
+        pipeline = {
+            "name": "stand_alone_test",
+            "engineType": "Generic",
+            "pipe": [
+                {
+                    "name": "src",
+                    "id": 1,
+                    "type": "string-source",
+                    "parents": [],
+                    "arguments": {
+                        "value": "test-st1-1234",
+                        "check-test-mode": True
+                    }
+                },
+                {
+                    "name": "sink",
+                    "id": 2,
+                    "type": "string-sink",
+                    "parents": [{"parent": 1, "output": 0}],
+                    "arguments": {
+                        "expected-value": "test-st1-1234",
+                        "check-test-mode": True
+                    }
+                }
+            ]
+        }
+        self._fix_pipeline(pipeline, None, __test_mode__=True)
         config = self._get_executor_config(pipeline)
         Executor(config).go()
 

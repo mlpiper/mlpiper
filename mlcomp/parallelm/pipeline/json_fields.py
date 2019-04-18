@@ -34,3 +34,6 @@ COMPONENT_DESC_ROOT_PATH_FIELD = 'root-path'
 
 # Component metadata reference json
 COMPONENT_METADATA_REF_FILE_NAME_FIELD = 'metadataFilename'
+
+
+PIPELINE_SYSTEM_CONFIG_TEST_MODE_PARAM = '__test_mode__'

@@ -1,4 +1,5 @@
 from parallelm.components import ConnectableComponent
+from parallelm.mlops import mlops
 
 
 class StringSink(ConnectableComponent):
@@ -12,4 +13,8 @@ class StringSink(ConnectableComponent):
         print("String Sink, Got:[{}] Expected: [{}] ".format(actual_value, expected_str_value))
         if expected_str_value != actual_value:
             raise Exception("Actual [{}] != Expected [{}]".format(actual_value, expected_str_value))
+        check_test_mode = self._params.get('check-test-mode', False)
+        if check_test_mode:
+            if not mlops.test_mode:
+                raise Exception("systemConfig '__test_mode__' has to be set to True in this test")
         return []
