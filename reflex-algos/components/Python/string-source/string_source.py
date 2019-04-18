@@ -1,4 +1,5 @@
 from parallelm.components import ConnectableComponent
+from parallelm.mlops import mlops
 
 
 class StringSource(ConnectableComponent):
@@ -8,4 +9,8 @@ class StringSource(ConnectableComponent):
 
     def _materialize(self, parent_data_objs, user_data):
         str_value = self._params.get('value', "default-string-value")
+        check_test_mode = self._params.get('check-test-mode', False)
+        if check_test_mode:
+            if not mlops.test_mode:
+                raise Exception("systemConfig '__test_mode__' has to be set to True in this test")
         return [str_value]

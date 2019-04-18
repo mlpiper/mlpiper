@@ -25,6 +25,13 @@
       "label": "String value",
       "description": "String value to provide as output",
       "optional": false
+    },
+    {
+      "key": "check-test-mode",
+      "label": "Enable check for test mode",
+      "type": "bool",
+      "description": "Test if pipeline is run in test mode",
+      "optional": true
     }
   ],
   "version": 1

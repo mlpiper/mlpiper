@@ -151,6 +151,7 @@ class Executor(Base):
             sys.stdout.flush()
 
             system_conf = self.pipeline[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD]
+            mlops._set_test_mode(system_conf.get(json_fields.PIPELINE_SYSTEM_CONFIG_TEST_MODE_PARAM, False))
             if dag.is_stand_alone:
                 dag.run_single_component_pipeline(system_conf, self._ml_engine)
             else:

@@ -90,6 +90,9 @@ class MLOps(object):
         self._mlops_ctx = None
         self._curr_model = None
 
+        # Run in test mode
+        self._test_mode = False
+
     def _set_api_test_mode(self):
         self._api_test_mode = True
         self._stats_helper._api_test_mode = True
@@ -253,6 +256,13 @@ class MLOps(object):
         :param suppress: boolean True/False
         """
         SuppressException.set_suppress(suppress)
+
+    @property
+    def test_mode(self):
+        return self._test_mode
+
+    def _set_test_mode(self, value):
+        self._test_mode = value
 
     @property
     def mlapp_id(self):
