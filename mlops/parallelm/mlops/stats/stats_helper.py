@@ -9,6 +9,7 @@ from parallelm.mlops.ml_metrics_stat.classification.auc import AUC
 from parallelm.mlops.ml_metrics_stat.classification.average_precision_score import AveragePrecisionScore
 from parallelm.mlops.ml_metrics_stat.classification.balanced_accuracy_score import BalancedAccuracyScore
 from parallelm.mlops.ml_metrics_stat.classification.brier_score_loss import BrierScoreLoss
+from parallelm.mlops.ml_metrics_stat.classification.classification_report import ClassificationReport
 from parallelm.mlops.ml_metrics_stat.classification.confusion_matrix import ConfusionMatrix
 from parallelm.mlops.ml_metrics_stat.regression.explained_variance_score import ExplainedVarianceScore
 from parallelm.mlops.ml_metrics_stat.regression.mean_absolute_error import MeanAbsoluteError
@@ -51,7 +52,7 @@ class StatsHelper(BaseObj):
 
     def _set_classification_stat(self, name, data, model_id, timestamp, **kwargs):
         mlops_stat_object = None
-        category = StatCategory.GENERAL
+        category = StatCategory.TIME_SERIES
 
         self._logger.debug("{} predefined stat called: name: {} data_type: {}".
                            format(Constants.OFFICIAL_NAME, name, type(data)))
@@ -59,37 +60,38 @@ class StatsHelper(BaseObj):
         if name == ClassificationMetrics.ACCURACY_SCORE:
             mlops_stat_object = \
                 AccuracyScore.get_mlops_accuracy_stat_object(accuracy_score=data)
-            category = StatCategory.TIME_SERIES
 
         elif name == ClassificationMetrics.AUC:
             mlops_stat_object = \
                 AUC.get_mlops_auc_stat_object(auc=data)
-            category = StatCategory.TIME_SERIES
 
         elif name == ClassificationMetrics.AVERAGE_PRECISION_SCORE:
             mlops_stat_object = \
                 AveragePrecisionScore.get_mlops_aps_stat_object(aps=data)
-            category = StatCategory.TIME_SERIES
 
         elif name == ClassificationMetrics.BALANCED_ACCURACY_SCORE:
             mlops_stat_object = \
                 BalancedAccuracyScore.get_mlops_balanced_accuracy_stat_object(balanced_accuracy_score=data)
-            category = StatCategory.TIME_SERIES
 
         elif name == ClassificationMetrics.BRIER_SCORE_LOSS:
             mlops_stat_object = \
                 BrierScoreLoss.get_mlops_bsl_stat_object(bsl=data)
-            category = StatCategory.TIME_SERIES
+
+        elif name == ClassificationMetrics.CLASSIFICATION_REPORT:
+            mlops_stat_object = \
+                ClassificationReport.get_mlops_classification_report_table_stat_object(cr=data)
+            category = StatCategory.GENERAL
 
         elif name == ClassificationMetrics.CONFUSION_MATRIX:
             mlops_stat_object = \
                 ConfusionMatrix.get_mlops_cm_table_object(cm_nd_array=data, **kwargs)
+            category = StatCategory.GENERAL
 
         if mlops_stat_object is not None:
             self.set_stat(name=name,
                           data=mlops_stat_object,
                           model_id=model_id,
-                          # type of stat will be General
+                          # type of stat will be time series by default
                           category=category,
                           timestamp=timestamp,
                           **kwargs)
@@ -101,7 +103,7 @@ class StatsHelper(BaseObj):
 
     def _set_regression_stat(self, name, data, model_id, timestamp, **kwargs):
         mlops_stat_object = None
-        category = StatCategory.GENERAL
+        category = StatCategory.TIME_SERIES
 
         self._logger.debug("{} predefined stat called: name: {} data_type: {}".
                            format(Constants.OFFICIAL_NAME, name, type(data)))
@@ -134,7 +136,7 @@ class StatsHelper(BaseObj):
             self.set_stat(name=name,
                           data=mlops_stat_object,
                           model_id=model_id,
-                          # type of stat will be General
+                          # type of stat will be time series by default
                           category=category,
                           timestamp=timestamp,
                           **kwargs)

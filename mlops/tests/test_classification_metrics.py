@@ -129,6 +129,48 @@ def test_mlops_bsl_apis():
     pm.done()
 
 
+def test_mlops_classification_report_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 1, 1, 0]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    cr = metrics.classification_report(labels_actual, labels_pred)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.CLASSIFICATION_REPORT, cr)
+
+    # second way
+    pm.metrics.classification_report(y_true=labels_actual, y_pred=labels_pred)
+
+    # should throw error if empty string is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.CLASSIFICATION_REPORT, "")
+
+    # should throw error if None string is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.CLASSIFICATION_REPORT, None)
+
+    # should throw error if weird string
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.CLASSIFICATION_REPORT, "Hello ParallelM")
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_pred_missing_values = [0, 0, 0, 1]
+        pm.metrics.classification_report(y_true=labels_actual, y_pred=labels_pred_missing_values)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+    target_names = ["class Yes", "class No"]
+    # testing with sample weights as well
+    pm.metrics.classification_report(y_true=labels_actual,
+                                     y_pred=labels_pred,
+                                     target_names=target_names,
+                                     sample_weight=sample_weight)
+
+    pm.done()
+
+
 def test_mlops_confusion_metrics_apis():
     pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
 
