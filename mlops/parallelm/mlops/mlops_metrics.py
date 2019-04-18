@@ -167,6 +167,35 @@ class MLOpsMetrics(object):
         return bsl
 
     @staticmethod
+    def classification_report(y_true, y_pred,
+                              labels=None, target_names=None,
+                              sample_weight=None,
+                              digits=2):
+        """
+        Method generates classification report and output it using MCenter as table.
+
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Estimated targets as returned by a classifier.
+        :param labels: List of labels to index the matrix.
+        :param target_names: List of string for display names matching the labels (same order).
+        :param sample_weight: Sample weights.
+        :param digits: Number of digits for formatting output floating point values.
+        :return: classification report string
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        cr = sklearn.metrics.classification_report(y_true=y_true, y_pred=y_pred,
+                                                   labels=labels, target_names=target_names,
+                                                   sample_weight=sample_weight,
+                                                   digits=digits)
+
+        mlops.set_stat(ClassificationMetrics.CLASSIFICATION_REPORT, data=cr)
+
+        return cr
+
+    @staticmethod
     def confusion_matrix(y_true, y_pred, labels, sample_weight=None):
         """
         Method calculates confusion matrix and output it using MCenter as table.
