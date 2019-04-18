@@ -141,3 +141,14 @@ class MLOpsMetrics(object):
                                                       multioutput=multioutput)
 
         mlops.set_stat(RegressionMetrics.MEAN_SQUARED_LOG_ERROR, data=msle)
+
+    @staticmethod
+    def median_absolute_error(y_true, y_pred):
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        mae = sklearn.metrics.median_absolute_error(y_true=y_true,
+                                                    y_pred=y_pred)
+
+        mlops.set_stat(RegressionMetrics.MEDIAN_ABSOLUTE_ERROR, data=mae)
