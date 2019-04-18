@@ -3,11 +3,12 @@ import six
 
 from parallelm.mlops.base_obj import BaseObj
 from parallelm.mlops.constants import Constants
-from parallelm.mlops.metrics_constants import ClassificationMetrics
-from parallelm.mlops.ml_metrics_stat.accuracy_score import AccuracyScore
-from parallelm.mlops.ml_metrics_stat.auc import AUC
-from parallelm.mlops.ml_metrics_stat.average_precision_score import AveragePrecisionScore
-from parallelm.mlops.ml_metrics_stat.confusion_matrix import ConfusionMatrix
+from parallelm.mlops.metrics_constants import ClassificationMetrics, RegressionMetrics
+from parallelm.mlops.ml_metrics_stat.classification.accuracy_score import AccuracyScore
+from parallelm.mlops.ml_metrics_stat.classification.auc import AUC
+from parallelm.mlops.ml_metrics_stat.classification.average_precision_score import AveragePrecisionScore
+from parallelm.mlops.ml_metrics_stat.classification.confusion_matrix import ConfusionMatrix
+from parallelm.mlops.ml_metrics_stat.regression.explained_variance_score import ExplainedVarianceScore
 from parallelm.mlops.mlops_exception import MLOpsException, MLOpsStatisticsException
 from parallelm.mlops.stats.bar_graph import BarGraph
 from parallelm.mlops.stats.kpi_value import KpiValue
@@ -81,6 +82,31 @@ class StatsHelper(BaseObj):
 
             raise MLOpsStatisticsException(error)
 
+    def _set_regression_stat(self, name, data, model_id, timestamp, **kwargs):
+        mlops_stat_object = None
+        category = StatCategory.GENERAL
+
+        self._logger.debug("{} predefined stat called: name: {} data_type: {}".
+                           format(Constants.OFFICIAL_NAME, name, type(data)))
+
+        if name == RegressionMetrics.EXPLAINED_VARIANCE_SCORE:
+            mlops_stat_object = \
+                ExplainedVarianceScore.get_mlops_evs_stat_object(evs=data)
+
+        if mlops_stat_object is not None:
+            self.set_stat(name=name,
+                          data=mlops_stat_object,
+                          model_id=model_id,
+                          # type of stat will be General
+                          category=category,
+                          timestamp=timestamp,
+                          **kwargs)
+        else:
+            error = "{} predefined stat cannot be output as error happened in creating mlops stat object from {}" \
+                .format(name, data)
+
+            raise MLOpsStatisticsException(error)
+
     def set_stat(self, name, data, model_id, category, timestamp, **kwargs):
         # If name supports the stat_object API, return the object.
         if isinstance(name, MLOpsStatGetter):
@@ -98,6 +124,12 @@ class StatsHelper(BaseObj):
                                           model_id=model_id,
                                           timestamp=timestamp, **kwargs)
 
+            return self
+        elif name in RegressionMetrics:
+            self._set_regression_stat(name=name,
+                                      data=data,
+                                      model_id=model_id,
+                                      timestamp=timestamp, **kwargs)
             return self
 
         if category in (StatCategory.CONFIG, StatCategory.TIME_SERIES):
