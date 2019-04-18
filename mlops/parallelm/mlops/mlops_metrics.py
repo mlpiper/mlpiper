@@ -128,3 +128,16 @@ class MLOpsMetrics(object):
                                                  multioutput=multioutput)
 
         mlops.set_stat(RegressionMetrics.MEAN_SQUARED_ERROR, data=mse)
+
+    @staticmethod
+    def mean_squared_log_error(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        msle = sklearn.metrics.mean_squared_log_error(y_true=y_true,
+                                                      y_pred=y_pred,
+                                                      sample_weight=sample_weight,
+                                                      multioutput=multioutput)
+
+        mlops.set_stat(RegressionMetrics.MEAN_SQUARED_LOG_ERROR, data=msle)
