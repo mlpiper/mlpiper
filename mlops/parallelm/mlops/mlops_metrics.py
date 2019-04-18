@@ -102,3 +102,16 @@ class MLOpsMetrics(object):
                                                        multioutput=multioutput)
 
         mlops.set_stat(RegressionMetrics.EXPLAINED_VARIANCE_SCORE, data=evs)
+
+    @staticmethod
+    def mean_absolute_error(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        mae = sklearn.metrics.mean_absolute_error(y_true=y_true,
+                                                  y_pred=y_pred,
+                                                  sample_weight=sample_weight,
+                                                  multioutput=multioutput)
+
+        mlops.set_stat(RegressionMetrics.MEAN_ABSOLUTE_ERROR, data=mae)
