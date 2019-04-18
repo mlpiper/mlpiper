@@ -119,6 +119,29 @@ class MLOpsMetrics(object):
         return aps
 
     @staticmethod
+    def balanced_accuracy_score(y_true, y_pred, sample_weight=None, adjusted=False):
+        """
+
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Estimated targets as returned by a classifier.
+        :param sample_weight: Sample weights.
+        :param adjusted: When true, the result is adjusted for chance, so that random performance would score 0, and perfect performance scores 1.
+        :return: balanced accuracy score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        bas = sklearn.metrics.balanced_accuracy_score(y_true,
+                                                      y_pred,
+                                                      sample_weight=sample_weight,
+                                                      adjusted=adjusted)
+
+        mlops.set_stat(ClassificationMetrics.BALANCED_ACCURACY_SCORE, data=bas)
+
+        return bas
+
+    @staticmethod
     def confusion_matrix(y_true, y_pred, labels, sample_weight=None):
         """
         Method calculates confusion matrix and output it using MCenter as table.
