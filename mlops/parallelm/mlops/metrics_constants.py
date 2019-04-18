@@ -10,6 +10,7 @@ class ClassificationMetrics(Enum):
     AVERAGE_PRECISION_SCORE = "Average Precision Score"
     BALANCED_ACCURACY_SCORE = "Balanced Accuracy Score"
     BRIER_SCORE_LOSS = "Brier Score Loss"
+    CLASSIFICATION_REPORT = "Classification Report"
     CONFUSION_MATRIX = "Confusion Matrix"
 
 
