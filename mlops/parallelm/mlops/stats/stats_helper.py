@@ -9,6 +9,7 @@ from parallelm.mlops.ml_metrics_stat.classification.auc import AUC
 from parallelm.mlops.ml_metrics_stat.classification.average_precision_score import AveragePrecisionScore
 from parallelm.mlops.ml_metrics_stat.classification.confusion_matrix import ConfusionMatrix
 from parallelm.mlops.ml_metrics_stat.regression.explained_variance_score import ExplainedVarianceScore
+from parallelm.mlops.ml_metrics_stat.regression.mean_absolute_error import MeanAbsoluteError
 from parallelm.mlops.mlops_exception import MLOpsException, MLOpsStatisticsException
 from parallelm.mlops.stats.bar_graph import BarGraph
 from parallelm.mlops.stats.kpi_value import KpiValue
@@ -92,6 +93,10 @@ class StatsHelper(BaseObj):
         if name == RegressionMetrics.EXPLAINED_VARIANCE_SCORE:
             mlops_stat_object = \
                 ExplainedVarianceScore.get_mlops_evs_stat_object(evs=data)
+
+        elif name == RegressionMetrics.MEAN_ABSOLUTE_ERROR:
+            mlops_stat_object = \
+                MeanAbsoluteError.get_mlops_mae_stat_object(mae=data)
 
         if mlops_stat_object is not None:
             self.set_stat(name=name,
