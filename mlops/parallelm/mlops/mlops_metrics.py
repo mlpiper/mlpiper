@@ -121,6 +121,7 @@ class MLOpsMetrics(object):
     @staticmethod
     def balanced_accuracy_score(y_true, y_pred, sample_weight=None, adjusted=False):
         """
+        Method calculates balanced accuracy and output it using MCenter.
 
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
@@ -140,6 +141,30 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClassificationMetrics.BALANCED_ACCURACY_SCORE, data=bas)
 
         return bas
+
+    @staticmethod
+    def brier_score_loss(y_true, y_prob, sample_weight=None, pos_label=None):
+        """
+        Method calculates brier score loss and output it using MCenter.
+
+        :param y_true: True targets.
+        :param y_prob: Probabilities of the positive class.
+        :param sample_weight: Sample weights.
+        :param pos_label: Label of the positive class. If None, the maximum label is used as positive class.
+        :return: brier score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        bsl = sklearn.metrics.brier_score_loss(y_true,
+                                               y_prob,
+                                               sample_weight=sample_weight,
+                                               pos_label=pos_label)
+
+        mlops.set_stat(ClassificationMetrics.BRIER_SCORE_LOSS, data=bsl)
+
+        return bsl
 
     @staticmethod
     def confusion_matrix(y_true, y_pred, labels, sample_weight=None):

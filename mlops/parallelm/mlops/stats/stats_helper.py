@@ -8,6 +8,7 @@ from parallelm.mlops.ml_metrics_stat.classification.accuracy_score import Accura
 from parallelm.mlops.ml_metrics_stat.classification.auc import AUC
 from parallelm.mlops.ml_metrics_stat.classification.average_precision_score import AveragePrecisionScore
 from parallelm.mlops.ml_metrics_stat.classification.balanced_accuracy_score import BalancedAccuracyScore
+from parallelm.mlops.ml_metrics_stat.classification.brier_score_loss import BrierScoreLoss
 from parallelm.mlops.ml_metrics_stat.classification.confusion_matrix import ConfusionMatrix
 from parallelm.mlops.ml_metrics_stat.regression.explained_variance_score import ExplainedVarianceScore
 from parallelm.mlops.ml_metrics_stat.regression.mean_absolute_error import MeanAbsoluteError
@@ -73,6 +74,11 @@ class StatsHelper(BaseObj):
         elif name == ClassificationMetrics.BALANCED_ACCURACY_SCORE:
             mlops_stat_object = \
                 BalancedAccuracyScore.get_mlops_balanced_accuracy_stat_object(balanced_accuracy_score=data)
+            category = StatCategory.TIME_SERIES
+
+        elif name == ClassificationMetrics.BRIER_SCORE_LOSS:
+            mlops_stat_object = \
+                BrierScoreLoss.get_mlops_bsl_stat_object(bsl=data)
             category = StatCategory.TIME_SERIES
 
         elif name == ClassificationMetrics.CONFUSION_MATRIX:
