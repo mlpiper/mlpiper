@@ -47,16 +47,18 @@ class ComponentScanner(object):
             # Always include current component json file regardless of its name.
             comps[engine_type][comp_name]["files"].append(comp_filename)
 
-            # Always include "requirements.txt"
-            if os.path.exists(os.path.join(root, MLCompConstants.REQUIREMENTS_FILENAME)):
-                comps[engine_type][comp_name]["files"].append(MLCompConstants.REQUIREMENTS_FILENAME)
-
             logging.debug("Found component, root: {}, engine: {}, name: ".format(root, engine_type, comp_name))
         return comps
 
     def _include_files(self, comp_root, comp_desc):
         include_patterns = self._parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_INCLUDE_GLOB_PATTERNS))
         exclude_patterns = self._parse_patterns(comp_desc.get(json_fields.COMPONENT_DESC_EXCLUDE_GLOB_PATTERNS))
+
+        # Add "requirements.txt" if includeGlobPattern is defined,
+        # so requirements file will be always copied.
+        if len(include_patterns):
+            if os.path.exists(os.path.join(comp_root, MLCompConstants.REQUIREMENTS_FILENAME)):
+                include_patterns.append(MLCompConstants.REQUIREMENTS_FILENAME)
 
         included_files = []
         init_py_found = False
