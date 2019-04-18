@@ -20,3 +20,4 @@ class RegressionMetrics(Enum):
     MEAN_SQUARED_ERROR = "Mean Squared Error"
     MEAN_SQUARED_LOG_ERROR = "Mean Squared Log Error"
     MEDIAN_ABSOLUTE_ERROR = "Median Absolute Error"
+    R2_SCORE = "R2 Score"
