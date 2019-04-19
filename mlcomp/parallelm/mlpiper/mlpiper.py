@@ -36,6 +36,7 @@ class MLPiper(Base):
         self._use_color = True
         self._engine = None
         self._options = options
+        self._mlcomp_jar = None
 
         self._skip_mlpiper_deps = False
 
@@ -49,6 +50,10 @@ class MLPiper(Base):
 
     def comp_repo(self, comp_root_path):
         self._comp_repo_info = ComponentScanner().scan_dir(comp_root_path)
+        return self
+
+    def mlcomp_jar(self, mlcomp_jar):
+        self._mlcomp_jar = mlcomp_jar
         return self
 
     def deployment_dir(self, deploy_dir):
@@ -239,7 +244,8 @@ class MLPiper(Base):
         pipeline_runner = Executor() \
             .comp_root_path(self._comp_root_path) \
             .pipeline_file(open(pipeline_file)) \
-            .use_color(self._use_color)
+            .use_color(self._use_color) \
+            .mlcomp_jar(self._mlcomp_jar)
 
         if not self._skip_mlpiper_deps:
             py_deps = pipeline_runner.all_py_component_dependencies()
