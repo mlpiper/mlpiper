@@ -4,19 +4,9 @@ import six
 from parallelm.mlops.base_obj import BaseObj
 from parallelm.mlops.constants import Constants
 from parallelm.mlops.metrics_constants import ClassificationMetrics, RegressionMetrics
-from parallelm.mlops.ml_metrics_stat.classification.accuracy_score import AccuracyScore
-from parallelm.mlops.ml_metrics_stat.classification.auc import AUC
-from parallelm.mlops.ml_metrics_stat.classification.average_precision_score import AveragePrecisionScore
-from parallelm.mlops.ml_metrics_stat.classification.balanced_accuracy_score import BalancedAccuracyScore
-from parallelm.mlops.ml_metrics_stat.classification.brier_score_loss import BrierScoreLoss
-from parallelm.mlops.ml_metrics_stat.classification.classification_report import ClassificationReport
-from parallelm.mlops.ml_metrics_stat.classification.confusion_matrix import ConfusionMatrix
-from parallelm.mlops.ml_metrics_stat.regression.explained_variance_score import ExplainedVarianceScore
-from parallelm.mlops.ml_metrics_stat.regression.mean_absolute_error import MeanAbsoluteError
-from parallelm.mlops.ml_metrics_stat.regression.mean_squared_error import MeanSquaredError
-from parallelm.mlops.ml_metrics_stat.regression.mean_squared_log_error import MeanSquaredLogError
-from parallelm.mlops.ml_metrics_stat.regression.median_absolute_error import MedianAbsoluteError
-from parallelm.mlops.ml_metrics_stat.regression.r2_score import R2Score
+from parallelm.mlops.ml_metrics_stat.classification.classification_stat_object_factory import \
+    ClassificationStatObjectFactory
+from parallelm.mlops.ml_metrics_stat.regression.regression_stat_object_factory import RegressionStatObjectFactory
 from parallelm.mlops.mlops_exception import MLOpsException, MLOpsStatisticsException
 from parallelm.mlops.stats.bar_graph import BarGraph
 from parallelm.mlops.stats.kpi_value import KpiValue
@@ -57,35 +47,8 @@ class StatsHelper(BaseObj):
         self._logger.debug("{} predefined stat called: name: {} data_type: {}".
                            format(Constants.OFFICIAL_NAME, name, type(data)))
 
-        if name == ClassificationMetrics.ACCURACY_SCORE:
-            mlops_stat_object = \
-                AccuracyScore.get_mlops_accuracy_stat_object(accuracy_score=data)
-
-        elif name == ClassificationMetrics.AUC:
-            mlops_stat_object = \
-                AUC.get_mlops_auc_stat_object(auc=data)
-
-        elif name == ClassificationMetrics.AVERAGE_PRECISION_SCORE:
-            mlops_stat_object = \
-                AveragePrecisionScore.get_mlops_aps_stat_object(aps=data)
-
-        elif name == ClassificationMetrics.BALANCED_ACCURACY_SCORE:
-            mlops_stat_object = \
-                BalancedAccuracyScore.get_mlops_balanced_accuracy_stat_object(balanced_accuracy_score=data)
-
-        elif name == ClassificationMetrics.BRIER_SCORE_LOSS:
-            mlops_stat_object = \
-                BrierScoreLoss.get_mlops_bsl_stat_object(bsl=data)
-
-        elif name == ClassificationMetrics.CLASSIFICATION_REPORT:
-            mlops_stat_object = \
-                ClassificationReport.get_mlops_classification_report_table_stat_object(cr=data)
-            category = StatCategory.GENERAL
-
-        elif name == ClassificationMetrics.CONFUSION_MATRIX:
-            mlops_stat_object = \
-                ConfusionMatrix.get_mlops_cm_table_object(cm_nd_array=data, **kwargs)
-            category = StatCategory.GENERAL
+        mlops_stat_object, category = \
+            ClassificationStatObjectFactory.get_stat_object(name, data=data, **kwargs)
 
         if mlops_stat_object is not None:
             self.set_stat(name=name,
@@ -102,35 +65,12 @@ class StatsHelper(BaseObj):
             raise MLOpsStatisticsException(error)
 
     def _set_regression_stat(self, name, data, model_id, timestamp, **kwargs):
-        mlops_stat_object = None
-        category = StatCategory.TIME_SERIES
 
         self._logger.debug("{} predefined stat called: name: {} data_type: {}".
                            format(Constants.OFFICIAL_NAME, name, type(data)))
 
-        if name == RegressionMetrics.EXPLAINED_VARIANCE_SCORE:
-            mlops_stat_object = \
-                ExplainedVarianceScore.get_mlops_evs_stat_object(evs=data)
-
-        elif name == RegressionMetrics.MEAN_ABSOLUTE_ERROR:
-            mlops_stat_object = \
-                MeanAbsoluteError.get_mlops_mae_stat_object(mae=data)
-
-        elif name == RegressionMetrics.MEAN_SQUARED_ERROR:
-            mlops_stat_object = \
-                MeanSquaredError.get_mlops_mse_stat_object(mse=data)
-
-        elif name == RegressionMetrics.MEAN_SQUARED_LOG_ERROR:
-            mlops_stat_object = \
-                MeanSquaredLogError.get_mlops_msle_stat_object(msle=data)
-
-        elif name == RegressionMetrics.MEDIAN_ABSOLUTE_ERROR:
-            mlops_stat_object = \
-                MedianAbsoluteError.get_mlops_mae_stat_object(mae=data)
-
-        elif name == RegressionMetrics.R2_SCORE:
-            mlops_stat_object = \
-                R2Score.get_mlops_r2_score_stat_object(r2_score=data)
+        mlops_stat_object, category = \
+            RegressionStatObjectFactory.get_stat_object(name, data=data, **kwargs)
 
         if mlops_stat_object is not None:
             self.set_stat(name=name,
