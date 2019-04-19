@@ -6,7 +6,7 @@ import shutil
 import subprocess
 import sys
 
-from constants import COMPONENTS_PATH
+from constants import PYTHON_COMPONENTS_PATH, JAVA_COMPONENTS_PATH
 
 simple_pipelines_for_testing = [
     {
@@ -101,9 +101,24 @@ deps_show_pipeline = {
     ]
 }
 
+java_connected_pipeline = {
+    "name": "connected_with_multiple_jars_test",
+    "engineType": "Generic",
+    "pipe": [
+        {
+            "name": "Java",
+            "id": 1,
+            "type": "test-java-connected-multiple-jars",
+            "parents": [],
+            "arguments": {}
+        }
+    ]
+}
+
 
 class TestMLPiper:
     mlpiper_script = None
+    mlcomp_jar = None
     egg_paths = []
     pipelines_to_test = []
     skip_cleanup = False
@@ -126,6 +141,8 @@ class TestMLPiper:
 
         TestMLPiper.mlpiper_script = os.path.join(mlcomp_root_path, "bin", "mlpiper")
         print("mlpiper_script: {}".format(TestMLPiper.mlpiper_script))
+
+        TestMLPiper.mlcomp_jar = os.path.join(mlcomp_root_path, "..", "reflex-common", "mlcomp", "target", "mlcomp.jar")
 
     @classmethod
     def teardown_class(cls):
@@ -178,7 +195,7 @@ class TestMLPiper:
             self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
             os.rmdir(self._deployment_dir)
 
-            comp_dir = os.path.join(os.path.dirname(__file__), COMPONENTS_PATH)
+            comp_dir = os.path.join(os.path.dirname(__file__), PYTHON_COMPONENTS_PATH)
 
             cmd = "{} {} -r {} -f {} --deployment-dir {}".format(TestMLPiper.mlpiper_script, cmdline_action, comp_dir,
                                                                  pipeline_filepath, self._deployment_dir)
@@ -203,7 +220,7 @@ class TestMLPiper:
         self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
         os.rmdir(self._deployment_dir)
 
-        comp_dir = os.path.join(os.path.dirname(__file__), COMPONENTS_PATH)
+        comp_dir = os.path.join(os.path.dirname(__file__), PYTHON_COMPONENTS_PATH)
 
         fd, input_model = mkstemp(prefix='test_mlpiper_pipeline_input_model_', dir='/tmp')
         os.write(fd, json.dumps("Model ZZZ!").encode())
@@ -229,7 +246,7 @@ class TestMLPiper:
 
     def test_run_show_deps(self):
         cmdline_action = "deps"
-        comp_dir = os.path.join(os.path.dirname(__file__), COMPONENTS_PATH)
+        comp_dir = os.path.join(os.path.dirname(__file__), PYTHON_COMPONENTS_PATH)
 
         fd, pipeline_file = mkstemp(prefix='test_deps_pipeline_', dir='/tmp')
         os.write(fd, json.dumps(deps_show_pipeline).encode())
@@ -246,5 +263,22 @@ class TestMLPiper:
             assert ("dep2" in l_deps)
             assert ("dep345" in l_deps)
             assert ("dep456" in l_deps)
+        finally:
+            os.remove(pipeline_file)
+
+    def test_run_connected_java_pipeline_with_mlcomp_jar(self):
+        self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
+        os.rmdir(self._deployment_dir)
+
+        comp_dir = os.path.join(os.path.dirname(__file__), JAVA_COMPONENTS_PATH, "test-java-connected-multiple-jars", "target")
+
+        fd, pipeline_file = mkstemp(prefix='test_mlpiper_pipeline_', dir='/tmp')
+        os.write(fd, json.dumps(java_connected_pipeline).encode())
+        os.close(fd)
+
+        cmd = "{} run -r {} -f {} --deployment-dir {} --mlcomp-jar {}" \
+            .format(TestMLPiper.mlpiper_script, comp_dir, pipeline_file, self._deployment_dir, self.mlcomp_jar)
+        try:
+            self._exec_shell_cmd(cmd, "Failed in running pipeline with input/output models!")
         finally:
             os.remove(pipeline_file)
