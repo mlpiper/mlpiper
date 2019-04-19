@@ -109,12 +109,16 @@ def _add_deploy_sub_parser(subparsers, sub_parser_name, sub_parser_help):
     parser_prepare.add_argument('--force', action='store_true',
                                 help='Overwrite any previous generated files/directories (.e.g deployed dir)')
 
+    parser_prepare.add_argument('--mlcomp-jar', default=None, help="Path to mlcomp jar")
+
 
 def _add_run_deployment_sub_parser(subparsers):
     parser_run = subparsers.add_parser('run-deployment',
                                        help='Run mlpiper deployment. Note, this is an internal option.')
     parser_run.add_argument('-d', '--deployment-dir', default=None, required=True,
                             help="Directory containing deployed pipeline")
+
+    parser_run.add_argument('--mlcomp-jar', default=None, help="Path to mlcomp jar")
 
 
 def _add_deps_sub_parser(subparsers):
@@ -147,6 +151,7 @@ def main(bin_dir=None):
         ml_piper = MLPiper(options) \
             .comp_repo(options.comp_root) \
             .deployment_dir(options.deployment_dir) \
+            .mlcomp_jar(options.mlcomp_jar) \
             .bin_dir(bin_dir) \
             .pipeline(options.pipeline if options.pipeline else options.file) \
             .use_color(not options.no_color) \
@@ -165,7 +170,10 @@ def main(bin_dir=None):
             ml_piper.run_deployment()
 
     elif options.subparser_name in ("run-deployment"):
-        ml_piper = MLPiper(options).deployment_dir(options.deployment_dir).skip_mlpiper_deps_install(True)
+        ml_piper = MLPiper(options) \
+            .deployment_dir(options.deployment_dir) \
+            .skip_mlpiper_deps_install(True) \
+            .mlcomp_jar(options.mlcomp_jar)
         ml_piper.run_deployment()
 
     elif options.subparser_name in ("deps"):
