@@ -301,7 +301,7 @@ class TestPythonEngine:
 
     def test_execute_java_connected_multiple_jars(self):
         pipeline = {
-            "name": "stand_alone_with_multiple_jars_test",
+            "name": "connected_with_multiple_jars_test",
             "engineType": "Generic",
             "pipe": [
                 {
