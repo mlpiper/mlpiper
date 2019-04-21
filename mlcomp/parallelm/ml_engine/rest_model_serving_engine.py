@@ -8,8 +8,8 @@ class RestModelServingEngine(PythonEngine):
     """
     Implementing the MLEngine API for a RestModelServing engine.
     """
-    def __init__(self, pipeline_name, mlcomp_jar=None, standalone=False):
-        super(RestModelServingEngine, self).__init__(pipeline_name, mlcomp_jar, standalone)
+    def __init__(self, pipeline, mlcomp_jar=None, standalone=False):
+        super(RestModelServingEngine, self).__init__(pipeline, mlcomp_jar, standalone)
         self._model_fetcher = None
 
     def run(self, mlops, pipeline):

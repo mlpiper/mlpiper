@@ -1,0 +1,81 @@
+{
+    "engineType": "Generic",
+    "userStandalone": false,
+    "language": "Python",
+    "name": "sagemaker_dataset_loader",
+    "label": "SageMaker dataset loader",
+    "program": "sagemaker_dataset_loader.py",
+    "componentClass": "SageMakerDatasetLoader",
+    "group": "Connectors",
+    "includeGlobPatterns" : "__init__.py | common/** | sagemaker_dataset_*",
+    "useMLOps": true,
+    "inputInfo": [],
+    "outputInfo": [
+        {
+            "description": "list",
+            "label": "Train set",
+            "defaultComponent": "",
+            "type": "list",
+            "group": "data"
+        },
+        {
+            "description": "list",
+            "label": "Validation set",
+            "defaultComponent": "",
+            "type": "list",
+            "group": "data"
+        },
+        {
+            "description": "list",
+            "label": "Test set",
+            "defaultComponent": "",
+            "type": "list",
+            "group": "data"
+        }
+    ],
+    "arguments": [
+        {
+            "key": "aws_access_key_id",
+            "type": "str",
+            "label": "AWS access key ID",
+            "description": "",
+            "optional": false
+        },
+        {
+            "key": "aws_secret_access_key",
+            "type": "str",
+            "label": "AWS secret access key",
+            "description": "",
+            "optional": false
+        },
+        {
+            "key": "region",
+            "type": "str",
+            "label": "Region [Default: us-west-2]",
+            "description": "AWS bucket name",
+            "optional": true
+        },
+        {
+            "key": "bucket_name",
+            "type": "str",
+            "label": "Bucket name [Default: Session().default_bucket()]",
+            "description": "AWS bucket name",
+            "optional": false
+        },
+        {
+            "key": "dataset_filepath",
+            "type": "str",
+            "label": "Dataset file path",
+            "description": "Path to dataset from the bucket root",
+            "optional": false
+        },
+        {
+            "key": "aws_logging_level",
+            "type": "str",
+            "label": "AWS logging level [Default: INFO]",
+            "description": "AWS boto3 logging level",
+            "optional": true
+        }
+    ],
+    "version": 1
+}

@@ -1,5 +1,6 @@
 import abc
 from parallelm.common.base import Base
+from parallelm.pipeline import json_fields
 
 
 class MLEngine(Base):
@@ -7,16 +8,16 @@ class MLEngine(Base):
     An abstract class, which defines the interface of any implemented engine. An example for such engines
     are PySpark, Tensorflow and so on.
     """
-    def __init__(self, pipeline_name, standalone):
+    def __init__(self, pipeline, standalone):
         super(MLEngine, self).__init__()
-        self._pipeline_name = pipeline_name
+        self._pipeline = pipeline
         self._standalone = standalone
         self._user_data = {}
         self._config = {}
 
     @property
     def pipeline_name(self):
-        return self._pipeline_name
+        return self._pipeline[json_fields.PIPELINE_NAME_FIELD]
 
     @property
     def standalone(self):

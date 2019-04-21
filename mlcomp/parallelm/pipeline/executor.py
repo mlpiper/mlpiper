@@ -152,7 +152,7 @@ class Executor(Base):
 
             system_conf = self.pipeline[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD]
             mlops._set_test_mode(system_conf.get(json_fields.PIPELINE_SYSTEM_CONFIG_TEST_MODE_PARAM, False))
-            ee_conf = self.pipeline[json_fields.PIPELINE_EE_CONF_FIELD]
+            ee_conf = self.pipeline.get(json_fields.PIPELINE_EE_CONF_FIELD, dict())
             if dag.is_stand_alone:
                 dag.run_single_component_pipeline(system_conf, ee_conf, self._ml_engine)
             else:
@@ -186,30 +186,32 @@ class Executor(Base):
         if engine_type == EngineType.PY_SPARK:
             from parallelm.ml_engine.py_spark_engine import PySparkEngine
 
-            self._ml_engine = PySparkEngine(pipeline[json_fields.PIPELINE_NAME_FIELD], self._run_locally, self._spark_jars)
+            self._ml_engine = PySparkEngine(pipeline, self._run_locally, self._spark_jars)
             self.set_logger(self._ml_engine.get_engine_logger(self.logger_name()))
             if mlops_loaded:
                 mlops.init(self._ml_engine.context)
 
-        elif engine_type == EngineType.GENERIC:
-            from parallelm.ml_engine.python_engine import PythonEngine
+        elif engine_type in [EngineType.GENERIC, EngineType.REST_MODEL_SERVING,  EngineType.SAGEMAKER]:
+            # All are supposed to be derived from python engine
 
-            self._logger.info("Using python engine")
-            self._ml_engine = PythonEngine(pipeline[json_fields.PIPELINE_NAME_FIELD], self._mlcomp_jar)
-            self.set_logger(self._ml_engine.get_engine_logger(self.logger_name()))
-            if mlops_loaded:
-                # This initialization applies only to Python components and not to components
-                # that are written in other languages (.e.g R). The reason for that is that
-                # those components are executed within different process and thus need to
-                # load and init the mlops library separately.
-                mlops.init()
+            if engine_type == EngineType.GENERIC:
+                from parallelm.ml_engine.python_engine import PythonEngine
 
-        elif engine_type == EngineType.REST_MODEL_SERVING:
-            from parallelm.ml_engine.rest_model_serving_engine import RestModelServingEngine
+                self._logger.info("Using python engine")
+                self._ml_engine = PythonEngine(pipeline, self._mlcomp_jar)
 
-            self._logger.info("Using REST Model Serving engine")
-            self._ml_engine = RestModelServingEngine(pipeline[json_fields.PIPELINE_NAME_FIELD], self._mlcomp_jar,
-                                                     self._standalone)
+            elif engine_type == EngineType.REST_MODEL_SERVING:
+                from parallelm.ml_engine.rest_model_serving_engine import RestModelServingEngine
+
+                self._logger.info("Using REST Model Serving engine")
+                self._ml_engine = RestModelServingEngine(pipeline, self._mlcomp_jar, self._standalone)
+
+            elif engine_type == EngineType.SAGEMAKER:
+                from parallelm.ml_engine.sagemaker_engine import SageMakerEngine
+
+                self._logger.info("Using SageMaker engine")
+                self._ml_engine = SageMakerEngine(pipeline)
+
             self.set_logger(self._ml_engine.get_engine_logger(self.logger_name()))
             if mlops_loaded:
                 # This initialization applies only to Python components and not to components
@@ -219,8 +221,8 @@ class Executor(Base):
                 mlops.init()
 
         else:
-            raise MLCompException("Engine type is not supported by the Python execution engine! engineType: " +
-                            engine_type)
+            raise MLCompException("Engine type is not supported by the Python execution engine! engineType: {}"
+                                  .format(engine_type))
 
         if mlops_loaded:
             self._ml_engine.run(mlops, pipeline)

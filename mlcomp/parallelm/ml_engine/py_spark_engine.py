@@ -7,8 +7,8 @@ from parallelm.ml_engine.ml_engine import MLEngine
 
 
 class PySparkEngine(MLEngine):
-    def __init__(self, pipeline_name, run_locally, spark_jars=None, standalone=False):
-        super(PySparkEngine, self).__init__(pipeline_name, standalone)
+    def __init__(self, pipeline, run_locally, spark_jars=None, standalone=False):
+        super(PySparkEngine, self).__init__(pipeline, standalone)
         self._run_locally = run_locally
         self._spark_session = None
         self._dataframe = None

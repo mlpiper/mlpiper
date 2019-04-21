@@ -1,0 +1,32 @@
+{
+    "engineType": "Generic",
+    "userStandalone": false,
+    "language": "Python",
+    "name": "sagemaker_kmeans",
+    "label": "SageMaker K-Means",
+    "program": "sagemaker_kmeans.py",
+    "componentClass": "SageMakerKMeans",
+    "group": "Algorithms",
+    "includeGlobPatterns" : "__init__.py | common/** | sagemaker_kmeans*",
+    "useMLOps": true,
+    "inputInfo": [],
+    "outputInfo": [
+        {
+            "description": "Dataset location path",
+            "label": "Dataset location",
+            "defaultComponent": "",
+            "type": "str",
+            "group": "data"
+        }
+    ],
+    "arguments": [
+        {
+            "key": "role_arn",
+            "type": "str",
+            "label": "Role ARN",
+            "description": "A uniquely AWS role identifier",
+            "optional": false
+        }
+    ],
+    "version": 1
+}

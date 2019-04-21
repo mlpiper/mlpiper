@@ -7,3 +7,4 @@ class EngineType:
     PY_SPARK = "PySpark"
     GENERIC = "Generic"
     REST_MODEL_SERVING = "RestModelServing"
+    SAGEMAKER = "SageMaker"
