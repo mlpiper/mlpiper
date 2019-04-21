@@ -70,7 +70,7 @@ class DagNode(Base):
                 arguments_copy.pop(arg, None)
         return arguments_copy
 
-    def input_arguments(self, system_conf, comp_only_args=False):
+    def input_arguments(self, system_conf, ee_conf, comp_only_args=False):
         """
         Get the input arguments for the node
         :param system_conf: The system configuration dict
@@ -79,6 +79,7 @@ class DagNode(Base):
         :return: Arguments dict
         """
         merged_arguments = self._apply_java_tags_mapping(system_conf)
+        merged_arguments.update(ee_conf)
         self._update_pipeline_arguments(merged_arguments)
         self._update_default_values(merged_arguments)
         if comp_only_args:

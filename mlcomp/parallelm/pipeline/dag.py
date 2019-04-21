@@ -44,12 +44,13 @@ class Dag(Base):
     def get_dag_node(self, index):
         return self._sorted_execution_graph_list[index]
 
-    def run_single_component_pipeline(self, system_conf, engine_info):
+    def run_single_component_pipeline(self, system_conf, ee_conf, engine_info):
         """
         Running a single component pipeline.
         o Assemble the command line arguments
         o Run the module using runpy so as if the module is executed as a script
-        :param system_conf:
+        :param system_conf: System configuration
+        :param ee_conf: Execution environment configuration
         :param engine_info:
         :return:
         """
@@ -62,7 +63,7 @@ class Dag(Base):
         dag_node = self.get_dag_node(0)
 
         # TODO: move the preparation to be dag_node methods or runner helper
-        input_args = dag_node.input_arguments(system_conf, comp_only_args=True)
+        input_args = dag_node.input_arguments(system_conf, ee_conf, comp_only_args=True)
         self._logger.info("Detected {} component".format(dag_node.comp_language()))
         dag_node.component_runner.configure(input_args)
         dag_node.component_runner.run(None)
@@ -88,12 +89,12 @@ class Dag(Base):
         self._print_colored("NR outputs: {}".format(len(data_objs) if data_objs else 0))
         self._print_colored(" ")
 
-    def run_connected_pipeline(self, system_conf, engine_info):
+    def run_connected_pipeline(self, system_conf, ee_conf, engine_info):
         # Components configuration phase
         print("Running pipeline")
         self._logger.debug("Running connected pipeline")
         for dag_node in self._sorted_execution_graph_list:
-            input_args = dag_node.input_arguments(system_conf)
+            input_args = dag_node.input_arguments(system_conf, ee_conf)
             dag_node.component_runner.configure(input_args)
 
         # Components materialize phase

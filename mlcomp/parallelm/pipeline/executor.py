@@ -152,10 +152,11 @@ class Executor(Base):
 
             system_conf = self.pipeline[json_fields.PIPELINE_SYSTEM_CONFIG_FIELD]
             mlops._set_test_mode(system_conf.get(json_fields.PIPELINE_SYSTEM_CONFIG_TEST_MODE_PARAM, False))
+            ee_conf = self.pipeline[json_fields.PIPELINE_EE_CONF_FIELD]
             if dag.is_stand_alone:
-                dag.run_single_component_pipeline(system_conf, self._ml_engine)
+                dag.run_single_component_pipeline(system_conf, ee_conf, self._ml_engine)
             else:
-                dag.run_connected_pipeline(system_conf, self._ml_engine)
+                dag.run_connected_pipeline(system_conf, ee_conf, self._ml_engine)
         # This except is intended to catch exit() calls from components.
         # Do not use exit() in mlpiper code.
         except SystemExit as e:
