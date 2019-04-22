@@ -18,6 +18,7 @@ class ClassificationMetrics(Enum):
     F1_SCORE = "F1 Score"
     FBETA_SCORE = "F-beta Score"
     HAMMING_LOSS = "Hamming Loss"
+    HINGE_LOSS = "Hinge Loss"
 
 
 class RegressionMetrics(Enum):

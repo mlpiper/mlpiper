@@ -329,6 +329,28 @@ class MLOpsMetrics(object):
 
         return hamming_loss
 
+    @staticmethod
+    def hinge_loss(y_true, pred_decision, labels=None, sample_weight=None):
+        """
+        Method calculates the hamming loss and output it using MCenter as single value.
+        :param y_true: Ground truth (correct) target values.
+        :param pred_decision: Predicted decisions, as output by decision_function (floats).
+        :param labels: List of labels to index the matrix.
+        :param sample_weight: Sample weights.
+        :return: hinge loss
+        """
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        hinge_loss = sklearn.metrics.hinge_loss(y_true=y_true,
+                                                pred_decision=pred_decision,
+                                                labels=labels,
+                                                sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.HINGE_LOSS, data=hinge_loss)
+
+        return hinge_loss
+
     ##################################################################
     ######################## regression stats ########################
     ##################################################################
