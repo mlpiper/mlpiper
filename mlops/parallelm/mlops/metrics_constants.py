@@ -17,6 +17,7 @@ class ClassificationMetrics(Enum):
     CONFUSION_MATRIX = "Confusion Matrix"
     F1_SCORE = "F1 Score"
     FBETA_SCORE = "F-beta Score"
+    HAMMING_LOSS = "Hamming Loss"
 
 
 class RegressionMetrics(Enum):
