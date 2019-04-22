@@ -17,23 +17,37 @@ class MLOpsMetrics(object):
     >>> labels = [0, 1, 0] # actual labels
     >>> labels_ordered = [0, 1] # order of labels to use for creating confusion matrix.
     >>> labels_decision_values = [0.9, 0.85, 0.9] # distance from hyper plane
+    >>> label_pos_class_prob = [0.8, 0.2, 0.9] # probabilities of positive class classification
 
     >>> mlops.metrics.accuracy_score(y_true=labels, y_pred=labels_pred)
 
-    >>> fpr, tpr, thresholds = sklearn.metrics.roc_curve(labels, labels_pred, pos_label=2)
+    >>> fpr, tpr, thresholds = sklearn.metrics.roc_curve(labels, labels_pred, pos_label=1)
 
     >>> mlops.metrics.auc(x=fpr, y=tpr)
 
-    >>> pm.metrics.average_precision_score(y_true=labels_pred, y_score=labels_decision_values)
+    >>> mlops.metrics.average_precision_score(y_true=labels_pred, y_score=labels_decision_values)
+
+    >>> mlops.metrics.balanced_accuracy_score(y_true=labels, y_pred=labels_pred)
+
+    >>> mlops.metrics.brier_score_loss(y_true=labels, y_prob=label_pos_class_prob, pos_label=1)
+
+    >>> mlops.metrics.classification_report(labels, labels_pred)
+
+    >>> mlops.metrics.cohen_kappa_score(labels, labels_pred)
 
     >>> mlops.metrics.confusion_matrix(y_true=labels, y_pred=labels_pred, labels=labels_ordered)
 
+    >>> mlops.metrics.f1_score(labels, labels_pred, pos_label=1)
+
+    >>> mlops.metrics.fbeta_score(labels, labels_pred, pos_label=1, beta=0.5)
+
+    >>> mlops.metrics.hamming_loss(labels, labels_pred)
 
     For Regression
     >>> from parallelm.mlops import mlops
 
-    >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75]
-    >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25]
+    >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75] # prediction labels
+    >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25] # actual labels
 
     >>> mlops.metrics.explained_variance_score(y_true=labels_actual, y_pred=labels_pred)
 
@@ -293,6 +307,27 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClassificationMetrics.FBETA_SCORE, data=fbeta_score)
 
         return fbeta_score
+
+    @staticmethod
+    def hamming_loss(y_true, y_pred, labels=None, sample_weight=None):
+        """
+        Method calculates the hamming loss and output it using MCenter as single value.
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Estimated targets as returned by a classifier.
+        :param labels: List of labels to index the matrix.
+        :param sample_weight: Sample weights.
+        :return: hamming loss
+        """
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        hamming_loss = sklearn.metrics.hamming_loss(y_true=y_true, y_pred=y_pred,
+                                                    labels=labels,
+                                                    sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.HAMMING_LOSS, data=hamming_loss)
+
+        return hamming_loss
 
     ##################################################################
     ######################## regression stats ########################

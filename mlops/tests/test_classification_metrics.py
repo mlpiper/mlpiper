@@ -313,3 +313,36 @@ def test_mlops_fbeta_score_apis():
                            beta=0.5)
 
     pm.done()
+
+
+def test_mlops_hamming_loss_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 1, 1, 0]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    hamming_loss = sklearn.metrics.hamming_loss(labels_actual, labels_pred)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.HAMMING_LOSS, hamming_loss)
+
+    # second way
+    pm.metrics.hamming_loss(labels_actual, labels_pred)
+
+    # should throw error if not numeric number is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.HAMMING_LOSS, [1, 2, 3])
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_prob_missing_values = [0, 0, 0, 1]
+        pm.metrics.hamming_loss(y_true=labels_actual, y_pred=labels_prob_missing_values)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.hamming_loss(y_true=labels_actual,
+                            y_pred=labels_pred,
+                            sample_weight=sample_weight)
+
+    pm.done()
