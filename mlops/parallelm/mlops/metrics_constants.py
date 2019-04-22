@@ -15,6 +15,7 @@ class ClassificationMetrics(Enum):
     CLASSIFICATION_REPORT = "Classification Report"
     COHEN_KAPPA_SCORE = "Cohen Kappa Score"
     CONFUSION_MATRIX = "Confusion Matrix"
+    F1_SCORE = "F1 Score"
 
 
 class RegressionMetrics(Enum):

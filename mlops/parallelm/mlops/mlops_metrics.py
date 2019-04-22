@@ -225,7 +225,6 @@ class MLOpsMetrics(object):
     def confusion_matrix(y_true, y_pred, labels, sample_weight=None):
         """
         Method calculates confusion matrix and output it using MCenter as table.
-
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
@@ -241,6 +240,33 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClassificationMetrics.CONFUSION_MATRIX, data=cm, labels=labels)
 
         return cm
+
+    @staticmethod
+    def f1_score(y_true, y_pred, labels=None, pos_label=1, average="binary", sample_weight=None):
+        """
+        Method calculates the F1 score and output it using MCenter as single value.
+        In the multi-class and multi-label case, this is the weighted average of the F1 score of each class.
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Estimated targets as returned by a classifier.
+        :param labels: List of labels to index the matrix.
+        :param pos_label: scores to report for that label only.
+        :param average: Param is needed for multiclass problems. It can be any of [None, 'binary' (default), 'micro', 'macro', 'samples', 'weighted']
+        :param sample_weight: Sample weights.
+        :return:
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        f1_score = sklearn.metrics.f1_score(y_true=y_true, y_pred=y_pred,
+                                            labels=labels,
+                                            pos_label=pos_label,
+                                            average=average,
+                                            sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.F1_SCORE, data=f1_score)
+
+        return f1_score
 
     ##################################################################
     ######################## regression stats ########################
