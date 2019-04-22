@@ -132,6 +132,22 @@ class ClassificationStatObjectFactory(object):
                 ("cr object for outputting classification report cannot be None.")
 
     @staticmethod
+    def get_mlops_cohen_kappa_score_stat_object(**kwargs):
+        """
+        Method will create MLOps Single value stat object from numeric real number - cohen kappa score
+        It is not recommended to access this method without understanding single value data structure that it is returning.
+        :param kwargs: numeric value of cohen kappa score
+        :return: Single Value stat object which has brier score embedded inside
+        """
+        cks = kwargs.get('data', None)
+
+        single_value, category = MLStatObjectCreator. \
+            get_single_value_stat_object(name=ClassificationMetrics.COHEN_KAPPA_SCORE.value,
+                                         single_value=cks)
+
+        return single_value, category
+
+    @staticmethod
     def get_mlops_confusion_matrix_stat_object(**kwargs):
         """
         Method will create MLOps Table stat object from ndarray and labels argument coming from kwargs (`labels`).
@@ -182,6 +198,7 @@ class ClassificationStatObjectFactory(object):
         ClassificationMetrics.BALANCED_ACCURACY_SCORE: get_mlops_balanced_accuracy_score_stat_object.__func__,
         ClassificationMetrics.BRIER_SCORE_LOSS: get_mlops_brier_score_loss_stat_object.__func__,
         ClassificationMetrics.CLASSIFICATION_REPORT: get_mlops_classification_report_stat_object.__func__,
+        ClassificationMetrics.COHEN_KAPPA_SCORE: get_mlops_cohen_kappa_score_stat_object.__func__,
         ClassificationMetrics.CONFUSION_MATRIX: get_mlops_confusion_matrix_stat_object.__func__,
     }
 

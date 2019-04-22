@@ -196,6 +196,32 @@ class MLOpsMetrics(object):
         return cr
 
     @staticmethod
+    def cohen_kappa_score(y1, y2, labels=None, weights=None, sample_weight=None):
+        """
+        Method calculates cohen kappa score for two y1 and y2 distributions and output it using MCenter.
+        :param y1: Labels assigned by the first annotator.
+        :param y2: Labels assigned by the second annotator.
+        :param labels: List of labels to index the matrix. This may be used to select a subset of labels. It can be None,
+        :param weights: List of weighting type to calculate the score. None means no weighted, "linear", "quadratic".
+        :param sample_weight: Sample weights.
+        :return:
+        """
+
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        cks = sklearn.metrics.cohen_kappa_score(y1=y1,
+                                                y2=y2,
+                                                labels=labels,
+                                                weights=weights,
+                                                sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.COHEN_KAPPA_SCORE, data=cks)
+
+        return cks
+
+    @staticmethod
     def confusion_matrix(y_true, y_pred, labels, sample_weight=None):
         """
         Method calculates confusion matrix and output it using MCenter as table.

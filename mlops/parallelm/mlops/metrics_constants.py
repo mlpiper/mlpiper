@@ -13,6 +13,7 @@ class ClassificationMetrics(Enum):
     BALANCED_ACCURACY_SCORE = "Balanced Accuracy Score"
     BRIER_SCORE_LOSS = "Brier Score Loss"
     CLASSIFICATION_REPORT = "Classification Report"
+    COHEN_KAPPA_SCORE = "Cohen Kappa Score"
     CONFUSION_MATRIX = "Confusion Matrix"
 
 
