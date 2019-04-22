@@ -19,6 +19,7 @@ class ClassificationMetrics(Enum):
     FBETA_SCORE = "F-beta Score"
     HAMMING_LOSS = "Hamming Loss"
     HINGE_LOSS = "Hinge Loss"
+    JACCARD_SIMILARITY_SCORE = "Jaccard Similarity Score"
 
 
 class RegressionMetrics(Enum):
