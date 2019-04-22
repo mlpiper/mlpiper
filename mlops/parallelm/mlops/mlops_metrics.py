@@ -351,6 +351,27 @@ class MLOpsMetrics(object):
 
         return hinge_loss
 
+    @staticmethod
+    def jaccard_similarity_score(y_true, y_pred, normalize=True, sample_weight=None):
+        """
+        Method calculates the Jaccard similarity score and output it using MCenter as single value.
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Estimated targets as returned by a classifier.
+        :param normalize: If False, return the sum of the Jaccard similarity coefficient over the sample set. Otherwise, return the average.
+        :param sample_weight: Sample weights.
+        :return: Jaccard similarity score
+        """
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        jaccard_similarity_score = sklearn.metrics.jaccard_similarity_score(y_true=y_true, y_pred=y_pred,
+                                                                            normalize=normalize,
+                                                                            sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.JACCARD_SIMILARITY_SCORE, data=jaccard_similarity_score)
+
+        return jaccard_similarity_score
+
     ##################################################################
     ######################## regression stats ########################
     ##################################################################
