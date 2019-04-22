@@ -204,7 +204,7 @@ class MLOpsMetrics(object):
         :param labels: List of labels to index the matrix. This may be used to select a subset of labels. It can be None,
         :param weights: List of weighting type to calculate the score. None means no weighted, "linear", "quadratic".
         :param sample_weight: Sample weights.
-        :return:
+        :return: cohen kappa score
         """
 
         # need to import only on run time.
@@ -252,7 +252,7 @@ class MLOpsMetrics(object):
         :param pos_label: scores to report for that label only.
         :param average: Param is needed for multiclass problems. It can be any of [None, 'binary' (default), 'micro', 'macro', 'samples', 'weighted']
         :param sample_weight: Sample weights.
-        :return:
+        :return: f1 score
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -267,6 +267,32 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClassificationMetrics.F1_SCORE, data=f1_score)
 
         return f1_score
+
+    @staticmethod
+    def fbeta_score(y_true, y_pred, beta, labels=None, pos_label=1, average="binary", sample_weight=None):
+        """
+        Method calculates the F-beta score and output it using MCenter as single value.
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Estimated targets as returned by a classifier.
+        :param beta: Weight of precision in harmonic mean.
+        :param labels: List of labels to index the matrix.
+        :param pos_label: scores to report for that label only.
+        :param average: Param is needed for multiclass problems. It can be any of [None, 'binary' (default), 'micro', 'macro', 'samples', 'weighted']
+        :param sample_weight: Sample weights.
+        :return: f-beta score
+        """
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        fbeta_score = sklearn.metrics.fbeta_score(y_true=y_true, y_pred=y_pred, beta=beta,
+                                                  labels=labels,
+                                                  pos_label=pos_label,
+                                                  average=average,
+                                                  sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.FBETA_SCORE, data=fbeta_score)
+
+        return fbeta_score
 
     ##################################################################
     ######################## regression stats ########################
