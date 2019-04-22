@@ -279,3 +279,37 @@ def test_mlops_f1_score_apis():
                         sample_weight=sample_weight)
 
     pm.done()
+
+
+def test_mlops_fbeta_score_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 1, 1, 0]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    fbeta_score = sklearn.metrics.fbeta_score(labels_actual, labels_pred, beta=0.5)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.FBETA_SCORE, fbeta_score)
+
+    # second way
+    pm.metrics.fbeta_score(y_true=labels_actual, y_pred=labels_pred, beta=0.5)
+
+    # should throw error if not numeric number is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.FBETA_SCORE, [1, 2, 3])
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_prob_missing_values = [0, 0, 0, 1]
+        pm.metrics.fbeta_score(y_true=labels_actual, y_pred=labels_prob_missing_values, beta=0.5)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.fbeta_score(y_true=labels_actual,
+                           y_pred=labels_pred,
+                           sample_weight=sample_weight,
+                           beta=0.5)
+
+    pm.done()
