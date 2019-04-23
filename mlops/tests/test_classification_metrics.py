@@ -478,3 +478,48 @@ def test_mlops_matthews_corrcoef_apis():
                                  sample_weight=sample_weight)
 
     pm.done()
+
+
+def test_mlops_precision_recall_curve_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred_prob = [0.9, 0.4, 0.6, 0.9, 0.1, 0.9]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    precision, recall, thresholds = sklearn.metrics.precision_recall_curve(y_true=labels_actual,
+                                                                           probas_pred=labels_pred_prob)
+    # first way
+    pm.set_stat(ClassificationMetrics.PRECISION_RECALL_CURVE, [precision, recall])
+
+    pm.set_stat(ClassificationMetrics.PRECISION_RECALL_CURVE, [precision, recall], legend="Precision Recall")
+
+    # second way
+    pm.metrics.precision_recall_curve(y_true=labels_actual,
+                                      probas_pred=labels_pred_prob)
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_prob_missing_values = [0.0, 0.9, 1.0, 0.85]
+        pm.metrics.precision_recall_curve(y_true=labels_actual,
+                                          probas_pred=labels_prob_missing_values)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.precision_recall_curve(y_true=labels_actual,
+                                      probas_pred=labels_pred_prob,
+                                      sample_weight=sample_weight)
+
+    # testing with pos label as well
+    pm.metrics.precision_recall_curve(y_true=labels_actual,
+                                      probas_pred=labels_pred_prob,
+                                      sample_weight=sample_weight,
+                                      pos_label=1)
+
+    # testing with average as well
+    pm.metrics.precision_recall_curve(y_true=labels_actual,
+                                      probas_pred=labels_pred_prob,
+                                      sample_weight=sample_weight,
+                                      pos_label=1,
+                                      average="micro")
+    pm.done()

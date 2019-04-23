@@ -415,6 +415,38 @@ class MLOpsMetrics(object):
 
         return mcc
 
+    @staticmethod
+    def precision_recall_curve(y_true, probas_pred, pos_label=None, average="macro", sample_weight=None):
+        """
+        Method is responsible for calculating precision recall curve and output it using graph stat object in MCenter
+        :param y_true: Ground truth (correct) target values.
+        :param probas_pred: Estimated probabilities or decision function.
+        :param pos_label: The label of the positive class.
+        :param average: This determines the type of averaging performed for calculating precision. It could be any from [None, 'micro', 'macro' (default), 'samples', 'weighted']
+        :param sample_weight: Sample weights.
+        :return: precision, recall, thresholds
+        """
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+        import numpy as np
+
+        precision, recall, thresholds = sklearn.metrics.precision_recall_curve(y_true=y_true,
+                                                                               probas_pred=probas_pred,
+                                                                               pos_label=pos_label,
+                                                                               sample_weight=sample_weight)
+        classes = len(np.unique(y_true))
+
+        average_precision = sklearn.metrics.average_precision_score(y_true=y_true,
+                                                                    y_score=probas_pred,
+                                                                    average=average,
+                                                                    sample_weight=sample_weight)
+
+        graph_legend = "{}-class Precision Recall Curve - Average Precision: {}".format(classes, average_precision)
+
+        mlops.set_stat(ClassificationMetrics.PRECISION_RECALL_CURVE, data=[precision, recall], legend=graph_legend)
+
+        return precision, recall, thresholds
+
     ##################################################################
     ######################## regression stats ########################
     ##################################################################

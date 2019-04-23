@@ -1,4 +1,5 @@
 from parallelm.mlops.mlops_exception import MLOpsStatisticsException
+from parallelm.mlops.stats.graph import Graph
 from parallelm.mlops.stats.single_value import SingleValue
 from parallelm.mlops.stats.table import Table
 from parallelm.mlops.stats_category import StatCategory
@@ -60,3 +61,34 @@ class MLStatObjectCreator(object):
         except Exception as e:
             raise MLOpsStatisticsException \
                 ("error happened while outputting table object from list_2d: {}. error: {}".format(list_2d, e))
+
+    @staticmethod
+    def get_graph_value_stat_object(name, x_data, y_data, x_title, y_title, legend):
+        """
+        Create graph object from given data.
+        :param name: Name of stat
+        :param x_data: X axis data. It has to be numeric list.
+        :param y_data: Y axis data. It has to be numeric list.
+        :param x_title: X axis title
+        :param y_title: Y axis title
+        :param legend: Legend of Y axis
+        :return: MLOps Graph Value object, general stat category
+        """
+        category = StatCategory.GENERAL
+
+        if legend is None:
+            legend = y_title
+
+        try:
+            graph_object = Graph() \
+                .name(name) \
+                .set_x_series(list(x_data)) \
+                .add_y_series(label=legend, data=list(y_data))
+
+            graph_object.x_title(x_title)
+            graph_object.y_title(y_title)
+
+            return graph_object, category
+        except Exception as e:
+            raise MLOpsStatisticsException \
+                ("error happened while outputting graph object. error: {}".format(e))
