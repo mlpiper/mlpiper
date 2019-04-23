@@ -88,29 +88,24 @@ object ReflexComponentFactory {
         registerEngineFactory(ComputeEngineType.FlinkStreaming, FlinkStreamingComponentFactory(testMode))
       case ComputeEngineType.SparkBatch =>
         registerEngineFactory(ComputeEngineType.SparkBatch, SparkBatchComponentFactory(testMode))
-      case ComputeEngineType.PySpark => {
-        val sparkPythonDir = Paths.get(externalComponentsDir, ComputeEngineType.PySpark.toString).toString
-        ReflexComponentFactory.registerEngineFactory(
-          ComputeEngineType.PySpark,
-          SparkPythonComponentFactory(testMode, sparkPythonDir))
-      }
-      case ComputeEngineType.Generic => {
-        val pythonDir = Paths.get(externalComponentsDir, ComputeEngineType.Generic.toString).toString
-        ReflexComponentFactory.registerEngineFactory(
-          ComputeEngineType.Generic,
-          SparkPythonComponentFactory(testMode, pythonDir))
-      }
-      case ComputeEngineType.RestModelServing => {
-        val restModelServingDir = Paths.get(externalComponentsDir, ComputeEngineType.RestModelServing.toString).toString
-        ReflexComponentFactory.registerEngineFactory(
-          ComputeEngineType.RestModelServing,
-          SparkPythonComponentFactory(testMode, restModelServingDir))
-      }
-    }
+      case ComputeEngineType.PySpark |
+           ComputeEngineType.Generic |
+           ComputeEngineType.RestModelServing |
+           ComputeEngineType.SageMaker =>
+        registerDirBasedEngineFactory(engineType, testMode)
+   }
+  }
+
+  private def registerDirBasedEngineFactory(engineType: ComputeEngineType.Value, testMode: Boolean): Unit = {
+    val compsDir = Paths.get(externalComponentsDir, engineType.toString).toString
+    ReflexComponentFactory.registerEngineFactory(
+      engineType,
+      SparkPythonComponentFactory(testMode, compsDir))
   }
 
   def registerAllEngines(externalComponentsDir: String): Unit = {
     logger.info("Registering all engines, externalComponentsDir: " + externalComponentsDir)
+    setExternalComponentsDir(externalComponentsDir)
 
     // TODO: the unregister is added here to make sure the registerAllEngines call is always working.
     // TODO: this is a fix for an issue where registerAllEngines is called multiple times.
@@ -119,21 +114,10 @@ object ReflexComponentFactory {
     registerEngineFactory(ComputeEngineType.FlinkStreaming, FlinkStreamingComponentFactory(testMode))
     registerEngineFactory(ComputeEngineType.SparkBatch, SparkBatchComponentFactory(testMode))
 
-    val sparkPythonDir = Paths.get(externalComponentsDir, ComputeEngineType.PySpark.toString).toString
-    ReflexComponentFactory.registerEngineFactory(
-      ComputeEngineType.PySpark,
-      SparkPythonComponentFactory(testMode, sparkPythonDir))
-
-    val pythonDir = Paths.get(externalComponentsDir, ComputeEngineType.Generic.toString).toString
-    ReflexComponentFactory.registerEngineFactory(
-      ComputeEngineType.Generic,
-      PythonComponentFactory(testMode, pythonDir))
-
-    val restModelServingDir = Paths.get(externalComponentsDir, ComputeEngineType.RestModelServing.toString).toString
-    ReflexComponentFactory.registerEngineFactory(
-      ComputeEngineType.RestModelServing,
-      PythonComponentFactory(testMode, restModelServingDir))
-
+    registerDirBasedEngineFactory(ComputeEngineType.PySpark, testMode)
+    registerDirBasedEngineFactory(ComputeEngineType.Generic, testMode)
+    registerDirBasedEngineFactory(ComputeEngineType.RestModelServing, testMode)
+    registerDirBasedEngineFactory(ComputeEngineType.SageMaker, testMode)
   }
 
   private def unRegisterEngines(): Unit = {

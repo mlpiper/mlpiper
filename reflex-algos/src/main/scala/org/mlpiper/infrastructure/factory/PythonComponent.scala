@@ -70,8 +70,8 @@ class PythonComponent(componentMetadata: ComponentMetadata, componentDir: String
 
 object PythonComponent {
   def getAsPythonComponent(comp: ReflexPipelineComponent): PythonComponent = {
-    require(comp.engineType == ComputeEngineType.Generic ||
-      comp.engineType == ComputeEngineType.RestModelServing,
+    require(comp.engineType == ComputeEngineType.Generic || comp.engineType == ComputeEngineType.RestModelServing
+      || comp.engineType == ComputeEngineType.SageMaker,
       "Must provide a component of type PythonComponent")
     comp.asInstanceOf[PythonComponent]
   }

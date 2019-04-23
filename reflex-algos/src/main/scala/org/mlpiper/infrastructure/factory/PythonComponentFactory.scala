@@ -4,7 +4,7 @@ import org.mlpiper.infrastructure.{ComputeEngineType, ReflexPipelineComponent}
 
 /**
   * A factory for Python components, each component is provided as a directory containing the component
-  * inmplementation (python) and a component.json file which will provide the component signature.
+  * implementation (python) and a component.json file which will provide the component signature.
   *
   * @param testMode Register also testing components
   * @param externalDir External directory where to scan for components
