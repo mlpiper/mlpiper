@@ -302,6 +302,40 @@ class ClassificationStatObjectFactory(object):
 
         return single_value, category
 
+    @staticmethod
+    def get_mlops_precision_recall_curve_stat_object(**kwargs):
+        """
+        Method will create Graph value stat object from `data` and `legend` information.
+        It is not recommended to access this method without understanding graph value data structure that it is returning.
+        :param kwargs: data will have list where first index value should be list of all precision values and second index value should be according recall value and legend information can also be provided
+        :return: Graph Value which represents Precision Recall Curve
+        """
+        try:
+            data = kwargs.get('data', None)
+            legend = kwargs.get('legend', None)
+
+            data_representation = "first index value should be list of all precision values and second index value should be according recall values"
+
+            assert isinstance(data, list), \
+                "data argument has to be type list where {}".format(data_representation)
+
+            assert len(data) == 2, "data provided should have 2 elements where {}".format(data_representation)
+
+            # data will be list and first index shall be precision
+            precision = data[0]
+            recall = data[1]
+            graph_value, category = MLStatObjectCreator.get_graph_value_stat_object(
+                name=ClassificationMetrics.PRECISION_RECALL_CURVE.value,
+                x_data=recall, y_data=precision,
+                x_title="Recall", y_title="Precision",
+                legend=legend)
+
+            return graph_value, category
+
+        except Exception as e:
+            raise MLOpsStatisticsException \
+                ("error happened while outputting precision recall curve. error: {}".format(e))
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClassificationMetrics.ACCURACY_SCORE: get_mlops_accuracy_score_stat_object.__func__,
@@ -318,7 +352,8 @@ class ClassificationStatObjectFactory(object):
         ClassificationMetrics.HINGE_LOSS: get_mlops_hinge_loss_stat_object.__func__,
         ClassificationMetrics.JACCARD_SIMILARITY_SCORE: get_mlops_jaccard_similarity_score_stat_object.__func__,
         ClassificationMetrics.LOG_LOSS: get_mlops_log_loss_stat_object.__func__,
-        ClassificationMetrics.MATTHEWS_CORRELATION_COEFFICIENT: get_mlops_matthews_corrcoef_stat_object.__func__
+        ClassificationMetrics.MATTHEWS_CORRELATION_COEFFICIENT: get_mlops_matthews_corrcoef_stat_object.__func__,
+        ClassificationMetrics.PRECISION_RECALL_CURVE: get_mlops_precision_recall_curve_stat_object.__func__
     }
 
     @staticmethod

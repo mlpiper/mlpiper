@@ -22,6 +22,7 @@ class ClassificationMetrics(Enum):
     JACCARD_SIMILARITY_SCORE = "Jaccard Similarity Score"
     LOG_LOSS = "Log Loss"
     MATTHEWS_CORRELATION_COEFFICIENT = "Matthews Correlation Coefficient"
+    PRECISION_RECALL_CURVE = "Precision Recall Curve"
 
 
 class RegressionMetrics(Enum):
