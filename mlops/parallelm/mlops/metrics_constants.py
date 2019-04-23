@@ -20,6 +20,7 @@ class ClassificationMetrics(Enum):
     HAMMING_LOSS = "Hamming Loss"
     HINGE_LOSS = "Hinge Loss"
     JACCARD_SIMILARITY_SCORE = "Jaccard Similarity Score"
+    LOG_LOSS = "Log Loss"
 
 
 class RegressionMetrics(Enum):

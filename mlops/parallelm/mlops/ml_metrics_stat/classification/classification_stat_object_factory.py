@@ -270,6 +270,22 @@ class ClassificationStatObjectFactory(object):
 
         return single_value, category
 
+    @staticmethod
+    def get_mlops_log_loss_stat_object(**kwargs):
+        """
+        Method will create MLOps Single value stat object from numeric real number - log loss
+        It is not recommended to access this method without understanding single value data structure that it is returning.
+        :param kwargs: numeric value of log loss
+        :return: Single Value stat object which has log loss embedded inside
+        """
+        log_loss = kwargs.get('data', None)
+
+        single_value, category = MLStatObjectCreator. \
+            get_single_value_stat_object(name=ClassificationMetrics.LOG_LOSS.value,
+                                         single_value=log_loss)
+
+        return single_value, category
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClassificationMetrics.ACCURACY_SCORE: get_mlops_accuracy_score_stat_object.__func__,
@@ -284,8 +300,8 @@ class ClassificationStatObjectFactory(object):
         ClassificationMetrics.FBETA_SCORE: get_mlops_fbeta_score_stat_object.__func__,
         ClassificationMetrics.HAMMING_LOSS: get_mlops_hamming_loss_stat_object.__func__,
         ClassificationMetrics.HINGE_LOSS: get_mlops_hinge_loss_stat_object.__func__,
-        ClassificationMetrics.JACCARD_SIMILARITY_SCORE: get_mlops_jaccard_similarity_score_stat_object.__func__
-
+        ClassificationMetrics.JACCARD_SIMILARITY_SCORE: get_mlops_jaccard_similarity_score_stat_object.__func__,
+        ClassificationMetrics.LOG_LOSS: get_mlops_log_loss_stat_object.__func__
     }
 
     @staticmethod
