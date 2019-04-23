@@ -21,6 +21,7 @@ class ClassificationMetrics(Enum):
     HINGE_LOSS = "Hinge Loss"
     JACCARD_SIMILARITY_SCORE = "Jaccard Similarity Score"
     LOG_LOSS = "Log Loss"
+    MATTHEWS_CORRELATION_COEFFICIENT = "Matthews Correlation Coefficient"
 
 
 class RegressionMetrics(Enum):

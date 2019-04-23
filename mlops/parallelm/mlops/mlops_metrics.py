@@ -397,6 +397,24 @@ class MLOpsMetrics(object):
 
         return log_loss
 
+    @staticmethod
+    def matthews_corrcoef(y_true, y_pred, sample_weight=None):
+        """
+        Method calculates the Matthews Correlation Coefficient and output it using MCenter as single value.
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Estimated targets as returned by a classifier.
+        :param sample_weight: Sample weights.
+        :return: Matthews Correlation Coefficient
+        """
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        mcc = sklearn.metrics.matthews_corrcoef(y_true=y_true, y_pred=y_pred, sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.MATTHEWS_CORRELATION_COEFFICIENT, data=mcc)
+
+        return mcc
+
     ##################################################################
     ######################## regression stats ########################
     ##################################################################

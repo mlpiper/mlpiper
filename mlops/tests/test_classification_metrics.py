@@ -445,3 +445,36 @@ def test_mlops_log_loss_apis():
                         sample_weight=sample_weight)
 
     pm.done()
+
+
+def test_mlops_matthews_corrcoef_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 1, 1, 0]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    mcc = sklearn.metrics.matthews_corrcoef(labels_actual, labels_pred)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.MATTHEWS_CORRELATION_COEFFICIENT, mcc)
+
+    # second way
+    pm.metrics.matthews_corrcoef(labels_actual, labels_pred)
+
+    # should throw error if not numeric number is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.MATTHEWS_CORRELATION_COEFFICIENT, [1, 2, 3])
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_prob_missing_values = [1, 0, 1, 1]
+        pm.metrics.matthews_corrcoef(y_true=labels_actual, y_pred=labels_prob_missing_values)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.matthews_corrcoef(y_true=labels_actual,
+                                 y_pred=labels_pred,
+                                 sample_weight=sample_weight)
+
+    pm.done()
