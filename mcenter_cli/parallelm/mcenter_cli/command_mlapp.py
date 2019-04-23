@@ -38,7 +38,7 @@ class MLAppInfoCommand(Command):
         if len(mlapp_info) > 1:
             raise Exception("Found {} mlapps with the same name".format(len(mlapp_info)))
         mlapp_info = mlapp_info[0]
-        self.app.stdout(pprint.pformat(mlapp_info))
+        self.app.stdout.write(pprint.pformat(mlapp_info))
 
 
 class MLAppUploadCommand(Command):
@@ -58,7 +58,7 @@ class MLAppUploadCommand(Command):
 
     def take_action(self, parsed_args):
 
-        self.app.stdout("Uploading mlapp from {}".format(parsed_args.appdir))
+        self.app.stdout.write("Uploading mlapp from {}".format(parsed_args.appdir))
         if parsed_args.mlapp_version == MLAppVersions.V2:
             upload_mlapp_v2(mclient=self.app.mclient,
                             mlapp_dir=parsed_args.appdir,
@@ -77,7 +77,7 @@ class MLAppDeleteCommand(Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.stdout("Deleting MLApp: {}".format(parsed_args.name))
+        self.app.stdout.write("Deleting MLApp: {}".format(parsed_args.name))
         MLAppDeleteHelper(self.app.mclient, parsed_args.name, False).delete()
 
 
@@ -89,6 +89,6 @@ class MLAppDownloadCommand(Command):
         return parser
 
     def take_action(self, parsed_args):
-        self.app.stdout("Downloading mlapp: {} to {}".format(parsed_args.name, parsed_args.appdir))
+        self.app.stdout.write("Downloading mlapp: {} to {}".format(parsed_args.name, parsed_args.appdir))
         DirectoryFromMLAppBuilder(self.app.mclient, parsed_args.name, parsed_args.appdir).build()
 
