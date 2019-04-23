@@ -412,3 +412,36 @@ def test_mlops_jaccard_sim_score_apis():
                                         sample_weight=sample_weight)
 
     pm.done()
+
+
+def test_mlops_log_loss_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred_prob = [[0.9, 0.1], [0.6, 0.4], [0.6, 0.4], [0.1, 0.9], [0.1, 0.8], [0.1, 0.9]]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    log_loss = sklearn.metrics.log_loss(labels_actual, labels_pred_prob)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.LOG_LOSS, log_loss)
+
+    # second way
+    pm.metrics.log_loss(labels_actual, labels_pred_prob)
+
+    # should throw error if not numeric number is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.LOG_LOSS, [1, 2, 3])
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_prob_missing_values = [[0.9, 0.1], [0.6, 0.4], [0.6, 0.4]]
+        pm.metrics.log_loss(y_true=labels_actual, y_pred=labels_prob_missing_values)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.log_loss(y_true=labels_actual,
+                        y_pred=labels_pred_prob,
+                        sample_weight=sample_weight)
+
+    pm.done()

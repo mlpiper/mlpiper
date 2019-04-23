@@ -372,6 +372,31 @@ class MLOpsMetrics(object):
 
         return jaccard_similarity_score
 
+    @staticmethod
+    def log_loss(y_true, y_pred, eps=1e-15, normalize=True, sample_weight=None, labels=None):
+        """
+        Method calculates the log loss and output it using MCenter as single value.
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Predicted probabilities.
+        :param eps: probabilities are clipped to max(eps, min(1 - eps, p)).
+        :param normalize: If true, return the mean loss per sample. Otherwise, return the sum of the per-sample losses.
+        :param sample_weight: Sample weights.
+        :param labels: List of labels to index the matrix.
+        :return: Log loss
+        """
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        log_loss = sklearn.metrics.log_loss(y_true=y_true, y_pred=y_pred,
+                                            eps=eps,
+                                            normalize=normalize,
+                                            sample_weight=sample_weight,
+                                            labels=labels)
+
+        mlops.set_stat(ClassificationMetrics.LOG_LOSS, data=log_loss)
+
+        return log_loss
+
     ##################################################################
     ######################## regression stats ########################
     ##################################################################
