@@ -1,9 +1,0 @@
-metastore_db/
-derby.log
-parallelm.egg-info/
-build/
-dist/
-*.pyc
-parallelm/protobuf
-.coverage
-

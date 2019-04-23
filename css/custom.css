@@ -1,0 +1,17 @@
+h2{
+	color:#3683a4;
+	/*text-decoration: underline;*/
+}
+h3{
+	text-transform: uppercase;
+}
+
+ul.dropdown-menu > li.dropdown-submenu, ul.dropdown-menu > li.dropdown-submenu > a{
+	cursor: default;
+}
+ul.dropdown-menu > li.dropdown-submenu > ul li, ul.dropdown-menu > li.dropdown-submenu > ul li a{
+	cursor: pointer;
+}
+ul.nav li.third-level{
+	text-transform: capitalize;
+}

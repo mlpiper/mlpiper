@@ -1,8 +1,0 @@
-type: object
-properties:
-  mlAppInstanceId:
-    type: string
-  description:
-    type: string
-  action:
-    type: string

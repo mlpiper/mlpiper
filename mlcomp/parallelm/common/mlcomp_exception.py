@@ -1,3 +1,0 @@
-
-class MLCompException(Exception):
-    pass

@@ -1,4 +1,0 @@
-#!/usr/bin/env python3
-
-from parallelm.mcenter_cli.main import main
-main()

@@ -1,0 +1,13 @@
+.md-logo {
+    pointer-events: none;
+}
+
+.md-logo > img {
+    width: 150px;
+    height: 30px;
+}
+
+#mlops-api {
+    cursor: pointer;
+}
+

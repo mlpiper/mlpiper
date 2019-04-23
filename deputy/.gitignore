@@ -1,8 +1,0 @@
-metastore_db/
-derby.log
-*.egg-info/
-build/
-dist/
-*.pyc
-.coverage
-

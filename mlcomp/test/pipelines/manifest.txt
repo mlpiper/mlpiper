@@ -1,7 +1,0 @@
-# This file contains reference to test cases that will be executed by the 'run_all_tests.py' tool
-# The expected pattern is: <test-pipeline-json>, <components-root-dir>"
-# The test's pipelines are supposed to reside under the same folder of this manifest file.
-
-logistic-regression-pipeline.json, ~/dev/mlops-components/dev/connectable/pyspark/ml
-pi-pipeline-rdd.json, ~/dev/mlops-components/dev/connectable/pyspark/spark-context
-

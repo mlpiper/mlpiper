@@ -1,8 +1,0 @@
-parameters:
-- $ref: './MCenterRestApi.yaml#/parameters/mlAppInstanceId'
-get:
-  responses:
-    200:
-      description: "OK"
-    500:
-      description: "Internal Server error"
