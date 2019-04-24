@@ -487,6 +487,34 @@ class MLOpsMetrics(object):
 
         return precision_score
 
+    @staticmethod
+    def recall_score(y_true, y_pred, labels=None, pos_label=1, average="binary", sample_weight=None):
+        """
+        Method calculates the recall score and output it using MCenter as single value or array of values.
+        In the multi-class and multi-label case, this is the weighted average of the F1 score of each class.
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Estimated targets as returned by a classifier.
+        :param labels: List of labels to index the matrix.
+        :param pos_label: scores to report for that label only.
+        :param average: Param is needed for multiclass problems. It can be any of [None, 'binary' (default), 'micro', 'macro', 'samples', 'weighted']
+        :param sample_weight: Sample weights.
+        :return: recall score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        recall_score = sklearn.metrics.recall_score(y_true=y_true,
+                                                    y_pred=y_pred,
+                                                    labels=labels,
+                                                    pos_label=pos_label,
+                                                    average=average,
+                                                    sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.RECALL_SCORE, data=recall_score)
+
+        return recall_score
+
     ##################################################################
     ######################## regression stats ########################
     ##################################################################

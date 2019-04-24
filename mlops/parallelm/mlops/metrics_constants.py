@@ -24,6 +24,7 @@ class ClassificationMetrics(Enum):
     MATTHEWS_CORRELATION_COEFFICIENT = "Matthews Correlation Coefficient"
     PRECISION_RECALL_CURVE = "Precision Recall Curve"
     PRECISION_SCORE = "Precision Score"
+    RECALL_SCORE = "Recall Score"
 
 
 class RegressionMetrics(Enum):

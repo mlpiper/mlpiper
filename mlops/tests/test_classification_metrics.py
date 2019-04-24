@@ -582,3 +582,47 @@ def test_mlops_precision_score_apis():
     assert len(precision_score) == 3
 
     pm.done()
+
+
+def test_mlops_recall_score_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 1, 1, 0]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    recall_score = sklearn.metrics.recall_score(labels_actual, labels_pred)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.RECALL_SCORE, recall_score)
+
+    # second way
+    pm.metrics.recall_score(y_true=labels_actual, y_pred=labels_pred)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.recall_score(y_true=labels_actual,
+                            y_pred=labels_pred,
+                            sample_weight=sample_weight)
+
+    labels_pred_multiclass = [1, 0, 2, 1, 1, 2]
+    labels_actual_multiclass = [0, 1, 1, 0, 2, 0]
+
+    # first way where recall score is array of values per class.
+    recall_score = sklearn.metrics.recall_score(y_true=labels_actual_multiclass,
+                                                y_pred=labels_pred_multiclass,
+                                                pos_label=2,
+                                                labels=[0, 1, 2],
+                                                average=None)
+    pm.set_stat(ClassificationMetrics.RECALL_SCORE, recall_score)
+
+    # second way
+    recall_score = pm.metrics.recall_score(y_true=labels_actual_multiclass,
+                                           y_pred=labels_pred_multiclass,
+                                           pos_label=2,
+                                           labels=[0, 1, 2],
+                                           average=None)
+
+    assert len(recall_score) == 3
+
+    pm.done()
