@@ -1,33 +1,67 @@
 # README
 
-The `mlcomp` module is designed to process and execute complex pipelines,
-which consists of one or more component chained together such that output of a
-previous component becomes the input to the next component. Each pipeline has a
-particular purpose, such as to train a model or generate inferences.
+The `mlcomp` module is designed to process and execute complex pipelines, that consist of one or more components chained together such that output of a previous component becomes the input to the next component. Each pipeline has a particular purpose, such as to train a model or generate inferences.
 
-A single pipeline may include component from different languages, such as Python,
-R and Java.
+A single pipeline may include components from different languages, such as Python, R and Java.
+
+## Quickstart
+
+#### Steps
+
+- Create a pipeline. Open any text editor and copy the following pipeline description:
+
+        {
+            "name": "Simple MCenter runner test",
+            "engineType": "Generic",
+            "pipe": [
+                {
+                    "name": "Source String",
+                    "id": 1,
+                    "type": "string-source",
+                    "parents": [],
+                    "arguments": {
+                        "value": "Hello World: testing string source and sink"
+                    }
+                },
+                {
+                    "name": "Sink String",
+                    "id": 2,
+                    "type": "string-sink",
+                    "parents": [{"parent": 1, "output": 0}],
+                    "arguments": {
+                        "expected-value": "Hello World: testing string source and sink"
+                    }
+                }
+            ]
+        }
+
+- Clone `mlpiper` repo [https://github.com/mlpiper/mlpiper/](https://github.com/mlpiper/mlpiper/)
+- Components `string-source` and `string-sink` can be found in the repo path [https://github.com/mlpiper/mlpiper/tree/master/reflex-algos/components/Python](https://github.com/mlpiper/mlpiper/tree/master/reflex-algos/components/Python)
+- Once the `ml-comp` python package is installed, the `mlpiper` command line tool is available and can be used to execute the above pipeline and the components described in it. Run the example above with:
+
+      mlpiper run -f ~/<pipeline description file> -r <path to mlpiper repo>/reflex-algos/components/Python/ -d <deployment dir>
+
+     Use the **--force** option to overwrite the deployment directory.
 
 ## How to construct a component
 
 #### Steps
 
-- Create a folder, whose name corresponds to the component's name (.e.g source_string)
+- Create a directory, the name of which corresponds to the component's name (e.g., source_string)
 
-- Create a `component.json` file (json format) inside this folder and make sure to
-  fill in all the following fields:
+- Create a `component.json` file (JSON format) inside this directory and make sure to fill in all of the following fields:
 
         {
             "engineType": "Generic",
             "language": "Python",
             "userStandalone": false,
-            "name": "<Component name (.e.g string_source)>",
+            "name": "<Component name (e.g., string_source)>",
             "label": "<A lable that is displayed in the UI>",
-            "version": "<Component's version (e.g. 1.0.0)>",
-            "group": "<One of the valid groups (.e.g "Connectors")>,
-            "program": "<The Python component main script (.e.g string_source.py)>",
-            "componentClass": "<The component class name (.e.g StringSource)
-            "useMLStats": <true|false - whether the components uses mlstats>,
+            "version": "<Component's version (e.g., 1.0.0)>",
+            "group": "<One of the valid groups (e.g., "Connectors")>,
+            "program": "<The Python component main script (e.g., string_source.py)>",
+            "componentClass": "<The component class name (e.g., StringSource)
+            "useMLStats": <true|false - (whether the components uses MLStats)>,
             "inputInfo": [
                 {
                  "description": "<Description>",
@@ -45,7 +79,7 @@ R and Java.
                 {
                     "key": "<Unique argument key name>",
                     "type": "int|long|float|str|bool",
-                    "label": "<A lable that is displayed in the UI>",
+                    "label": "<A label that is displayed in the UI>",
                     "description": "<Description>",
                     "optional": <true|false>
                 }
@@ -83,7 +117,7 @@ R and Java.
       This returned value will be used as an input for the next component
       in the pipeline chain.
 
-- Place the components main program (*.py) inside a folder along with its json
+- Place the component's main program (\*.py) inside a directory along with its JSON
   description file and any other desired files.
 
 
@@ -91,7 +125,7 @@ R and Java.
 
 #### Steps
 
-- Open any text editor and copy the following template:
+- Open any text editor and copy the following pipeline description:
 
         {
             "name": "Simple MCenter runner test",
@@ -121,8 +155,8 @@ R and Java.
   Notes:
     - It is assumed that you've already constructed two components whose names
       are: `string-source` and `string-sink`
-    - The output of `string-source` component (the value returned from
-      `_materialize` function) is supposed to become the input of `string-sink`
+    - The output of the `string-source` component (the value returned from
+      `_materialize` function) is supposed to become the input of the `string-sink`
       component (an input to the `_materialize` function)
  
 - Save it with any desired name
@@ -130,31 +164,33 @@ R and Java.
 
 ## How to test
 
-Once the `ml-comp` python package is installed, a command line `mlpiper` is installed
-and can be used to execute the pipeline above and the components described in it.
+Once the `ml-comp` python package is installed, `mlpiper` command line tool is available
+and can be used to execute the above pipeline and the components described in it.
 
 There are three main commands that can be used as follows:
 
-  - **deploy** - deploys a pipeline along with provided components into a given
-                 folder. Once deployed, it can also be executed directly from 
-                 the given folder.
+  - **deploy** - Deploys a pipeline along with provided components into a given
+                 directory. Once deployed, it can be executed directly from 
+                 the given directory.
 
-  - **run** - deploys and executes the pipeline at once.
+  - **run** - Deploys and then executes the pipeline.
 
-  - **run-deployment** - executes an already deployed pipeline.
+  - **run-deployment** - Executes an already-deployed pipeline.
 
 
 #### Examples:
 
-  - Prepare a deployment. The resulted dir will be copied to a docker container and run
-    there
+  - Prepare a deployment. The resulting directory will be copied to a docker container and run
+    there:
 
-        mlpiper deploy -p p1.json -r ~/dev/components -d /tmp/pp
+        mlpiper deploy -f p1.json -r ~/dev/components -d /tmp/pp
 
-  - Deploy & Run. Useful for development and debugging
+  - Deploy & Run. Useful for development and debugging:
 
-        mlpiper run -p p1.json -r ~/dev/components -d /tmp/pp
+        mlpiper run -f p1.json -r ~/dev/components -d /tmp/pp
 
-  - Run a deployment. Usually non interactive called by another script
+       Use **--force** option to overwrite deployment directory
+
+  - Run a deployment. Usually non-interactive and called by another script:
 
         mlpiper run-deployment --deployment-dir /tmp/pp
