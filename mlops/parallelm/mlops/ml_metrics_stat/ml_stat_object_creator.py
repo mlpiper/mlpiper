@@ -97,7 +97,7 @@ class MLStatObjectCreator(object):
                 ("error happened while outputting graph object. error: {}".format(e))
 
     @staticmethod
-    def get_multiline_stat_object(name, list_value):
+    def get_multiline_stat_object(name, list_value, labels=None):
         """
         Create multiline object from list of values. It will output mulitline from values and legends will be index of the values - i.e. 0, 1, ..
         :param name: Name of stat
@@ -107,7 +107,10 @@ class MLStatObjectCreator(object):
         if isinstance(list_value, list) or isinstance(list_value, np.ndarray):
             category = StatCategory.TIME_SERIES
 
-            labels = list(map(lambda x: str(x).strip(), range(len(list_value))))
+            # if labels are not provided then it will be 0, 1, .. length of list - 1
+            if labels is None:
+                labels = range(len(list_value))
+            labels = list(map(lambda x: str(x).strip(), labels))
 
             multiline_object = MultiLineGraph() \
                 .name(name) \

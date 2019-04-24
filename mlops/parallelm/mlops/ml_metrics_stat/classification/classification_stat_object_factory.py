@@ -193,18 +193,28 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_f1_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - f1 score
-        It is not recommended to access this method without understanding single value data structure that it is returning.
-        :param kwargs: numeric value of f1 score
-        :return: Single Value stat object which has f1 score embedded inside
+        Method will create MLOps Single/Multiline value stat object from numeric real number - f1 score; or array of f1 score per class
+        :param kwargs: numeric value of f1 score or array of f1 score per class. In labels, it can have list of array of class as well.
+        :return: Single/Multiline Value stat object which has f1 score embedded inside
         """
         f1_score = kwargs.get('data', None)
+        labels = kwargs.get('labels', None)
 
-        single_value, category = MLStatObjectCreator. \
-            get_single_value_stat_object(name=ClassificationMetrics.F1_SCORE.value,
-                                         single_value=f1_score)
+        if isinstance(f1_score, list) or isinstance(f1_score, np.ndarray):
+            multiline_value, category = MLStatObjectCreator. \
+                get_multiline_stat_object(name=ClassificationMetrics.F1_SCORE.value,
+                                          list_value=f1_score,
+                                          labels=labels)
 
-        return single_value, category
+            return multiline_value, category
+
+        # if it is not list then it has to be single value.
+        else:
+            single_value, category = MLStatObjectCreator. \
+                get_single_value_stat_object(name=ClassificationMetrics.F1_SCORE.value,
+                                             single_value=f1_score)
+
+            return single_value, category
 
     @staticmethod
     def get_mlops_fbeta_score_stat_object(**kwargs):
