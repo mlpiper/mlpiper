@@ -40,6 +40,7 @@ class RegressionStatObjectFactory(object):
         :return: Single/Multiline Value stat object which has mean absolute error embedded inside
         """
         mae = kwargs.get('data', None)
+
         import numpy as np
         if isinstance(mae, list) or isinstance(mae, np.ndarray):
             multiline_value, category = MLStatObjectCreator. \
@@ -59,18 +60,27 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_mean_squared_error_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - mean squared error
-        It is not recommended to access this method without understanding single value data structure that it is returning.
-        :param kwargs: mean squared error
-        :return: Single Value stat object which has mean squared error embedded inside
+        Method will create MLOps Single/Multiline value stat object from numeric real number - mean squared error; or list of errors
+        :param kwargs: mean squared error or array of mean square errors
+        :return: Single/Multiline Value stat object which has mean squared error embedded inside
         """
         mse = kwargs.get('data', None)
 
-        single_value, category = MLStatObjectCreator. \
-            get_single_value_stat_object(name=RegressionMetrics.MEAN_SQUARED_ERROR.value,
-                                         single_value=mse)
+        import numpy as np
+        if isinstance(mse, list) or isinstance(mse, np.ndarray):
+            multiline_value, category = MLStatObjectCreator. \
+                get_multiline_stat_object(name=RegressionMetrics.MEAN_SQUARED_ERROR.value,
+                                          list_value=mse)
 
-        return single_value, category
+            return multiline_value, category
+
+        # if it is not list then it has to be single value.
+        else:
+            single_value, category = MLStatObjectCreator. \
+                get_single_value_stat_object(name=RegressionMetrics.MEAN_SQUARED_ERROR.value,
+                                             single_value=mse)
+
+            return single_value, category
 
     @staticmethod
     def get_mlops_mean_squared_log_error_stat_object(**kwargs):
