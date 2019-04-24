@@ -219,18 +219,28 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_fbeta_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - f-beta score
-        It is not recommended to access this method without understanding single value data structure that it is returning.
-        :param kwargs: numeric value of f-beta score
-        :return: Single Value stat object which has f-beta score embedded inside
+        Method will create MLOps Single/Multiline value stat object from numeric real number - f-beta scoree; or array of f-beta score per class
+        :param kwargs: numeric value of f-beta score or array of f-beta score per class. In labels, it can have list of array of class as well.
+        :return: Single/Multiline Value stat object which has f-beta score embedded inside
         """
         fbeta_score = kwargs.get('data', None)
+        labels = kwargs.get('labels', None)
 
-        single_value, category = MLStatObjectCreator. \
-            get_single_value_stat_object(name=ClassificationMetrics.FBETA_SCORE.value,
-                                         single_value=fbeta_score)
+        if isinstance(fbeta_score, list) or isinstance(fbeta_score, np.ndarray):
+            multiline_value, category = MLStatObjectCreator. \
+                get_multiline_stat_object(name=ClassificationMetrics.FBETA_SCORE.value,
+                                          list_value=fbeta_score,
+                                          labels=labels)
 
-        return single_value, category
+            return multiline_value, category
+
+        # if it is not list then it has to be single value.
+        else:
+            single_value, category = MLStatObjectCreator. \
+                get_single_value_stat_object(name=ClassificationMetrics.FBETA_SCORE.value,
+                                             single_value=fbeta_score)
+
+            return single_value, category
 
     @staticmethod
     def get_mlops_hamming_loss_stat_object(**kwargs):
