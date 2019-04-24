@@ -23,6 +23,7 @@ class ClassificationMetrics(Enum):
     LOG_LOSS = "Log Loss"
     MATTHEWS_CORRELATION_COEFFICIENT = "Matthews Correlation Coefficient"
     PRECISION_RECALL_CURVE = "Precision Recall Curve"
+    PRECISION_SCORE = "Precision Score"
 
 
 class RegressionMetrics(Enum):
