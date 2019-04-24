@@ -15,6 +15,7 @@ class MLOpsMetrics(object):
     >>> # Output ML Stat - For Example Confusion Matrix as Table
     >>> labels_pred = [1, 0, 1] # prediction labels
     >>> labels = [0, 1, 0] # actual labels
+    >>> labels_prob = [[0.4, 0.6],[0.9, 0.1],[0.3, 0.7]] # prediction probabilities
     >>> labels_ordered = [0, 1] # order of labels to use for creating confusion matrix.
     >>> labels_decision_values = [0.9, 0.85, 0.9] # distance from hyper plane
     >>> label_pos_class_prob = [0.8, 0.2, 0.9] # probabilities of positive class classification
@@ -43,7 +44,18 @@ class MLOpsMetrics(object):
 
     >>> mlops.metrics.hamming_loss(labels, labels_pred)
 
+    >>> mlops.metrics.hinge_loss(labels, labels_decision_values)
+
+    >>> mlops.metrics.jaccard_similarity_score(labels, labels_pred)
+
+    >>> mlops.metrics.log_loss(labels, labels_prob)
+
+    >>> mlops.metrics.matthews_corrcoef(labels, labels_pred)
+
+    >>> mlops.metrics.precision_recall_curve(y_true=labels, probas_pred=labels_decision_values, pos_label=1, average="macro")
+
     For Regression
+
     >>> from parallelm.mlops import mlops
 
     >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75] # prediction labels
