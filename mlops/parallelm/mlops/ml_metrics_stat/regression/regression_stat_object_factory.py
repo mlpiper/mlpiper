@@ -10,18 +10,27 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_explained_variance_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - e score
-        It is not recommended to access this method without understanding single value data structure that it is returning.
-        :param kwargs: explained variance score
-        :return: Single Value stat object which has explained variance score embedded inside
+        Method will create MLOps Single/Multiline value stat object from numeric real number - explained variance score or list of variances
+        :param kwargs: explained variance score or array of variance scores.
+        :return: Single/Multiline Value stat object which has explained variance score embedded inside
         """
         evs = kwargs.get('data', None)
 
-        single_value, category = MLStatObjectCreator. \
-            get_single_value_stat_object(name=RegressionMetrics.EXPLAINED_VARIANCE_SCORE.value,
-                                         single_value=evs)
+        import numpy as np
+        if isinstance(evs, list) or isinstance(evs, np.ndarray):
+            multiline_value, category = MLStatObjectCreator. \
+                get_multiline_stat_object(name=RegressionMetrics.EXPLAINED_VARIANCE_SCORE.value,
+                                          list_value=evs)
 
-        return single_value, category
+            return multiline_value, category
+
+        # if it is not list then it has to be single value.
+        else:
+            single_value, category = MLStatObjectCreator. \
+                get_single_value_stat_object(name=RegressionMetrics.EXPLAINED_VARIANCE_SCORE.value,
+                                             single_value=evs)
+
+            return single_value, category
 
     @staticmethod
     def get_mlops_mean_absolute_error_stat_object(**kwargs):
