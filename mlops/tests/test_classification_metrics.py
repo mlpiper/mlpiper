@@ -298,13 +298,10 @@ def test_mlops_fbeta_score_apis():
 
     # first way
     pm.set_stat(ClassificationMetrics.FBETA_SCORE, fbeta_score)
+    pm.set_stat(ClassificationMetrics.FBETA_SCORE, [1, 2, 3])
 
     # second way
     pm.metrics.fbeta_score(y_true=labels_actual, y_pred=labels_pred, beta=0.5)
-
-    # should throw error if not numeric number is provided
-    with pytest.raises(MLOpsStatisticsException):
-        pm.set_stat(ClassificationMetrics.FBETA_SCORE, [1, 2, 3])
 
     # should throw error if labels predicted is different length than actuals
     with pytest.raises(ValueError):
@@ -318,6 +315,17 @@ def test_mlops_fbeta_score_apis():
                            y_pred=labels_pred,
                            sample_weight=sample_weight,
                            beta=0.5)
+
+    labels_pred_multiclass = [1, 0, 2, 1, 1, 2]
+    labels_actual_multiclass = [0, 1, 1, 0, 2, 0]
+
+    fbeta_score = pm.metrics.fbeta_score(y_true=labels_actual_multiclass,
+                                         y_pred=labels_pred_multiclass,
+                                         labels=[0, 1, 2],
+                                         average=None,
+                                         beta=0.5)
+
+    assert len(fbeta_score) == 3
 
     pm.done()
 
