@@ -123,18 +123,25 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_r2_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - r2 score
-        It is not recommended to access this method without understanding single value data structure that it is returning.
-        :param kwargs: r2 score
-        :return: Single Value stat object which has r2 score embedded inside
+        Method will create MLOps Single/Multiline value stat object from numeric real number - r2 score; or list of r2 score
+        :param kwargs: r2 score or array r2 score
+        :return: Single/Multiline Value stat object which has r2 score embedded inside
         """
         r2_score = kwargs.get('data', None)
+        if isinstance(r2_score, list) or isinstance(r2_score, np.ndarray):
+            multiline_value, category = MLStatObjectCreator. \
+                get_multiline_stat_object(name=RegressionMetrics.R2_SCORE.value,
+                                          list_value=r2_score)
 
-        single_value, category = MLStatObjectCreator. \
-            get_single_value_stat_object(name=RegressionMetrics.R2_SCORE.value,
-                                         single_value=r2_score)
+            return multiline_value, category
 
-        return single_value, category
+        # if it is not list then it has to be single value.
+        else:
+            single_value, category = MLStatObjectCreator. \
+                get_single_value_stat_object(name=RegressionMetrics.R2_SCORE.value,
+                                             single_value=r2_score)
+
+            return single_value, category
 
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {

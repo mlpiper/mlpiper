@@ -209,17 +209,14 @@ def test_mlops_r2_score_apis():
     labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75]
     labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25]
 
-    mae = sklearn.metrics.r2_score(labels_actual, labels_pred)
+    r2 = sklearn.metrics.r2_score(labels_actual, labels_pred)
 
     # first way
-    pm.set_stat(RegressionMetrics.R2_SCORE, mae)
+    pm.set_stat(RegressionMetrics.R2_SCORE, r2)
+    pm.set_stat(RegressionMetrics.R2_SCORE, [1, 2, 3])
 
     # second way
     pm.metrics.r2_score(y_true=labels_actual, y_pred=labels_pred)
-
-    # should throw error if not numeric number is provided
-    with pytest.raises(MLOpsStatisticsException):
-        pm.set_stat(RegressionMetrics.R2_SCORE, [1, 2, 3])
 
     # should throw error if labels predicted is different length than actuals
     with pytest.raises(ValueError):
@@ -232,5 +229,14 @@ def test_mlops_r2_score_apis():
     pm.metrics.r2_score(y_true=labels_actual,
                         y_pred=labels_pred,
                         sample_weight=sample_weight)
+
+    labels_2d_actual = [[1.0, 0.5], [2.5, 4.75], [7.0, 0.75]]
+    labels_2d_pred = [[1.5, 0.75], [2.75, 4.5], [7.50, 0.25]]
+
+    r2 = pm.metrics.r2_score(y_true=labels_2d_actual,
+                             y_pred=labels_2d_pred,
+                             multioutput="raw_values")
+
+    assert len(r2) == 2
 
     pm.done()
