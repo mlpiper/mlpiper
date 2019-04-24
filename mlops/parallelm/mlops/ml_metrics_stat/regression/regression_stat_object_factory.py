@@ -35,18 +35,26 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_mean_absolute_error_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - mean absolute error
-        It is not recommended to access this method without understanding single value data structure that it is returning.
-        :param kwargs: mean absolute error
-        :return: Single Value stat object which has mean absolute error embedded inside
+        Method will create MLOps Single/Multiline value stat object from numeric real number - mean absolute error; or list of errors
+        :param kwargs: mean absolute error or array of mean absolute errors
+        :return: Single/Multiline Value stat object which has mean absolute error embedded inside
         """
         mae = kwargs.get('data', None)
+        import numpy as np
+        if isinstance(mae, list) or isinstance(mae, np.ndarray):
+            multiline_value, category = MLStatObjectCreator. \
+                get_multiline_stat_object(name=RegressionMetrics.MEAN_ABSOLUTE_ERROR.value,
+                                          list_value=mae)
 
-        single_value, category = MLStatObjectCreator. \
-            get_single_value_stat_object(name=RegressionMetrics.MEAN_ABSOLUTE_ERROR.value,
-                                         single_value=mae)
+            return multiline_value, category
 
-        return single_value, category
+        # if it is not list then it has to be single value.
+        else:
+            single_value, category = MLStatObjectCreator. \
+                get_single_value_stat_object(name=RegressionMetrics.MEAN_ABSOLUTE_ERROR.value,
+                                             single_value=mae)
+
+            return single_value, category
 
     @staticmethod
     def get_mlops_mean_squared_error_stat_object(**kwargs):
