@@ -1,3 +1,5 @@
+import numpy as np
+
 from parallelm.mlops.metrics_constants import RegressionMetrics
 from parallelm.mlops.ml_metrics_stat.ml_stat_object_creator import MLStatObjectCreator
 
@@ -16,7 +18,6 @@ class RegressionStatObjectFactory(object):
         """
         evs = kwargs.get('data', None)
 
-        import numpy as np
         if isinstance(evs, list) or isinstance(evs, np.ndarray):
             multiline_value, category = MLStatObjectCreator. \
                 get_multiline_stat_object(name=RegressionMetrics.EXPLAINED_VARIANCE_SCORE.value,
@@ -41,7 +42,6 @@ class RegressionStatObjectFactory(object):
         """
         mae = kwargs.get('data', None)
 
-        import numpy as np
         if isinstance(mae, list) or isinstance(mae, np.ndarray):
             multiline_value, category = MLStatObjectCreator. \
                 get_multiline_stat_object(name=RegressionMetrics.MEAN_ABSOLUTE_ERROR.value,
@@ -66,7 +66,6 @@ class RegressionStatObjectFactory(object):
         """
         mse = kwargs.get('data', None)
 
-        import numpy as np
         if isinstance(mse, list) or isinstance(mse, np.ndarray):
             multiline_value, category = MLStatObjectCreator. \
                 get_multiline_stat_object(name=RegressionMetrics.MEAN_SQUARED_ERROR.value,
@@ -85,18 +84,25 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_mean_squared_log_error_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - mean squared log error
-        It is not recommended to access this method without understanding single value data structure that it is returning.
-        :param kwargs: mean squared log error
-        :return: Single Value stat object which has mean squared log error embedded inside
+        Method will create MLOps Single/Multiline value stat object from numeric real number - mean squared log error; or list of errors
+        :param kwargs: mean squared log error or array of mean squared log errors
+        :return: Single/Multiline Value stat object which has mean squared log error embedded inside
         """
         msle = kwargs.get('data', None)
+        if isinstance(msle, list) or isinstance(msle, np.ndarray):
+            multiline_value, category = MLStatObjectCreator. \
+                get_multiline_stat_object(name=RegressionMetrics.MEAN_SQUARED_LOG_ERROR.value,
+                                          list_value=msle)
 
-        single_value, category = MLStatObjectCreator. \
-            get_single_value_stat_object(name=RegressionMetrics.MEAN_SQUARED_LOG_ERROR.value,
-                                         single_value=msle)
+            return multiline_value, category
 
-        return single_value, category
+        # if it is not list then it has to be single value.
+        else:
+            single_value, category = MLStatObjectCreator. \
+                get_single_value_stat_object(name=RegressionMetrics.MEAN_SQUARED_LOG_ERROR.value,
+                                             single_value=msle)
+
+            return single_value, category
 
     @staticmethod
     def get_mlops_median_absolute_error_stat_object(**kwargs):
