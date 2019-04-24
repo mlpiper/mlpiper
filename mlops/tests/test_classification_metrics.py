@@ -258,13 +258,10 @@ def test_mlops_f1_score_apis():
 
     # first way
     pm.set_stat(ClassificationMetrics.F1_SCORE, f1)
+    pm.set_stat(ClassificationMetrics.F1_SCORE, [1, 2, 3])
 
     # second way
     pm.metrics.f1_score(y_true=labels_actual, y_pred=labels_pred)
-
-    # should throw error if not numeric number is provided
-    with pytest.raises(MLOpsStatisticsException):
-        pm.set_stat(ClassificationMetrics.F1_SCORE, [1, 2, 3])
 
     # should throw error if labels predicted is different length than actuals
     with pytest.raises(ValueError):
@@ -277,6 +274,16 @@ def test_mlops_f1_score_apis():
     pm.metrics.f1_score(y_true=labels_actual,
                         y_pred=labels_pred,
                         sample_weight=sample_weight)
+
+    labels_pred_multiclass = [1, 0, 2, 1, 1, 2]
+    labels_actual_multiclass = [0, 1, 1, 0, 2, 0]
+
+    f1_score = pm.metrics.f1_score(y_true=labels_actual_multiclass,
+                                   y_pred=labels_pred_multiclass,
+                                   labels=[0, 1, 2],
+                                   average=None)
+
+    assert len(f1_score) == 3
 
     pm.done()
 
