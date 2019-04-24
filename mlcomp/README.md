@@ -8,6 +8,46 @@ particular purpose, such as to train a model or generate inferences.
 A single pipeline may include component from different languages, such as Python,
 R and Java.
 
+## Quickstart
+
+#### Steps
+
+- Create a pipeline. Open any text editor and copy the following pipeline description:
+
+        {
+            "name": "Simple MCenter runner test",
+            "engineType": "Generic",
+            "pipe": [
+                {
+                    "name": "Source String",
+                    "id": 1,
+                    "type": "string-source",
+                    "parents": [],
+                    "arguments": {
+                        "value": "Hello World: testing string source and sink"
+                    }
+                },
+                {
+                    "name": "Sink String",
+                    "id": 2,
+                    "type": "string-sink",
+                    "parents": [{"parent": 1, "output": 0}],
+                    "arguments": {
+                        "expected-value": "Hello World: testing string source and sink"
+                    }
+                }
+            ]
+        }
+
+- Clone `mlpiper` repo [https://github.com/mlpiper/mlpiper/](https://github.com/mlpiper/mlpiper/)
+- Components `string-source` and `string-sink` can be found in the repo path [https://github.com/mlpiper/mlpiper/tree/master/reflex-algos/components/Python](https://github.com/mlpiper/mlpiper/tree/master/reflex-algos/components/Python)
+- Once the `ml-comp` python package is installed, `mlpiper` command line tool is available and can be used to execute the pipeline above and the components described in it. Running the example above:
+
+      mlpiper run -f ~/<pipeline description file> -r <path to mlpiper repo>/reflex-algos/components/Python/ -d <deployment dir>
+
+     Use **--force** option to overwrite deployment dir
+
+
 ## How to construct a component
 
 #### Steps
@@ -91,7 +131,7 @@ R and Java.
 
 #### Steps
 
-- Open any text editor and copy the following template:
+- Open any text editor and copy the following pipeline description:
 
         {
             "name": "Simple MCenter runner test",
@@ -130,7 +170,7 @@ R and Java.
 
 ## How to test
 
-Once the `ml-comp` python package is installed, a command line `mlpiper` is installed
+Once the `ml-comp` python package is installed, `mlpiper` command line tool is available
 and can be used to execute the pipeline above and the components described in it.
 
 There are three main commands that can be used as follows:
@@ -147,14 +187,16 @@ There are three main commands that can be used as follows:
 #### Examples:
 
   - Prepare a deployment. The resulted dir will be copied to a docker container and run
-    there
+    there:
 
-        mlpiper deploy -p p1.json -r ~/dev/components -d /tmp/pp
+        mlpiper deploy -f p1.json -r ~/dev/components -d /tmp/pp
 
-  - Deploy & Run. Useful for development and debugging
+  - Deploy & Run. Useful for development and debugging:
 
-        mlpiper run -p p1.json -r ~/dev/components -d /tmp/pp
+        mlpiper run -f p1.json -r ~/dev/components -d /tmp/pp
 
-  - Run a deployment. Usually non interactive called by another script
+       Use **--force** option to overwrite deployment dir
+
+  - Run a deployment. Usually non interactive called by another script:
 
         mlpiper run-deployment --deployment-dir /tmp/pp
