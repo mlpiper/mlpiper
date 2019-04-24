@@ -104,9 +104,8 @@ def test_mlops_mean_squared_error_apis():
     # second way
     pm.metrics.mean_squared_error(y_true=labels_actual, y_pred=labels_pred)
 
-    # should throw error if not numeric number is provided
-    with pytest.raises(MLOpsStatisticsException):
-        pm.set_stat(RegressionMetrics.MEAN_SQUARED_ERROR, [1, 2, 3])
+    # array list is allowed as well
+    pm.set_stat(RegressionMetrics.MEAN_SQUARED_ERROR, [1, 2, 3])
 
     # should throw error if labels predicted is different length than actuals
     with pytest.raises(ValueError):
@@ -119,6 +118,15 @@ def test_mlops_mean_squared_error_apis():
     pm.metrics.mean_squared_error(y_true=labels_actual,
                                   y_pred=labels_pred,
                                   sample_weight=sample_weight)
+
+    labels_2d_actual = [[1.0, 0.5], [2.5, 4.75], [7.0, 0.75]]
+    labels_2d_pred = [[1.5, 0.75], [2.75, 4.5], [7.50, 0.25]]
+
+    mse = pm.metrics.mean_squared_error(y_true=labels_2d_actual,
+                                        y_pred=labels_2d_pred,
+                                        multioutput="raw_values")
+
+    assert len(mse) == 2
 
     pm.done()
 
