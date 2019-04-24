@@ -1,5 +1,8 @@
+import numpy as np
+
 from parallelm.mlops.mlops_exception import MLOpsStatisticsException
 from parallelm.mlops.stats.graph import Graph
+from parallelm.mlops.stats.multi_line_graph import MultiLineGraph
 from parallelm.mlops.stats.single_value import SingleValue
 from parallelm.mlops.stats.table import Table
 from parallelm.mlops.stats_category import StatCategory
@@ -92,3 +95,27 @@ class MLStatObjectCreator(object):
         except Exception as e:
             raise MLOpsStatisticsException \
                 ("error happened while outputting graph object. error: {}".format(e))
+
+    @staticmethod
+    def get_multiline_stat_object(name, list_value):
+        """
+        Create multiline object from list of values. It will output mulitline from values and legends will be index of the values - i.e. 0, 1, ..
+        :param name: Name of stat
+        :param list_value: list of values to embed in multiline value.
+        :return: MLOps Multiline Value object, timeseries stat category
+        """
+        if isinstance(list_value, list) or isinstance(list_value, np.ndarray):
+            category = StatCategory.TIME_SERIES
+
+            labels = list(map(lambda x: str(x).strip(), range(len(list_value))))
+
+            multiline_object = MultiLineGraph() \
+                .name(name) \
+                .labels(labels)
+
+            multiline_object.data(list(list_value))
+
+            return multiline_object, category
+        else:
+            raise MLOpsStatisticsException(
+                "list_value has to be of type list or nd array but got {}".format(type(list_value)))
