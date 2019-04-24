@@ -356,6 +356,32 @@ class ClassificationStatObjectFactory(object):
             raise MLOpsStatisticsException \
                 ("error happened while outputting precision recall curve. error: {}".format(e))
 
+    @staticmethod
+    def get_mlops_precision_score_stat_object(**kwargs):
+        """
+        Method will create MLOps Single/Multiline value stat object from numeric real number - precision score; or array of precision score per class
+        :param kwargs: numeric value of precision score or array of precision score per class. In labels, it can have list of array of class as well.
+        :return: Single/Multiline Value stat object which has precision score embedded inside
+        """
+        precision_score = kwargs.get('data', None)
+        labels = kwargs.get('labels', None)
+
+        if isinstance(precision_score, list) or isinstance(precision_score, np.ndarray):
+            multiline_value, category = MLStatObjectCreator. \
+                get_multiline_stat_object(name=ClassificationMetrics.PRECISION_SCORE.value,
+                                          list_value=precision_score,
+                                          labels=labels)
+
+            return multiline_value, category
+
+        # if it is not list then it has to be single value.
+        else:
+            single_value, category = MLStatObjectCreator. \
+                get_single_value_stat_object(name=ClassificationMetrics.PRECISION_SCORE.value,
+                                             single_value=precision_score)
+
+            return single_value, category
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClassificationMetrics.ACCURACY_SCORE: get_mlops_accuracy_score_stat_object.__func__,
@@ -373,7 +399,8 @@ class ClassificationStatObjectFactory(object):
         ClassificationMetrics.JACCARD_SIMILARITY_SCORE: get_mlops_jaccard_similarity_score_stat_object.__func__,
         ClassificationMetrics.LOG_LOSS: get_mlops_log_loss_stat_object.__func__,
         ClassificationMetrics.MATTHEWS_CORRELATION_COEFFICIENT: get_mlops_matthews_corrcoef_stat_object.__func__,
-        ClassificationMetrics.PRECISION_RECALL_CURVE: get_mlops_precision_recall_curve_stat_object.__func__
+        ClassificationMetrics.PRECISION_RECALL_CURVE: get_mlops_precision_recall_curve_stat_object.__func__,
+        ClassificationMetrics.PRECISION_SCORE: get_mlops_precision_score_stat_object.__func__
     }
 
     @staticmethod
