@@ -424,6 +424,41 @@ class ClassificationStatObjectFactory(object):
 
         return single_value, category
 
+    @staticmethod
+    def get_mlops_roc_curve_stat_object(**kwargs):
+        """
+        Method will create Graph value stat object from `data` and `legend` information.
+        It is not recommended to access this method without understanding graph value data structure that it is returning.
+        :param kwargs: data will have list where first index value should be list of all true positive rate and second index value should be according false positive rate and legend information can also be provided
+        :return: Graph Value which represents ROC Curve
+        """
+        try:
+            data = kwargs.get('data', None)
+            legend = kwargs.get('legend', None)
+
+            data_representation = "first index value should be list of all true positive rate and second index value should be according false positive rate"
+
+            assert isinstance(data, list), \
+                "data argument has to be type list where {}".format(data_representation)
+
+            assert len(data) == 2, "data provided should have 2 elements where {}".format(data_representation)
+
+            # data will be list and first index shall be TPR
+            tpr = data[0]
+            # data will be list and first index shall be FPR
+            fpr = data[1]
+            graph_value, category = MLStatObjectCreator.get_graph_value_stat_object(
+                name=ClassificationMetrics.ROC_CURVE.value,
+                x_data=fpr, y_data=tpr,
+                x_title="False Positive Rate", y_title="True Positive Rate",
+                legend=legend)
+
+            return graph_value, category
+
+        except Exception as e:
+            raise MLOpsStatisticsException \
+                ("error happened while outputting roc curve. error: {}".format(e))
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClassificationMetrics.ACCURACY_SCORE: get_mlops_accuracy_score_stat_object.__func__,
@@ -445,6 +480,7 @@ class ClassificationStatObjectFactory(object):
         ClassificationMetrics.PRECISION_SCORE: get_mlops_precision_score_stat_object.__func__,
         ClassificationMetrics.RECALL_SCORE: get_mlops_recall_score_stat_object.__func__,
         ClassificationMetrics.ROC_AUC_SCORE: get_mlops_roc_auc_score_stat_object.__func__,
+        ClassificationMetrics.ROC_CURVE: get_mlops_roc_curve_stat_object.__func__
     }
 
     @staticmethod

@@ -536,6 +536,34 @@ class MLOpsMetrics(object):
 
         mlops.set_stat(ClassificationMetrics.ROC_AUC_SCORE, data=roc_auc_score)
 
+    @staticmethod
+    def roc_curve(y_true, y_score, pos_label=None, sample_weight=None, drop_intermediate=True):
+        """
+        Method is responsible for calculating roc curve and output it using graph stat object in MCenter
+        :param y_true: Ground truth (correct) target values.
+        :param y_score: Target scores, can either be probability estimates of the positive class, confidence values, or non-thresholded measure of decisions.
+        :param pos_label:Positive label.
+        :param sample_weight: Sample weights.
+        :param drop_intermediate: Whether to drop some suboptimal thresholds which would not appear on a plotted ROC curve. This is useful in order to create lighter ROC curves.
+        :return: fpr, tpr, thresholds
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+        fpr, tpr, thresholds = sklearn.metrics.roc_curve(y_true=y_true,
+                                                         y_score=y_score,
+                                                         pos_label=pos_label,
+                                                         sample_weight=sample_weight,
+                                                         drop_intermediate=drop_intermediate)
+
+        roc_auc_score = sklearn.metrics.roc_auc_score(y_true, y_score)
+
+        graph_label_str = "ROC Curve, AUC: {}".format(roc_auc_score)
+
+        mlops.set_stat(ClassificationMetrics.ROC_CURVE, [tpr, fpr], legend=graph_label_str)
+
+        return fpr, tpr, thresholds
+
     ##################################################################
     ######################## regression stats ########################
     ##################################################################

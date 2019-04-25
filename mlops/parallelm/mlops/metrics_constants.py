@@ -26,6 +26,7 @@ class ClassificationMetrics(Enum):
     PRECISION_SCORE = "Precision Score"
     RECALL_SCORE = "Recall Score"
     ROC_AUC_SCORE = "ROC AUC Score"
+    ROC_CURVE = "ROC Curve"
 
 
 class RegressionMetrics(Enum):
