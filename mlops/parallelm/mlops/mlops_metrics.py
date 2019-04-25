@@ -463,7 +463,7 @@ class MLOpsMetrics(object):
     def precision_score(y_true, y_pred, labels=None, pos_label=1, average="binary", sample_weight=None):
         """
         Method calculates the precision score and output it using MCenter as single value or array of values.
-        In the multi-class and multi-label case, this is the weighted average of the F1 score of each class.
+        In the multi-class and multi-label case, this is the weighted average of the precision score of each class.
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
@@ -491,7 +491,7 @@ class MLOpsMetrics(object):
     def recall_score(y_true, y_pred, labels=None, pos_label=1, average="binary", sample_weight=None):
         """
         Method calculates the recall score and output it using MCenter as single value or array of values.
-        In the multi-class and multi-label case, this is the weighted average of the F1 score of each class.
+        In the multi-class and multi-label case, this is the weighted average of the recall score of each class.
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
@@ -514,6 +514,27 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClassificationMetrics.RECALL_SCORE, data=recall_score)
 
         return recall_score
+
+    @staticmethod
+    def roc_auc_score(y_true, y_score, average="macro", sample_weight=None):
+        """
+        Method calculates the roc auc score and output it using MCenter as single value.
+        :param y_true: Ground truth (correct) target values.
+        :param y_score: Target scores, can either be probability estimates of the positive class, confidence values, or non-thresholded measure of decisions
+        :param average: Param is needed for multiclass problems. It can be any of [None, 'micro', 'macro', 'samples', 'weighted']
+        :param sample_weight: Sample weights.
+        :return: roc auc score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        roc_auc_score = sklearn.metrics.roc_auc_score(y_true=y_true,
+                                                      y_score=y_score,
+                                                      average=average,
+                                                      sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.ROC_AUC_SCORE, data=roc_auc_score)
 
     ##################################################################
     ######################## regression stats ########################
