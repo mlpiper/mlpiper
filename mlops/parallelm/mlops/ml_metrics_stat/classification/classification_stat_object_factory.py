@@ -408,6 +408,22 @@ class ClassificationStatObjectFactory(object):
 
             return single_value, category
 
+    @staticmethod
+    def get_mlops_roc_auc_score_stat_object(**kwargs):
+        """
+        Method will create MLOps Single value stat object from numeric real number - roc auc score
+        It is not recommended to access this method without understanding single value data structure that it is returning.
+        :param kwargs: numeric value of roc auc score
+        :return: Single Value stat object which has roc auc score embedded inside
+        """
+        roc_auc_score = kwargs.get('data', None)
+
+        single_value, category = MLStatObjectCreator. \
+            get_single_value_stat_object(name=ClassificationMetrics.ROC_AUC_SCORE.value,
+                                         single_value=roc_auc_score)
+
+        return single_value, category
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClassificationMetrics.ACCURACY_SCORE: get_mlops_accuracy_score_stat_object.__func__,
@@ -427,7 +443,8 @@ class ClassificationStatObjectFactory(object):
         ClassificationMetrics.MATTHEWS_CORRELATION_COEFFICIENT: get_mlops_matthews_corrcoef_stat_object.__func__,
         ClassificationMetrics.PRECISION_RECALL_CURVE: get_mlops_precision_recall_curve_stat_object.__func__,
         ClassificationMetrics.PRECISION_SCORE: get_mlops_precision_score_stat_object.__func__,
-        ClassificationMetrics.RECALL_SCORE: get_mlops_recall_score_stat_object.__func__
+        ClassificationMetrics.RECALL_SCORE: get_mlops_recall_score_stat_object.__func__,
+        ClassificationMetrics.ROC_AUC_SCORE: get_mlops_roc_auc_score_stat_object.__func__,
     }
 
     @staticmethod
