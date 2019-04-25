@@ -704,3 +704,42 @@ def test_mlops_roc_curve_apis():
                          drop_intermediate=True)
 
     pm.done()
+
+
+def test_mlops_zero_one_loss_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 1, 1, 0]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    zero_one_loss = sklearn.metrics.zero_one_loss(labels_actual, labels_pred)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.ZERO_ONE_LOSS, zero_one_loss)
+
+    # second way
+    pm.metrics.zero_one_loss(labels_actual, labels_pred)
+
+    # should throw error if not numeric number is provided
+    with pytest.raises(MLOpsStatisticsException):
+        pm.set_stat(ClassificationMetrics.ZERO_ONE_LOSS, [1, 2, 3])
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_prob_missing_values = [1, 0, 1, 1]
+        pm.metrics.zero_one_loss(y_true=labels_actual, y_pred=labels_prob_missing_values)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.zero_one_loss(y_true=labels_actual,
+                             y_pred=labels_pred,
+                             sample_weight=sample_weight)
+
+    # testing with normalization false
+    pm.metrics.zero_one_loss(y_true=labels_actual,
+                             y_pred=labels_pred,
+                             normalize=False,
+                             sample_weight=sample_weight)
+
+    pm.done()

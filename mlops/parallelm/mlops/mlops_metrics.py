@@ -564,6 +564,26 @@ class MLOpsMetrics(object):
 
         return fpr, tpr, thresholds
 
+    @staticmethod
+    def zero_one_loss(y_true, y_pred, normalize=True, sample_weight=None):
+        """
+        Method calculates the zero one loss and output it using MCenter as single value.
+        :param y_true: Ground truth (correct) target values.
+        :param y_pred: Estimated targets as returned by a classifier.
+        :param normalize: If ``False``, return the number of misclassifications. Otherwise, return the fraction of misclassifications.
+        :param sample_weight: Sample weights.
+        :return: zero one loss
+        """
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        zol = sklearn.metrics.zero_one_loss(y_true=y_true, y_pred=y_pred, normalize=normalize,
+                                            sample_weight=sample_weight)
+
+        mlops.set_stat(ClassificationMetrics.ZERO_ONE_LOSS, data=zol)
+
+        return zol
+
     ##################################################################
     ######################## regression stats ########################
     ##################################################################
