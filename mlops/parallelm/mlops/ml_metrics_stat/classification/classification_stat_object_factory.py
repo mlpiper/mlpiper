@@ -311,8 +311,8 @@ class ClassificationStatObjectFactory(object):
         """
         Method will create MLOps Single value stat object from numeric real number - Matthews correlation coefficient
         It is not recommended to access this method without understanding single value data structure that it is returning.
-        :param kwargs: numeric value of log loss
-        :return: Single Value stat object which has log loss embedded inside
+        :param kwargs: numeric value of Matthews correlation coefficient
+        :return: Single Value stat object which has Matthews correlation coefficient embedded inside
         """
         mcc = kwargs.get('data', None)
 
@@ -459,6 +459,22 @@ class ClassificationStatObjectFactory(object):
             raise MLOpsStatisticsException \
                 ("error happened while outputting roc curve. error: {}".format(e))
 
+    @staticmethod
+    def get_mlops_zero_one_loss_stat_object(**kwargs):
+        """
+        Method will create MLOps Single value stat object from numeric real number - Zero One Loss
+        It is not recommended to access this method without understanding single value data structure that it is returning.
+        :param kwargs: numeric value of Zero One Loss
+        :return: Single Value stat object which has zero one loss embedded inside
+        """
+        zol = kwargs.get('data', None)
+
+        single_value, category = MLStatObjectCreator. \
+            get_single_value_stat_object(name=ClassificationMetrics.ZERO_ONE_LOSS.value,
+                                         single_value=zol)
+
+        return single_value, category
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClassificationMetrics.ACCURACY_SCORE: get_mlops_accuracy_score_stat_object.__func__,
@@ -480,7 +496,8 @@ class ClassificationStatObjectFactory(object):
         ClassificationMetrics.PRECISION_SCORE: get_mlops_precision_score_stat_object.__func__,
         ClassificationMetrics.RECALL_SCORE: get_mlops_recall_score_stat_object.__func__,
         ClassificationMetrics.ROC_AUC_SCORE: get_mlops_roc_auc_score_stat_object.__func__,
-        ClassificationMetrics.ROC_CURVE: get_mlops_roc_curve_stat_object.__func__
+        ClassificationMetrics.ROC_CURVE: get_mlops_roc_curve_stat_object.__func__,
+        ClassificationMetrics.ZERO_ONE_LOSS: get_mlops_zero_one_loss_stat_object.__func__
     }
 
     @staticmethod
