@@ -659,3 +659,48 @@ def test_mlops_roc_auc_apis():
                              sample_weight=sample_weight)
 
     pm.done()
+
+
+def test_mlops_roc_curve_apis():
+    pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred_prob = [0.9, 0.4, 0.6, 0.9, 0.1, 0.9]
+    labels_actual = [0, 1, 0, 0, 0, 1]
+
+    fpr, tpr, thresholds = sklearn.metrics.roc_curve(labels_actual, labels_pred_prob,
+                                                     pos_label=1,
+                                                     sample_weight=None,
+                                                     drop_intermediate=True)
+
+    roc_auc_score = sklearn.metrics.roc_auc_score(labels_actual, labels_pred_prob)
+
+    graph_label_str = "AUC: {}".format(roc_auc_score)
+
+    # first way
+    pm.set_stat(ClassificationMetrics.PRECISION_RECALL_CURVE, [tpr, fpr])
+
+    pm.set_stat(ClassificationMetrics.PRECISION_RECALL_CURVE, [tpr, fpr], legend=graph_label_str)
+
+    # second way
+    pm.metrics.roc_curve(labels_actual, labels_pred_prob,
+                         pos_label=1,
+                         sample_weight=None,
+                         drop_intermediate=True)
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_prob_missing_values = [0.0, 0.9, 1.0, 0.85]
+        pm.metrics.roc_curve(labels_actual, labels_prob_missing_values,
+                             pos_label=1,
+                             sample_weight=None,
+                             drop_intermediate=True)
+
+    sample_weight = [0.9, 0.1, 0.5, 0.9, 1.0, 0]
+
+    # testing with sample weights as well
+    pm.metrics.roc_curve(labels_actual, labels_pred_prob,
+                         pos_label=1,
+                         sample_weight=sample_weight,
+                         drop_intermediate=True)
+
+    pm.done()

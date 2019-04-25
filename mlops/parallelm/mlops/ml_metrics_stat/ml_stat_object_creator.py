@@ -80,7 +80,7 @@ class MLStatObjectCreator(object):
         category = StatCategory.GENERAL
 
         if legend is None:
-            legend = y_title
+            legend = "{} vs {}".format(y_title, x_title)
 
         try:
             graph_object = Graph() \
