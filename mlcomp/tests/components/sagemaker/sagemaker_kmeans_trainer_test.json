@@ -1,0 +1,76 @@
+{
+    "engineType": "SageMaker",
+    "userStandalone": false,
+    "language": "Python",
+    "modelBehavior": "ModelProducer",
+    "name": "sagemaker_kmeans_trainer_test",
+    "label": "SageMaker K-Means Trainer (Test)",
+    "program": "sagemaker_kmeans_trainer_test.py",
+    "componentClass": "SageMakerKMeansTrainerTest",
+    "group": "Algorithms",
+    "includeGlobPatterns" : "__init__.py | common/** | sagemaker_kmeans_trainer*",
+    "useMLOps": true,
+    "inputInfo": [
+        {
+            "description": "list",
+            "label": "Train set",
+            "defaultComponent": "",
+            "type": "numpy.ndarray",
+            "group": "data"
+        },
+        {
+            "description": "list",
+            "label": "Validation set",
+            "defaultComponent": "",
+            "type": "numpy.ndarray",
+            "group": "data"
+        },
+        {
+            "description": "list",
+            "label": "Test set",
+            "defaultComponent": "",
+            "type": "numpy.ndarray",
+            "group": "data"
+        }
+    ],
+    "outputInfo": [],
+    "arguments": [
+        {
+            "key": "output_model_filepath",
+            "label": "Model output file",
+            "type": "str",
+            "description": "File to use for saving the trained model",
+            "optional": true,
+            "tag": "model_dir"
+        },
+        {
+            "key": "bucket_name",
+            "type": "str",
+            "label": "Bucket name [Default: Session().default_bucket()]",
+            "description": "AWS bucket name",
+            "optional": true
+        },
+        {
+            "key": "data_location",
+            "type": "str",
+            "label": "Data location",
+            "description": "The s3 prefix to upload RecordSet objects to, expressed as an S3 url",
+            "optional": true
+        },
+        {
+            "key": "output_location",
+            "type": "str",
+            "label": "Output location",
+            "description": "Specifies where to store the compiled model, expressed as an S3 url",
+            "optional": true
+        },
+        {
+            "key": "skip_s3_dataset_uploading",
+            "label": "Skip dataset upload (Test)",
+            "type": "bool",
+            "description": "If true, then assume the dataset was already converted and uploaded and exists under 'model_s3_url'",
+            "optional": true
+        }
+    ],
+    "version": 1
+}

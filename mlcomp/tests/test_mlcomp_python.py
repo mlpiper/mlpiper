@@ -4,6 +4,7 @@ import os
 import logging
 import json
 
+from parallelm.ml_engine.sagemaker_engine import SageMakerEngine
 from parallelm.pipeline.components_desc import ComponentsDesc
 from parallelm.ml_engine.python_engine import PythonEngine
 from parallelm.pipeline.dag import Dag
@@ -331,7 +332,6 @@ class TestPythonEngine:
         finally:
             os.remove(model_file)
 
-
     def test_execute_java_connected_multiple_jars(self):
         pipeline = {
             "name": "connected_with_multiple_jars_test",
@@ -487,6 +487,7 @@ class TestPythonEngine:
                     "enableHealth": True,
                     "canaryThreshold": 0.0
         }
+        ee_config = {}
         pipeline = {
             "name": "stand_alone_test",
             "engineType": "Generic",
@@ -507,6 +508,93 @@ class TestPythonEngine:
         dag = Dag(pipeline, comps_desc_list, python_engine)
 
         dag_node = dag.get_dag_node(0)
-        input_args = dag_node.input_arguments(systemConfig, comp_only_args=True)
+        input_args = dag_node.input_arguments(systemConfig, ee_config, comp_only_args=True)
         assert input_args["arg1"] == "arg1-value"
         assert input_args["output-model"] == "output-model-1234"
+
+     # @pytest.mark.skip(reason="skipping this test for now - debugging")
+    def test_component_argument_building_with_sagemaker(self):
+        systemConfig = {
+                    "statsDBHost": "localhost",
+                    "statsDBPort": 8899,
+                    "statsMeasurementID": "tf-job-0001",
+                    "mlObjectSocketHost": "localhost",
+                    "mlObjectSocketSourcePort": 9900,
+                    "mlObjectSocketSinkPort": 9901,
+                    "modelFileSinkPath": "output-model-1234",
+                    "modelFileSourcePath": "input-model-1234",
+                    "healthStatFilePath": "/tmp/health",
+                    "workflowInstanceId": "/tmp/run/filesink1",
+                    "socketSourcePort": 0,
+                    "socketSinkPort": 0,
+                    "enableHealth": True,
+                    "canaryThreshold": 0.0
+        }
+        region = "us-west-2"
+        iam_role_value = "arn:aws:iam::ACCOUNT-ID-WITHOUT-HYPHENS:role/Get-pics"
+        ee_config = {
+            "configs": {
+                "engConfig": {
+                    "type": "sagemaker",
+                    "arguments": {
+                        "region": {
+                            "value": "us-west-2",
+                            "type": "string",
+                            "optional": "false",
+                            "label": "Region",
+                            "description": "The AWS Region to send the request to",
+                            "editable": "true"
+                        },
+                        "aws_access_key_id": {
+                            "value": "2134",
+                            "type": "string",
+                            "optional": "false",
+                            "label": "Access Key ID",
+                            "description": "A long term credential access key ID",
+                            "editable": "true"
+                        },
+                        "aws_secret_access_key": {
+                            "value": "123qwe",
+                            "type": "string",
+                            "optional": "false",
+                            "label": "Secret Access Key",
+                            "description": "A long term credential secret access key",
+                            "editable": "true"
+                        },
+                        "iam_role": {
+                            "value": iam_role_value,
+                            "type": "string",
+                            "optional": "false",
+                            "label": "Region",
+                            "description": "The AWS Region to send the request to",
+                            "editable": "true"
+                        }
+                    }
+                }
+            }
+        }
+        pipeline = {
+            "name": "SageMaker pipeline",
+            "engineType": "SageMaker",
+            "systemConfig": systemConfig,
+            "executionEnvironment": ee_config,
+            "pipe": [
+                {
+                    "name": "String Source",
+                    "id": 1,
+                    "type": "string-source",
+                    "parents": [],
+                    "arguments": {
+                        "arg1": "arg1-value"
+                    }
+                }
+            ]
+        }
+        python_engine = SageMakerEngine(pipeline)
+        comps_desc_list = ComponentsDesc(python_engine, pipeline=pipeline).load()
+        dag = Dag(pipeline, comps_desc_list, python_engine)
+
+        dag_node = dag.get_dag_node(0)
+        input_args = dag_node.input_arguments(systemConfig, ee_config, comp_only_args=False)
+        assert input_args["arg1"] == "arg1-value"
+        assert input_args["configs"]["engConfig"]["arguments"]["iam_role"]["value"] == iam_role_value

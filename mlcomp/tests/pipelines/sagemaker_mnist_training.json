@@ -1,0 +1,82 @@
+{
+    "name": "1P KMeans High-Level Training",
+    "engineType": "SageMaker",
+    "pipe": [
+        {
+            "name": "Dataset downloader (Test)",
+            "id": 1,
+            "type": "dataset_downloader_test",
+            "parents": [],
+            "arguments": {
+                "dataset_url": "http://deeplearning.net/data/mnist/mnist.pkl.gz",
+                "test_set_local_csv_filepath": "/tmp/sagemaker_mnist_test_dataset.csv"
+            }
+        },
+        {
+            "name": "SageMaker KMeans Trainer (Test)",
+            "id": 2,
+            "type": "sagemaker_kmeans_trainer_test",
+            "parents": [
+                {
+                    "parent": 1,
+                    "output": 0
+                },
+                {
+                    "parent": 1,
+                    "output": 1
+                },
+                {
+                    "parent": 1,
+                    "output": 2
+                }
+            ],
+            "arguments": {
+            }
+        }
+    ],
+    "systemConfig": {
+        "modelFileSinkPath": "__PLACEHOLDER__"
+    },
+    "executionEnvironment": {
+        "configs": {
+            "engConfig": {
+                "type": "sagemaker",
+                "arguments": {
+                    "region": {
+                        "value": "us-west-2",
+                        "type": "string",
+                        "optional": false,
+                        "label": "Region",
+                        "description": "The AWS Region to send the request to",
+                        "editable": true
+                    },
+                    "aws_access_key_id": {
+                        "value": "",
+                        "type": "string",
+                        "optional": false,
+                        "label": "Access Key ID",
+                        "description": "A long term credential access key ID",
+                        "editable": true
+                    },
+                    "aws_secret_access_key": {
+                        "value": "",
+                        "type": "string",
+                        "optional": false,
+                        "label": "Secret Access Key",
+                        "description": "A long term credential secret access key",
+                        "editable": true
+                    },
+                    "iam_role": {
+                        "value": "",
+                        "default_value": "",
+                        "type": "string",
+                        "optional": false,
+                        "label": "IAM Role",
+                        "description": "An IAM identity that has specific permissions",
+                        "editable": true
+                    }
+                }
+            }
+        }
+    }
+}
