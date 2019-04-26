@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - added quickstart section to readme
 
+### Fixed
+- [REF-6108] explicitly specify utf-8 encoding when opening text file
+
 ## [1.2.1] - 2019-04-22
 ### Added
 - include all Java standalone/connected component's jars into classpath
@@ -26,3 +29,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 ### Removed
 ### Deprecated
+

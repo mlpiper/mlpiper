@@ -101,6 +101,20 @@ deps_show_pipeline = {
     ]
 }
 
+parse_pipeline_with_unicode_symbol_in_component = {
+    "name": "Parse Pipeline with unicode ",
+    "engineType": "Generic",
+    "pipe": [
+        {
+            "name": "Test source model",
+            "id": 1,
+            "type": "test-component-with-unicode",
+            "parents": [],
+            "arguments": {}
+        }
+    ]
+}
+
 java_connected_pipeline = {
     "name": "connected_with_multiple_jars_test",
     "engineType": "Generic",
@@ -263,6 +277,22 @@ class TestMLPiper:
             assert ("dep2" in l_deps)
             assert ("dep345" in l_deps)
             assert ("dep456" in l_deps)
+        finally:
+            os.remove(pipeline_file)
+
+
+    def test_parse_component_with_unicode_symbol(self):
+        cmdline_action = "deps"
+        comp_dir = os.path.join(os.path.dirname(__file__), PYTHON_COMPONENTS_PATH)
+
+        fd, pipeline_file = mkstemp(prefix='test_component_with_unicode_', dir='/tmp')
+        os.write(fd, json.dumps(parse_pipeline_with_unicode_symbol_in_component).encode())
+        os.close(fd)
+
+        cmd = "{} {} -r {} -f {} Python".format(TestMLPiper.mlpiper_script, cmdline_action, comp_dir,
+                                                pipeline_file)
+        try:
+            stdout, stderr = self._exec_shell_cmd(cmd, "Failed in '{}' mlpiper command line! {}".format(cmdline_action, cmd))
         finally:
             os.remove(pipeline_file)
 

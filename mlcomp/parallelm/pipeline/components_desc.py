@@ -1,3 +1,4 @@
+import io
 import json
 import pkg_resources
 import os
@@ -36,7 +37,7 @@ class ComponentsDesc(Base):
     def _load_comp_desc(root, filename):
         if filename.endswith(".json"):
             comp_json = os.path.join(root, filename)
-            with open(comp_json) as f:
+            with io.open(comp_json, encoding="utf-8") as f:
                 try:
                     comp_desc = json.load(f)
                 except ValueError as ex:
@@ -63,7 +64,7 @@ class ComponentsDesc(Base):
 
         components_desc = self.load(extended=False)
 
-        with open(out_file_path, 'w') as f:
+        with io.open(out_file_path, mode='w', encoding="utf-8") as f:
             json.dump(components_desc, f, indent=4)
             print("Components details were written successfully to: " + out_file_path)
 
