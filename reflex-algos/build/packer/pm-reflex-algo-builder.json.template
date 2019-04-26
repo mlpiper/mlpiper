@@ -23,9 +23,9 @@
         "pip2 install --upgrade pip",
         "pip3 install Sphinx",
         "pip3 install sphinx_rtd_theme",
-        "pip2 install numpy enum34 pytest pyspark requests-mock protobuf",
+        "pip2 install sagemaker numpy enum34 pytest pyspark requests-mock protobuf",
         "pip2 install pandas scikit-learn termcolor nbconvert nbformat psutil flask flask_cors uwsgidecorators",
-        "pip3 install pytest numpy pyspark kazoo requests-mock protobuf",
+        "pip3 install sagemaker pytest numpy pyspark kazoo requests-mock protobuf",
         "pip3 install pandas scikit-learn termcolor nbconvert nbformat psutil flask flask_cors uwsgidecorators"
       ]
     },
