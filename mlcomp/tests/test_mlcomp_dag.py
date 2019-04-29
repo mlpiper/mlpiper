@@ -3,7 +3,9 @@ from tempfile import mkstemp
 
 from parallelm.ml_engine.python_engine import PythonEngine
 from parallelm.pipeline.components_desc import ComponentsDesc
+from parallelm.pipeline.component_info import ComponentInfo
 from parallelm.pipeline.dag import Dag
+from parallelm.pipeline import json_fields
 from parallelm.pipeline.executor import Executor
 
 
@@ -103,3 +105,97 @@ class TestPythonIO:
         assert dag.parent_data_objs(dag_node_3) == ["A200", "B211", "C222"]
         # node 4 gets output of node3's index 0 to its 1st input index and node3's output index 1 to its 0th input indexx
         assert dag.parent_data_objs(dag_node_4) == ["B310", "A301"]
+
+    def test_component_info(self):
+        comp_desc = {
+            "version": 1,
+            "engineType": "Generic",
+            "language": "Python",
+            "userStandalone": False,
+            "name": "test-component-info",
+            "label": "Test Component Info",
+            "description": "Description for test component info",
+            "program": "main.py",
+            "componentClass": "TestComponentInfo",
+            "modelBehavior": "ModelConsumer",
+            "useMLOps": True,
+            "group": "Algorithms",
+            "deps": ["optparse", "reticulate"],
+            "includeGlobPatterns": "__init__.py | util/*.py",
+            "excludeGlobPatterns": "*.txt",
+            "inputInfo": [
+                {
+                    "description": "Input string",
+                    "label": "just-string",
+                    "defaultComponent": "TestDefComp",
+                    "type": "str",
+                    "group": "data"
+                }
+            ],
+            "outputInfo": [
+                {
+                    "description": "Output string",
+                    "label": "just-output-string",
+                    "defaultComponent": "OutputConnector",
+                    "type": "str",
+                    "group": "data"
+                }
+            ],
+            "arguments": [
+                {
+                    "key": "exit-value",
+                    "label": "exit-value",
+                    "type": "int",
+                    "description": "Exit value to use",
+                    "envVar": "ENV_VAR",
+                    "optional": True
+                },
+                {
+                    "key": "input-model",
+                    "label": "Model input file",
+                    "type": "str",
+                    "description": "File to use for loading the model",
+                    "optional": False,
+                    "tag": "input_model_path"
+                }
+            ],
+        }
+
+        comp_info = ComponentInfo(comp_desc)
+        assert comp_info.version == comp_desc[json_fields.COMPONENT_DESC_VERSION_FIELD]
+        assert comp_info.engine_type == comp_desc[json_fields.COMPONENT_DESC_ENGINE_TYPE_FIELD]
+        assert comp_info.language == comp_desc[json_fields.COMPONENT_DESC_LANGUAGE_FIELD]
+        assert comp_info.user_standalone == comp_desc[json_fields.COMPONENT_DESC_USER_STAND_ALONE]
+        assert comp_info.name == comp_desc[json_fields.COMPONENT_DESC_NAME_FIELD]
+        assert comp_info.label == comp_desc[json_fields.COMPONENT_DESC_LABEL_FIELD]
+        assert comp_info.description == comp_desc[json_fields.COMPONENT_DESC_DESCRIPTION_FIELD]
+        assert comp_info.program == comp_desc[json_fields.COMPONENT_DESC_PROGRAM_FIELD]
+        assert comp_info.component_class == comp_desc[json_fields.COMPONENT_DESC_CLASS_FIELD]
+        assert comp_info.model_behavior == comp_desc[json_fields.COMPONENT_DESC_MODEL_BEHAVIOR_FIELD]
+        assert comp_info.use_mlops == comp_desc[json_fields.COMPONENT_DESC_USE_MLOPS_FIELD]
+        assert comp_info.group == comp_desc[json_fields.COMPONENT_DESC_GROUP_FIELD]
+        assert comp_info.deps == comp_desc[json_fields.COMPONENT_DESC_PYTHON_DEPS]
+        assert comp_info.include_glob_patterns == comp_desc[json_fields.COMPONENT_DESC_INCLUDE_GLOB_PATTERNS]
+        assert comp_info.exclude_glob_patterns == comp_desc[json_fields.COMPONENT_DESC_EXCLUDE_GLOB_PATTERNS]
+
+        assert len(comp_info.inputs) == 1
+        assert comp_info.inputs[0].description == "Input string"
+        assert comp_info.inputs[0].label == "just-string"
+        assert comp_info.inputs[0].default_component == "TestDefComp"
+        assert comp_info.inputs[0].type == "str"
+        assert comp_info.inputs[0].group == "data"
+
+        assert len(comp_info.outputs) == 1
+        assert comp_info.outputs[0].description == "Output string"
+        assert comp_info.outputs[0].label == "just-output-string"
+        assert comp_info.outputs[0].default_component == "OutputConnector"
+        assert comp_info.outputs[0].type == "str"
+        assert comp_info.outputs[0].group == "data"
+
+        assert len(comp_info.arguments) == 2
+        assert comp_info.arguments[0].key == "exit-value"
+
+        assert comp_info.arguments[1].description == "File to use for loading the model"
+        assert comp_info.arguments[1].optional is False
+        assert comp_info.get_argument("no-such-argument") is None
+        assert comp_info.get_argument("exit-value").description == "Exit value to use"
