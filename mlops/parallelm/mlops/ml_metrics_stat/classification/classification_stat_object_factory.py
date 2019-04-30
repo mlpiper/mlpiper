@@ -14,7 +14,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_accuracy_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - accuracy score
+        Method creates MLOps Single value stat object from numeric real number - accuracy score
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of accuracy
         :return: Single Value stat object which has accuracy score embedded inside
@@ -30,7 +30,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_auc_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - auc score
+        Method creates MLOps Single value stat object from numeric real number - auc score
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of auc
         :return: Single Value stat object which has auc score embedded inside
@@ -46,7 +46,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_average_precision_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - average precision score
+        Method creates MLOps Single value stat object from numeric real number - average precision score
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of average precision score
         :return: Single Value stat object which has aps score embedded inside
@@ -62,7 +62,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_balanced_accuracy_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - balanced accuracy score
+        Method creates MLOps Single value stat object from numeric real number - balanced accuracy score
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of balanced accuracy
         :return: Single Value stat object which has accuracy score embedded inside
@@ -78,7 +78,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_brier_score_loss_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - brier score loss
+        Method creates MLOps Single value stat object from numeric real number - brier score loss
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of brier score loss
         :return: Single Value stat object which has brier score embedded inside
@@ -94,7 +94,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_classification_report_stat_object(**kwargs):
         """
-        Method will create MLOps table value stat object from classification report string.
+        Method creates MLOps table value stat object from classification report string.
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: classification report string.
         :return: Table Value stat object which has classification report embedded inside
@@ -134,7 +134,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_cohen_kappa_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - cohen kappa score
+        Method creates MLOps Single value stat object from numeric real number - cohen kappa score
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of cohen kappa score
         :return: Single Value stat object which has cohen kappa score embedded inside
@@ -150,7 +150,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_confusion_matrix_stat_object(**kwargs):
         """
-        Method will create MLOps Table stat object from ndarray and labels argument coming from kwargs (`labels`).
+        Method creates MLOps Table stat object from ndarray and labels argument coming from kwargs (`labels`).
         It is not recommended to access this method without understanding table data structure that it is returning.
         :param kwargs: `data` - Array representation of confusion matrix & `labels` used for representation of confusion matrix
         :return: MLOps Table object generated from array
@@ -193,7 +193,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_f1_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single/Multiline value stat object from numeric real number - f1 score; or array of f1 score per class
+        Method creates MLOps Single/Multiline value stat object from numeric real number - f1 score; or array of f1 score per class
         :param kwargs: numeric value of f1 score or array of f1 score per class. In labels, it can have list of array of class as well.
         :return: Single/Multiline Value stat object which has f1 score embedded inside
         """
@@ -219,7 +219,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_fbeta_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single/Multiline value stat object from numeric real number - f-beta scoree; or array of f-beta score per class
+        Method creates MLOps Single/Multiline value stat object from numeric real number - f-beta scoree; or array of f-beta score per class
         :param kwargs: numeric value of f-beta score or array of f-beta score per class. In labels, it can have list of array of class as well.
         :return: Single/Multiline Value stat object which has f-beta score embedded inside
         """
@@ -245,7 +245,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_hamming_loss_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - hamming loss
+        Method creates MLOps Single value stat object from numeric real number - hamming loss
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of hamming loss
         :return: Single Value stat object which has hamming loss embedded inside
@@ -261,7 +261,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_hinge_loss_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - hinge loss
+        Method creates MLOps Single value stat object from numeric real number - hinge loss
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of hinge loss
         :return: Single Value stat object which has hinge loss embedded inside
@@ -277,7 +277,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_jaccard_similarity_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - jaccard similarity score
+        Method creates MLOps Single value stat object from numeric real number - jaccard similarity score
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of jaccard similarity score
         :return: Single Value stat object which has jaccard similarity score embedded inside
@@ -293,7 +293,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_log_loss_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - log loss
+        Method creates MLOps Single value stat object from numeric real number - log loss
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of log loss
         :return: Single Value stat object which has log loss embedded inside
@@ -309,7 +309,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_matthews_corrcoef_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - Matthews correlation coefficient
+        Method creates MLOps Single value stat object from numeric real number - Matthews correlation coefficient
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of Matthews correlation coefficient
         :return: Single Value stat object which has Matthews correlation coefficient embedded inside
@@ -325,7 +325,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_precision_recall_curve_stat_object(**kwargs):
         """
-        Method will create Graph value stat object from `data` and `legend` information.
+        Method creates Graph value stat object from `data` and `legend` information.
         It is not recommended to access this method without understanding graph value data structure that it is returning.
         :param kwargs: data will have list where first index value should be list of all precision values and second index value should be according recall value and legend information can also be provided
         :return: Graph Value which represents Precision Recall Curve
@@ -359,7 +359,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_precision_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single/Multiline value stat object from numeric real number - precision score; or array of precision score per class
+        Method creates MLOps Single/Multiline value stat object from numeric real number - precision score; or array of precision score per class
         :param kwargs: numeric value of precision score or array of precision score per class. In labels, it can have list of array of class as well.
         :return: Single/Multiline Value stat object which has precision score embedded inside
         """
@@ -385,7 +385,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_recall_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single/Multiline value stat object from numeric real number - recall score; or array of recall score per class
+        Method creates MLOps Single/Multiline value stat object from numeric real number - recall score; or array of recall score per class
         :param kwargs: numeric value of recall score or array of recall score per class. In labels, it can have list of array of class as well.
         :return: Single/Multiline Value stat object which has recall score embedded inside
         """
@@ -411,7 +411,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_roc_auc_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - roc auc score
+        Method creates MLOps Single value stat object from numeric real number - roc auc score
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of roc auc score
         :return: Single Value stat object which has roc auc score embedded inside
@@ -427,7 +427,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_roc_curve_stat_object(**kwargs):
         """
-        Method will create Graph value stat object from `data` and `legend` information.
+        Method creates Graph value stat object from `data` and `legend` information.
         It is not recommended to access this method without understanding graph value data structure that it is returning.
         :param kwargs: data will have list where first index value should be list of all true positive rate and second index value should be according false positive rate and legend information can also be provided
         :return: Graph Value which represents ROC Curve
@@ -462,7 +462,7 @@ class ClassificationStatObjectFactory(object):
     @staticmethod
     def get_mlops_zero_one_loss_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - Zero One Loss
+        Method creates MLOps Single value stat object from numeric real number - Zero One Loss
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: numeric value of Zero One Loss
         :return: Single Value stat object which has zero one loss embedded inside

@@ -12,7 +12,7 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_explained_variance_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single/Multiline value stat object from numeric real number - explained variance score or list of variances
+        Method creates MLOps Single/Multiline value stat object from numeric real number - explained variance score or list of variances
         :param kwargs: explained variance score or array of variance scores.
         :return: Single/Multiline Value stat object which has explained variance score embedded inside
         """
@@ -36,7 +36,7 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_mean_absolute_error_stat_object(**kwargs):
         """
-        Method will create MLOps Single/Multiline value stat object from numeric real number - mean absolute error; or list of errors
+        Method creates MLOps Single/Multiline value stat object from numeric real number - mean absolute error; or list of errors
         :param kwargs: mean absolute error or array of mean absolute errors
         :return: Single/Multiline Value stat object which has mean absolute error embedded inside
         """
@@ -60,7 +60,7 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_mean_squared_error_stat_object(**kwargs):
         """
-        Method will create MLOps Single/Multiline value stat object from numeric real number - mean squared error; or list of errors
+        Method creates MLOps Single/Multiline value stat object from numeric real number - mean squared error; or list of errors
         :param kwargs: mean squared error or array of mean square errors
         :return: Single/Multiline Value stat object which has mean squared error embedded inside
         """
@@ -84,7 +84,7 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_mean_squared_log_error_stat_object(**kwargs):
         """
-        Method will create MLOps Single/Multiline value stat object from numeric real number - mean squared log error; or list of errors
+        Method creates MLOps Single/Multiline value stat object from numeric real number - mean squared log error; or list of errors
         :param kwargs: mean squared log error or array of mean squared log errors
         :return: Single/Multiline Value stat object which has mean squared log error embedded inside
         """
@@ -107,7 +107,7 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_median_absolute_error_stat_object(**kwargs):
         """
-        Method will create MLOps Single value stat object from numeric real number - median absolute error
+        Method creates MLOps Single value stat object from numeric real number - median absolute error
         It is not recommended to access this method without understanding single value data structure that it is returning.
         :param kwargs: mean absolute error
         :return: Single Value stat object which has median absolute error embedded inside
@@ -123,7 +123,7 @@ class RegressionStatObjectFactory(object):
     @staticmethod
     def get_mlops_r2_score_stat_object(**kwargs):
         """
-        Method will create MLOps Single/Multiline value stat object from numeric real number - r2 score; or list of r2 score
+        Method creates MLOps Single/Multiline value stat object from numeric real number - r2 score; or list of r2 score
         :param kwargs: r2 score or array r2 score
         :return: Single/Multiline Value stat object which has r2 score embedded inside
         """

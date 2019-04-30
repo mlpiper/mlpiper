@@ -34,7 +34,7 @@ class MLStatObjectCreator(object):
     @staticmethod
     def get_table_value_stat_object(name, list_2d, match_header_pattern=None):
         """
-        Create Table Value stat object from list of list. Where first element of 2d list will be header. And from remaining lists, list's first index will be Row's header.
+        Create Table Value stat object from list of list. Where first element of 2d list is header. And from remaining lists, list's first index is Row's header.
         :param name: Name of stat
         :param list_2d: 2d representation of table to output
         :param match_header_pattern: If not none, then header of table should match the pattern provided
@@ -99,7 +99,7 @@ class MLStatObjectCreator(object):
     @staticmethod
     def get_multiline_stat_object(name, list_value, labels=None):
         """
-        Create multiline object from list of values. It will output mulitline from values and legends will be index of the values - i.e. 0, 1, ..
+        Create multiline object from list of values. It outputs mulitline from values and legends is index of the values - i.e. 0, 1, ..
         :param name: Name of stat
         :param list_value: list of values to embed in multiline value.
         :return: MLOps Multiline Value object, timeseries stat category
