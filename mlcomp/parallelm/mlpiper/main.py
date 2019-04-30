@@ -149,7 +149,7 @@ def main(bin_dir=None):
     if not options:
         return
 
-    logging.basicConfig(level=options.logging_level)
+    logging.basicConfig(level=options.logging_level, format='%(asctime)-15s %(levelname)s %(name)s:  %(message)s')
 
     if options.subparser_name in ("deploy", "run"):
         logging.debug("component_root: {}".format(options.comp_root))
