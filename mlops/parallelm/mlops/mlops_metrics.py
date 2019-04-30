@@ -6,7 +6,7 @@ from parallelm.mlops.singelton import Singleton
 class MLOpsMetrics(object):
     """
     Class is responsible for giving user sklearn alike code representation for using ParallelM's mlops apis.
-    Class will support classification, regression and clustering stats.
+    Class supports classification, regression and clustering stats.
     :Example:
     For Classification
 
@@ -20,9 +20,11 @@ class MLOpsMetrics(object):
     >>> labels_decision_values = [0.9, 0.85, 0.9] # distance from hyper plane
     >>> label_pos_class_prob = [0.8, 0.2, 0.9] # probabilities of positive class classification
 
+    >>> pos_label = 1
+
     >>> mlops.metrics.accuracy_score(y_true=labels, y_pred=labels_pred)
 
-    >>> fpr, tpr, thresholds = sklearn.metrics.roc_curve(labels, labels_pred, pos_label=1)
+    >>> fpr, tpr, thresholds = sklearn.metrics.roc_curve(labels, labels_pred, pos_label=pos_label)
 
     >>> mlops.metrics.auc(x=fpr, y=tpr)
 
@@ -30,7 +32,7 @@ class MLOpsMetrics(object):
 
     >>> mlops.metrics.balanced_accuracy_score(y_true=labels, y_pred=labels_pred)
 
-    >>> mlops.metrics.brier_score_loss(y_true=labels, y_prob=label_pos_class_prob, pos_label=1)
+    >>> mlops.metrics.brier_score_loss(y_true=labels, y_prob=label_pos_class_prob, pos_label=pos_label)
 
     >>> mlops.metrics.classification_report(labels, labels_pred)
 
@@ -40,7 +42,7 @@ class MLOpsMetrics(object):
 
     >>> mlops.metrics.f1_score(labels, labels_pred, pos_label=1)
 
-    >>> mlops.metrics.fbeta_score(labels, labels_pred, pos_label=1, beta=0.5)
+    >>> mlops.metrics.fbeta_score(labels, labels_pred, pos_label=pos_label, beta=0.5)
 
     >>> mlops.metrics.hamming_loss(labels, labels_pred)
 
@@ -52,7 +54,18 @@ class MLOpsMetrics(object):
 
     >>> mlops.metrics.matthews_corrcoef(labels, labels_pred)
 
-    >>> mlops.metrics.precision_recall_curve(y_true=labels, probas_pred=labels_decision_values, pos_label=1, average="macro")
+    >>> mlops.metrics.precision_recall_curve(y_true=labels, probas_pred=labels_decision_values, pos_label=pos_label, average="macro")
+
+    >>> mlops.metrics.precision_score(labels, labels_pred, pos_label=pos_label, average=None)
+
+    >>> mlops.metrics.recall_score(labels, labels_pred, pos_label=pos_label, average=None)
+
+    >>> mlops.metrics.roc_auc_score(labels, labels_decision_values)
+
+    >>> mlops.metrics.roc_curve(y_true=labels, y_score=labels_decision_values, pos_label=pos_label)
+
+    >>> mlops.metrics.zero_one_loss(labels, labels_pred)
+
 
     For Regression
 
@@ -81,7 +94,6 @@ class MLOpsMetrics(object):
     def accuracy_score(y_true, y_pred, normalize=True, sample_weight=None):
         """
         Method calculates accuracy and output it using MCenter.
-
         :param y_true: Ground truth (correct) labels.
         :param y_pred: Predicted labels, as returned by a classifier.
         :param normalize: If False, return the number of correctly classified samples. Otherwise, return the fraction of correctly classified samples.
@@ -104,7 +116,6 @@ class MLOpsMetrics(object):
     def auc(x, y, reorder="deprecated"):
         """
         Method calculates auc and output it using MCenter.
-
         :param x: x coordinates. These must be either monotonic increasing or monotonic decreasing.
         :param y: y coordinates.
         :param reorder: Whether to sort x before computing.
@@ -124,7 +135,6 @@ class MLOpsMetrics(object):
     def average_precision_score(y_true, y_score, average="macro", sample_weight=None):
         """
         Method calculates average precision value and output it using MCenter.
-
         :param y_true: True binary labels or binary label indicators.
         :param y_score: Target scores, can either be probability estimates of the positive class, confidence values, or non-thresholded measure of decisions (as returned by "decision_function" on some classifiers).
         :param average: If None, the scores for each class are returned. It can be "micro", "macro", "weighted" or "samples"
@@ -148,7 +158,6 @@ class MLOpsMetrics(object):
     def balanced_accuracy_score(y_true, y_pred, sample_weight=None, adjusted=False):
         """
         Method calculates balanced accuracy and output it using MCenter.
-
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param sample_weight: Sample weights.
@@ -172,7 +181,6 @@ class MLOpsMetrics(object):
     def brier_score_loss(y_true, y_prob, sample_weight=None, pos_label=None):
         """
         Method calculates brier score loss and output it using MCenter.
-
         :param y_true: True targets.
         :param y_prob: Probabilities of the positive class.
         :param sample_weight: Sample weights.
@@ -199,7 +207,6 @@ class MLOpsMetrics(object):
                               digits=2):
         """
         Method generates classification report and output it using MCenter as table.
-
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
@@ -592,7 +599,6 @@ class MLOpsMetrics(object):
     def explained_variance_score(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates explained variance score and output it using MCenter.
-
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
@@ -616,7 +622,6 @@ class MLOpsMetrics(object):
     def mean_absolute_error(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates mean absolute error and output it using MCenter.
-
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
@@ -640,7 +645,6 @@ class MLOpsMetrics(object):
     def mean_squared_error(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates mean squared error and output it using MCenter.
-
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
@@ -664,7 +668,6 @@ class MLOpsMetrics(object):
     def mean_squared_log_error(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates mean squared log error and output it using MCenter.
-
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
@@ -688,10 +691,8 @@ class MLOpsMetrics(object):
     def median_absolute_error(y_true, y_pred):
         """
         Method calculates median absolute error and output it using MCenter.
-
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
-
         :return: median absolute error
         """
         # need to import only on run time.
@@ -709,7 +710,6 @@ class MLOpsMetrics(object):
     def r2_score(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates r2 score and output it using MCenter.
-
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
