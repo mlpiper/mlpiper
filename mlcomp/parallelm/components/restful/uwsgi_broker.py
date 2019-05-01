@@ -188,9 +188,10 @@ class UwsgiBroker(Base):
         cls.w_logger.info("Entered to uWSGI entry point ... (wid: {}, pid: {}, ppid:{}"
                           .format(cls._wid, os.getpid(), os.getppid()))
 
-        cls.w_logger.info("Restful comp (wid:{}, pid: {}, ppid:{}): {}"
+        cls.w_logger.info("Restful comp (wid: {}, pid: {}, ppid:{}): {}"
                           .format(cls._wid, os.getpid(), os.getppid(), restful_comp))
 
+        cls.w_logger.info("Standalone mode (wid: {}): {}".format(cls._wid, standalone))
         restful_comp._ml_engine.set_standalone(standalone)
         cls._restful_comp = restful_comp
 
@@ -227,8 +228,6 @@ class UwsgiBroker(Base):
         logger.info("Model file path: {}".format(model_path))
 
         if within_uwsgi_context:
-            logger.info("{}".format(100 * 'a'))
-            logger.info("{}".format(cls._restful_comp._ml_engine.standalone))
             cls._model_selector = ModelSelector(model_path, cls._restful_comp._ml_engine.standalone)
 
             logger.info("Register signal (model reloading): {} (worker, wid: {}, {})"
