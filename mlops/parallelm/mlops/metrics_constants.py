@@ -51,6 +51,7 @@ class ClusteringMetrics(Enum):
     ADJUSTED_MUTUAL_INFO_SCORE = "Adjusted Mutual Info Score"
     ADJUSTED_RAND_SCORE = "Adjusted Rand Score"
     CALINSKI_HARABAZ_SCORE = "Calinski Harabaz Score"
+    COMPLETENESS_SCORE = "Completeness Score"
 
 
 def check_classification_registry():
