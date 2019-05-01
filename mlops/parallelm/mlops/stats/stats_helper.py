@@ -3,9 +3,10 @@ import six
 
 from parallelm.mlops.base_obj import BaseObj
 from parallelm.mlops.constants import Constants
-from parallelm.mlops.metrics_constants import ClassificationMetrics, RegressionMetrics
+from parallelm.mlops.metrics_constants import ClassificationMetrics, RegressionMetrics, ClusteringMetrics
 from parallelm.mlops.ml_metrics_stat.classification.classification_stat_object_factory import \
     ClassificationStatObjectFactory
+from parallelm.mlops.ml_metrics_stat.clustering.clustering_stat_object_factory import ClusteringStatObjectFactory
 from parallelm.mlops.ml_metrics_stat.regression.regression_stat_object_factory import RegressionStatObjectFactory
 from parallelm.mlops.mlops_exception import MLOpsException, MLOpsStatisticsException
 from parallelm.mlops.stats.bar_graph import BarGraph
@@ -41,8 +42,6 @@ class StatsHelper(BaseObj):
                                  format(type(data).__name__, Constants.OFFICIAL_NAME))
 
     def _set_classification_stat(self, name, data, model_id, timestamp, **kwargs):
-        mlops_stat_object = None
-        category = StatCategory.TIME_SERIES
 
         self._logger.debug("{} predefined stat called: name: {} data_type: {}".
                            format(Constants.OFFICIAL_NAME, name, type(data)))
@@ -86,6 +85,28 @@ class StatsHelper(BaseObj):
 
             raise MLOpsStatisticsException(error)
 
+    def _set_clustering_stat(self, name, data, model_id, timestamp, **kwargs):
+
+        self._logger.debug("{} predefined stat called: name: {} data_type: {}".
+                           format(Constants.OFFICIAL_NAME, name, type(data)))
+
+        mlops_stat_object, category = \
+            ClusteringStatObjectFactory.get_stat_object(name, data=data, **kwargs)
+
+        if mlops_stat_object is not None:
+            self.set_stat(name=name,
+                          data=mlops_stat_object,
+                          model_id=model_id,
+                          # type of stat will be time series by default
+                          category=category,
+                          timestamp=timestamp,
+                          **kwargs)
+        else:
+            error = "{} predefined stat cannot be output as error happened in creating mlops stat object from {}" \
+                .format(name, data)
+
+            raise MLOpsStatisticsException(error)
+
     def set_stat(self, name, data, model_id, category, timestamp, **kwargs):
         # If name supports the stat_object API, return the object.
         if isinstance(name, MLOpsStatGetter):
@@ -106,6 +127,12 @@ class StatsHelper(BaseObj):
             return self
         elif name in RegressionMetrics:
             self._set_regression_stat(name=name,
+                                      data=data,
+                                      model_id=model_id,
+                                      timestamp=timestamp, **kwargs)
+            return self
+        elif name in ClusteringMetrics:
+            self._set_clustering_stat(name=name,
                                       data=data,
                                       model_id=model_id,
                                       timestamp=timestamp, **kwargs)

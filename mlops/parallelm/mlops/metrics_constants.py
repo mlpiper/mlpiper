@@ -43,6 +43,14 @@ class RegressionMetrics(Enum):
     R2_SCORE = "R2 Score"
 
 
+class ClusteringMetrics(Enum):
+    """
+    Class will hold predefined naming of all clustering ML Metrics supported by ParallelM.
+    When adding a new enum, register a stat creation function to ClusteringStatObjectFactory.registry_name_to_function.
+    """
+    ADJUSTED_MUTUAL_INFO_SCORE = "Adjusted Mutual Info Score"
+
+
 def check_classification_registry():
     """
     Method checks if ClassificationMetrics is registered in ClassificationStatObjectFactory registry
@@ -73,6 +81,22 @@ def check_regression_registry():
     pass
 
 
+def check_clustering_registry():
+    """
+    Method checks if ClusteringMetrics is registered in ClusteringStatObjectFactory registry
+    """
+    from parallelm.mlops.ml_metrics_stat.clustering.clustering_stat_object_factory \
+        import ClusteringStatObjectFactory
+
+    for each_enum in ClusteringMetrics:
+        assert each_enum in ClusteringStatObjectFactory.registry_name_to_function, \
+            "please register {}'s method in ClusteringStatObjectFactory.registry_name_to_function" \
+                .format(each_enum)
+
+    pass
+
+
 # this functions will run during compile time to make sure all enums are registered in appropriate registry or not
 check_classification_registry()
 check_regression_registry()
+check_clustering_registry()
