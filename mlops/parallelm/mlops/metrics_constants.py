@@ -49,6 +49,7 @@ class ClusteringMetrics(Enum):
     When adding a new enum, register a stat creation function to ClusteringStatObjectFactory.registry_name_to_function.
     """
     ADJUSTED_MUTUAL_INFO_SCORE = "Adjusted Mutual Info Score"
+    ADJUSTED_RAND_SCORE = "Adjusted Rand Score"
 
 
 def check_classification_registry():

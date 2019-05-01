@@ -23,9 +23,26 @@ class ClusteringStatObjectFactory(object):
 
         return single_value, category
 
+    @staticmethod
+    def get_mlops_adjusted_rand_score_stat_object(**kwargs):
+        """
+        Method creates MLOps Single value stat object from numeric real number - adjusted rand score
+        It is not recommended to access this method without understanding single value data structure that it is returning.
+        :param kwargs: numeric value of adjusted rand score
+        :return: Single Value stat object which has adjusted rand score embedded inside
+        """
+        ars = kwargs.get('data', None)
+
+        single_value, category = MLStatObjectCreator. \
+            get_single_value_stat_object(name=ClusteringMetrics.ADJUSTED_RAND_SCORE.value,
+                                         single_value=ars)
+
+        return single_value, category
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
-        ClusteringMetrics.ADJUSTED_MUTUAL_INFO_SCORE: get_mlops_adjusted_mutual_info_score_stat_object.__func__
+        ClusteringMetrics.ADJUSTED_MUTUAL_INFO_SCORE: get_mlops_adjusted_mutual_info_score_stat_object.__func__,
+        ClusteringMetrics.ADJUSTED_RAND_SCORE: get_mlops_adjusted_rand_score_stat_object.__func__
     }
 
     @staticmethod
