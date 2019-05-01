@@ -750,3 +750,21 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.ADJUSTED_MUTUAL_INFO_SCORE, data=amis)
 
         return amis
+
+    @staticmethod
+    def adjusted_rand_score(labels_true, labels_pred):
+        """
+        Method calculates adjusted rand score and output it using MCenter.
+        :param labels_true: Ground truth (correct) target values.
+        :param labels_pred: Estimated target values.
+        :return: adjusted rand score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        ars = sklearn.metrics.adjusted_rand_score(labels_true=labels_true, labels_pred=labels_pred)
+
+        mlops.set_stat(ClusteringMetrics.ADJUSTED_RAND_SCORE, data=ars)
+
+        return ars
