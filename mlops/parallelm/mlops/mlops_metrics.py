@@ -786,3 +786,21 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.CALINSKI_HARABAZ_SCORE, data=chs)
 
         return chs
+
+    @staticmethod
+    def completeness_score(labels_true, labels_pred):
+        """
+        Method calculates completeness score and output it using MCenter.
+        :param labels_true: Ground truth (correct) target values.
+        :param labels_pred: Estimated target values.
+        :return: completeness score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        cs = sklearn.metrics.completeness_score(labels_true=labels_true, labels_pred=labels_pred)
+
+        mlops.set_stat(ClusteringMetrics.COMPLETENESS_SCORE, data=cs)
+
+        return cs
