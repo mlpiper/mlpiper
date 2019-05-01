@@ -27,7 +27,7 @@ class ModelEnv(object):
 
     @property
     def sync_filepath(self):
-        if not os.path.isfile(self._sync_filepath):
+        if not self._standalone and not os.path.isfile(self._sync_filepath):
             self.touch_sync()
 
         return self._sync_filepath
