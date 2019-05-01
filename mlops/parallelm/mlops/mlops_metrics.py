@@ -768,3 +768,21 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.ADJUSTED_RAND_SCORE, data=ars)
 
         return ars
+
+    @staticmethod
+    def calinski_harabaz_score(X, labels):
+        """
+        Method calculates calinski harabaz score and output it using MCenter.
+        :param X: Ground truth (correct) target values.
+        :param labels: Estimated target values.
+        :return: adjusted rand score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        chs = sklearn.metrics.calinski_harabaz_score(X=X, labels=labels)
+
+        mlops.set_stat(ClusteringMetrics.CALINSKI_HARABAZ_SCORE, data=chs)
+
+        return chs
