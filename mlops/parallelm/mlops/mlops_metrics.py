@@ -1,4 +1,4 @@
-from parallelm.mlops.metrics_constants import ClassificationMetrics, RegressionMetrics
+from parallelm.mlops.metrics_constants import ClassificationMetrics, RegressionMetrics, ClusteringMetrics
 from parallelm.mlops.singelton import Singleton
 
 
@@ -716,7 +716,6 @@ class MLOpsMetrics(object):
         :param multioutput: Defines aggregating of multiple output scores. It can be "raw_values", "uniform_average", "variance_weighted"
         :return: r2 score
         """
-
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
@@ -729,3 +728,25 @@ class MLOpsMetrics(object):
         mlops.set_stat(RegressionMetrics.R2_SCORE, data=r2_score)
 
         return r2_score
+
+    ##################################################################
+    ######################## clustering stats ########################
+    ##################################################################
+
+    @staticmethod
+    def adjusted_mutual_info_score(labels_true, labels_pred):
+        """
+        Method calculates adjusted mutual info score and output it using MCenter.
+        :param labels_true: Ground truth (correct) target values.
+        :param labels_pred: Estimated target values.
+        :return: adjusted mutual info score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        amis = sklearn.metrics.adjusted_mutual_info_score(labels_true=labels_true, labels_pred=labels_pred)
+
+        mlops.set_stat(ClusteringMetrics.ADJUSTED_MUTUAL_INFO_SCORE, data=amis)
+
+        return amis
