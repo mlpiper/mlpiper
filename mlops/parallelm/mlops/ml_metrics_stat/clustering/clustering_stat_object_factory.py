@@ -137,6 +137,22 @@ class ClusteringStatObjectFactory(object):
 
         return single_value, category
 
+    @staticmethod
+    def get_mlops_homogeneity_completeness_v_measure_stat_object(**kwargs):
+        """
+        Method creates MLOps Multiline value stat object from numeric real number - homogeneity, completeness, v_measure
+        :param kwargs: list of homogeneity, completeness, v_measure
+        :return: Multi Value stat object which has list of homogeneity, completeness, v_measure embedded inside
+        """
+        homogeneity_completeness_v_measure = kwargs.get('data', None)
+
+        multiline_value, category = MLStatObjectCreator. \
+            get_multiline_stat_object(name=ClusteringMetrics.HOMOGENEITY_COMPLETENESS_V_MEASURE.value,
+                                      list_value=list(homogeneity_completeness_v_measure),
+                                      labels=["Homogeneity", "Completeness", "V Measure"])
+
+        return multiline_value, category
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClusteringMetrics.ADJUSTED_MUTUAL_INFO_SCORE: get_mlops_adjusted_mutual_info_score_stat_object.__func__,
@@ -144,7 +160,8 @@ class ClusteringStatObjectFactory(object):
         ClusteringMetrics.CALINSKI_HARABAZ_SCORE: get_mlops_calinski_harabaz_score_stat_object.__func__,
         ClusteringMetrics.COMPLETENESS_SCORE: get_mlops_completeness_score_stat_object.__func__,
         ClusteringMetrics.CONTINGENCY_MATRIX: get_mlops_contingency_matrix_stat_object.__func__,
-        ClusteringMetrics.FOWLKES_MALLOWS_SCORE: get_mlops_fowlkes_mallows_score_stat_object.__func__
+        ClusteringMetrics.FOWLKES_MALLOWS_SCORE: get_mlops_fowlkes_mallows_score_stat_object.__func__,
+        ClusteringMetrics.HOMOGENEITY_COMPLETENESS_V_MEASURE: get_mlops_homogeneity_completeness_v_measure_stat_object.__func__
     }
 
     @staticmethod

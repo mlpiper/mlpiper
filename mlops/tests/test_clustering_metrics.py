@@ -176,3 +176,35 @@ def test_mlops_fowlkes_mallows_score_apis():
         mlops.metrics.fowlkes_mallows_score(labels_true=labels_actual, labels_pred=labels_pred_missing_values)
 
     mlops.done()
+
+
+def test_mlops_homogeneity_completeness_v_measure_apis():
+    mlops.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    labels_pred = [1, 0, 1, 2, 3, 0]
+    labels_actual = [0, 1, 0, 1, 3, 1]
+
+    homogeneity, completeness, v_measure = metrics \
+        .homogeneity_completeness_v_measure(labels_true=labels_actual, labels_pred=labels_pred)
+
+    # first way
+    mlops.set_stat(ClusteringMetrics.HOMOGENEITY_COMPLETENESS_V_MEASURE, [homogeneity, completeness, v_measure])
+
+    # second way
+    mlops.metrics.homogeneity_completeness_v_measure(labels_true=labels_actual, labels_pred=labels_pred)
+
+    # should throw error if list is not of size three
+    with pytest.raises(MLOpsStatisticsException):
+        mlops.set_stat(ClusteringMetrics.HOMOGENEITY_COMPLETENESS_V_MEASURE, [1, 1])
+
+    # should throw error if list is not of size three
+    with pytest.raises(MLOpsStatisticsException):
+        mlops.set_stat(ClusteringMetrics.HOMOGENEITY_COMPLETENESS_V_MEASURE, [1, 1, 1, 1])
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_pred_missing_values = [0, 0, 0, 1]
+        mlops.metrics.homogeneity_completeness_v_measure(labels_true=labels_actual,
+                                                         labels_pred=labels_pred_missing_values)
+
+    mlops.done()
