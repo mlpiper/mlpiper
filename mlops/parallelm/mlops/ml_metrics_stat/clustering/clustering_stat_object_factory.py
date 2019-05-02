@@ -121,13 +121,30 @@ class ClusteringStatObjectFactory(object):
                     (
                     "For outputting contingency matrix labels must be provided using extra `true_labels` & `pred_labels` argument to mlops apis.")
 
+    @staticmethod
+    def get_mlops_fowlkes_mallows_score_stat_object(**kwargs):
+        """
+        Method creates MLOps Single value stat object from numeric real number - fowlkes mallows score
+        It is not recommended to access this method without understanding single value data structure that it is returning.
+        :param kwargs: numeric value of fowlkes mallows score
+        :return: Single Value stat object which has fowlkes mallows score embedded inside
+        """
+        fms = kwargs.get('data', None)
+
+        single_value, category = MLStatObjectCreator. \
+            get_single_value_stat_object(name=ClusteringMetrics.FOWLKES_MALLOWS_SCORE.value,
+                                         single_value=fms)
+
+        return single_value, category
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClusteringMetrics.ADJUSTED_MUTUAL_INFO_SCORE: get_mlops_adjusted_mutual_info_score_stat_object.__func__,
         ClusteringMetrics.ADJUSTED_RAND_SCORE: get_mlops_adjusted_rand_score_stat_object.__func__,
         ClusteringMetrics.CALINSKI_HARABAZ_SCORE: get_mlops_calinski_harabaz_score_stat_object.__func__,
         ClusteringMetrics.COMPLETENESS_SCORE: get_mlops_completeness_score_stat_object.__func__,
-        ClusteringMetrics.CONTINGENCY_MATRIX: get_mlops_contingency_matrix_stat_object.__func__
+        ClusteringMetrics.CONTINGENCY_MATRIX: get_mlops_contingency_matrix_stat_object.__func__,
+        ClusteringMetrics.FOWLKES_MALLOWS_SCORE: get_mlops_fowlkes_mallows_score_stat_object.__func__
     }
 
     @staticmethod

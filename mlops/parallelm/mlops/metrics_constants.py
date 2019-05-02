@@ -53,6 +53,7 @@ class ClusteringMetrics(Enum):
     CALINSKI_HARABAZ_SCORE = "Calinski Harabaz Score"
     COMPLETENESS_SCORE = "Completeness Score"
     CONTINGENCY_MATRIX = "Contingency Matrix"
+    FOWLKES_MALLOWS_SCORE = "Fowlkes Mallows Score"
 
 
 def check_classification_registry():
