@@ -898,3 +898,25 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.HOMOGENEITY_SCORE, data=hs)
 
         return hs
+
+    @staticmethod
+    def mutual_info_score(labels_true, labels_pred, contingency=None):
+        """
+        Method calculates mutual info score and output it using MCenter.
+        :param labels_true: Ground truth (correct) target values.
+        :param labels_pred: Estimated target values.
+        :param contingency: A contingency matrix
+        :return: mutual info score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        mis = sklearn.metrics \
+            .mutual_info_score(labels_true=labels_true,
+                               labels_pred=labels_pred,
+                               contingency=contingency)
+
+        mlops.set_stat(ClusteringMetrics.MUTUAL_INFO_SCORE, data=mis)
+
+        return mis

@@ -56,6 +56,7 @@ class ClusteringMetrics(Enum):
     FOWLKES_MALLOWS_SCORE = "Fowlkes Mallows Score"
     HOMOGENEITY_COMPLETENESS_V_MEASURE = "Homogeneity - Completeness - V Measure"
     HOMOGENEITY_SCORE = "Homogeneity Score"
+    MUTUAL_INFO_SCORE = "Mutual Info Score"
 
 
 def check_classification_registry():
