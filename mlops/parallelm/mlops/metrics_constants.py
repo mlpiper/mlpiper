@@ -58,6 +58,7 @@ class ClusteringMetrics(Enum):
     HOMOGENEITY_SCORE = "Homogeneity Score"
     MUTUAL_INFO_SCORE = "Mutual Info Score"
     NORMALIZED_MUTUAL_INFO_SCORE = "Normalized Mutual Info Score"
+    SILHOUETTE_SCORE = "Silhouette Score"
 
 
 def check_classification_registry():

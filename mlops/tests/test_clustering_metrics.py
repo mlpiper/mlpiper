@@ -286,3 +286,32 @@ def test_mlops_normalized_mutual_info_score_apis():
         mlops.metrics.normalized_mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred_missing_values)
 
     mlops.done()
+
+
+def test_mlops_silhouette_score_apis():
+    mlops.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
+
+    X = [[1, 2], [1, 3], [1, 2], [2, 4], [4, 5], [9, 9]]
+    labels_pred = [1, 0, 1, 2, 3, 0]
+
+    ss = metrics.silhouette_score(X=X, labels=labels_pred,
+                                  metric='euclidean', sample_size=None, random_state=None)
+
+    # first way
+    mlops.set_stat(ClusteringMetrics.SILHOUETTE_SCORE, ss)
+
+    # second way
+    mlops.metrics.silhouette_score(X=X, labels=labels_pred,
+                                   metric='euclidean', sample_size=None, random_state=None)
+
+    # should throw error if not numeric number is provided
+    with pytest.raises(MLOpsStatisticsException):
+        mlops.set_stat(ClusteringMetrics.SILHOUETTE_SCORE, [1, 2, 3])
+
+    # should throw error if labels predicted is different length than actuals
+    with pytest.raises(ValueError):
+        labels_pred_missing_values = [0, 0, 0, 1]
+        mlops.metrics.silhouette_score(X=X, labels=labels_pred_missing_values,
+                                       metric='euclidean', sample_size=None, random_state=None)
+
+    mlops.done()
