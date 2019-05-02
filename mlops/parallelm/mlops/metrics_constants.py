@@ -57,6 +57,7 @@ class ClusteringMetrics(Enum):
     HOMOGENEITY_COMPLETENESS_V_MEASURE = "Homogeneity - Completeness - V Measure"
     HOMOGENEITY_SCORE = "Homogeneity Score"
     MUTUAL_INFO_SCORE = "Mutual Info Score"
+    NORMALIZED_MUTUAL_INFO_SCORE = "Normalized Mutual Info Score"
 
 
 def check_classification_registry():

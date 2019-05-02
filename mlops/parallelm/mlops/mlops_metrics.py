@@ -920,3 +920,22 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.MUTUAL_INFO_SCORE, data=mis)
 
         return mis
+
+    @staticmethod
+    def normalized_mutual_info_score(labels_true, labels_pred):
+        """
+        Method calculates normalized mutual info score and output it using MCenter.
+        :param labels_true: Ground truth (correct) target values.
+        :param labels_pred: Estimated target values.
+        :return: normalized mutual info score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        nmis = sklearn.metrics \
+            .normalized_mutual_info_score(labels_true=labels_true,
+                                          labels_pred=labels_pred)
+        mlops.set_stat(ClusteringMetrics.NORMALIZED_MUTUAL_INFO_SCORE, data=nmis)
+
+        return nmis
