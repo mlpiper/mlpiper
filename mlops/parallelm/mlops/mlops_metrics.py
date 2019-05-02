@@ -880,3 +880,21 @@ class MLOpsMetrics(object):
                        data=[homogeneity, completeness, v_measure])
 
         return homogeneity, completeness, v_measure
+
+    @staticmethod
+    def homogeneity_score(labels_true, labels_pred):
+        """
+        Method calculates homogeneity score and output it using MCenter.
+        :param labels_true: Ground truth (correct) target values.
+        :param labels_pred: Estimated target values.
+        :return: homogeneity score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        hs = sklearn.metrics.homogeneity_score(labels_true=labels_true, labels_pred=labels_pred)
+
+        mlops.set_stat(ClusteringMetrics.HOMOGENEITY_SCORE, data=hs)
+
+        return hs
