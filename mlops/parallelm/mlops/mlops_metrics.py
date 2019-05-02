@@ -48,7 +48,6 @@ class MLOpsMetrics(object):
     >>> from parallelm.mlops import mlops
     >>> import sklearn
 
-    >>> # Output ML Stat - For Example Confusion Matrix as Table
     >>> labels_pred = [1, 0, 1] # prediction labels
     >>> labels = [0, 1, 0] # actual labels
     >>> labels_prob = [[0.4, 0.6],[0.9, 0.1],[0.3, 0.7]] # prediction probabilities
@@ -102,7 +101,6 @@ class MLOpsMetrics(object):
 
     >>> mlops.metrics.zero_one_loss(labels, labels_pred)
 
-
     For Regression
 
     >>> from parallelm.mlops import mlops
@@ -121,6 +119,39 @@ class MLOpsMetrics(object):
     >>> mlops.metrics.median_absolute_error(y_true=labels, y_pred=labels_pred)
 
     >>> mlops.metrics.r2_score(y_true=labels, y_pred=labels_pred)
+
+    For Clustering
+
+    >>> from parallelm.mlops import mlops
+
+    >>> X = [[1, 2], [1, 3], [1, 2], [2, 4], [4, 5], [9, 9]] # feature set
+    >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+    >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+
+    >>> mlops.metrics.adjusted_mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred)
+
+    >>> mlops.metrics.adjusted_rand_score(labels_true=labels_actual, labels_pred=labels_pred)
+
+    >>> mlops.metrics.calinski_harabaz_score(X=X, labels=labels_pred)
+
+    >>> mlops.metrics.completeness_score(labels_true=labels_actual, labels_pred=labels_pred)
+
+    >>> mlops.metrics.cluster.contingency_matrix(labels_actual, labels_pred)
+
+    >>> mlops.metrics.fowlkes_mallows_score(labels_true=labels_actual, labels_pred=labels_pred)
+
+    >>> mlops.metrics.homogeneity_completeness_v_measure(labels_true=labels_actual, labels_pred=labels_pred)
+
+    >>> mlops.metrics.homogeneity_score(labels_true=labels_actual, labels_pred=labels_pred)
+
+    >>> mlops.metrics.mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred)
+
+    >>> mlops.metrics.normalized_mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred)
+
+    >>> mlops.metrics.silhouette_score(X=X, labels=labels_pred, metric='euclidean', sample_size=None, random_state=None)
+
+    >>> mlops.metrics.v_measure_score(labels_true=labels_actual, labels_pred=labels_pred)
+    
     """
 
     cluster = MLOpsClusterMetrics.Instance()

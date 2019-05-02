@@ -3,7 +3,7 @@ from enum import Enum
 
 class ClassificationMetrics(Enum):
     """
-    Class will hold predefined naming of all classification ML Metrics supported by ParallelM.
+    Class holds predefined naming of all classification ML Metrics supported by ParallelM.
     When adding a new enum, register a stat creation function to ClassificationStatObjectFactory.registry_name_to_function.
     """
 
@@ -32,7 +32,7 @@ class ClassificationMetrics(Enum):
 
 class RegressionMetrics(Enum):
     """
-    Class will hold predefined naming of all regression ML Metrics supported by ParallelM.
+    Class holds predefined naming of all regression ML Metrics supported by ParallelM.
     When adding a new enum, register a stat creation function to RegressionStatObjectFactory.registry_name_to_function.
     """
     EXPLAINED_VARIANCE_SCORE = "Explained Variance Score"
@@ -45,7 +45,7 @@ class RegressionMetrics(Enum):
 
 class ClusteringMetrics(Enum):
     """
-    Class will hold predefined naming of all clustering ML Metrics supported by ParallelM.
+    Class holds predefined naming of all clustering ML Metrics supported by ParallelM.
     When adding a new enum, register a stat creation function to ClusteringStatObjectFactory.registry_name_to_function.
     """
     ADJUSTED_MUTUAL_INFO_SCORE = "Adjusted Mutual Info Score"
