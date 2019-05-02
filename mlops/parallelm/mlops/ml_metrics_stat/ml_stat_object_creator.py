@@ -112,13 +112,18 @@ class MLStatObjectCreator(object):
                 labels = range(len(list_value))
             labels = list(map(lambda x: str(x).strip(), labels))
 
-            multiline_object = MultiLineGraph() \
-                .name(name) \
-                .labels(labels)
+            if (len(labels) == len(list_value)):
+                multiline_object = MultiLineGraph() \
+                    .name(name) \
+                    .labels(labels)
 
-            multiline_object.data(list(list_value))
+                multiline_object.data(list(list_value))
 
-            return multiline_object, category
+                return multiline_object, category
+            else:
+                raise MLOpsStatisticsException(
+                    "size of labels associated with list of values to get does not match. {}!={}"
+                    .format(len(labels), len(list_value)))
         else:
             raise MLOpsStatisticsException(
                 "list_value has to be of type list or nd array but got {}".format(type(list_value)))

@@ -860,3 +860,23 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.FOWLKES_MALLOWS_SCORE, data=fms)
 
         return fms
+
+    @staticmethod
+    def homogeneity_completeness_v_measure(labels_true, labels_pred):
+        """
+        Method calculates homogeneity, completeness, v_measure and output it using MCenter.
+        :param labels_true: Ground truth (correct) target values.
+        :param labels_pred: Estimated target values.
+        :return: homogeneity, completeness, v_measure
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        homogeneity, completeness, v_measure = \
+            sklearn.metrics.homogeneity_completeness_v_measure(labels_true=labels_true, labels_pred=labels_pred)
+
+        mlops.set_stat(ClusteringMetrics.HOMOGENEITY_COMPLETENESS_V_MEASURE,
+                       data=[homogeneity, completeness, v_measure])
+
+        return homogeneity, completeness, v_measure
