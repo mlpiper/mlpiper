@@ -52,6 +52,7 @@ class ClusteringMetrics(Enum):
     ADJUSTED_RAND_SCORE = "Adjusted Rand Score"
     CALINSKI_HARABAZ_SCORE = "Calinski Harabaz Score"
     COMPLETENESS_SCORE = "Completeness Score"
+    CONTINGENCY_MATRIX = "Contingency Matrix"
 
 
 def check_classification_registry():
