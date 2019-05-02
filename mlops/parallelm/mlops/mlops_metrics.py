@@ -842,3 +842,21 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.COMPLETENESS_SCORE, data=cs)
 
         return cs
+
+    @staticmethod
+    def fowlkes_mallows_score(labels_true, labels_pred, sparse=False):
+        """
+        Method calculates fowlkes mallows score and output it using MCenter.
+        :param labels_true: Ground truth (correct) target values.
+        :param labels_pred: Estimated target values.
+        :return: fowlkes mallows score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        fms = sklearn.metrics.fowlkes_mallows_score(labels_true=labels_true, labels_pred=labels_pred, sparse=sparse)
+
+        mlops.set_stat(ClusteringMetrics.FOWLKES_MALLOWS_SCORE, data=fms)
+
+        return fms
