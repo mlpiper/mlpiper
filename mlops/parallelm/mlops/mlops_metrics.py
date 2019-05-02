@@ -967,3 +967,23 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.SILHOUETTE_SCORE, data=ss)
 
         return ss
+
+    @staticmethod
+    def v_measure_score(labels_true, labels_pred):
+        """
+        Method calculates v measure score and output it using MCenter.
+        :param labels_true: Ground truth (correct) target values.
+        :param labels_pred: Estimated target values.
+        :return v measure score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        vms = sklearn.metrics \
+            .v_measure_score(labels_true=labels_true,
+                             labels_pred=labels_pred)
+
+        mlops.set_stat(ClusteringMetrics.V_MEASURE_SCORE, data=vms)
+
+        return vms

@@ -217,6 +217,22 @@ class ClusteringStatObjectFactory(object):
 
         return single_value, category
 
+    @staticmethod
+    def get_mlops_v_measure_score_stat_object(**kwargs):
+        """
+        Method creates MLOps Single value stat object from numeric real number - v measure score
+        It is not recommended to access this method without understanding single value data structure that it is returning.
+        :param kwargs: numeric value of v measure score
+        :return: Single Value stat object which has v measure score embedded inside
+        """
+        vms = kwargs.get('data', None)
+
+        single_value, category = MLStatObjectCreator. \
+            get_single_value_stat_object(name=ClusteringMetrics.V_MEASURE_SCORE.value,
+                                         single_value=vms)
+
+        return single_value, category
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClusteringMetrics.ADJUSTED_MUTUAL_INFO_SCORE: get_mlops_adjusted_mutual_info_score_stat_object.__func__,
@@ -230,6 +246,7 @@ class ClusteringStatObjectFactory(object):
         ClusteringMetrics.MUTUAL_INFO_SCORE: get_mlops_mutual_info_score_stat_object.__func__,
         ClusteringMetrics.NORMALIZED_MUTUAL_INFO_SCORE: get_mlops_normalized_mutual_info_score_stat_object.__func__,
         ClusteringMetrics.SILHOUETTE_SCORE: get_mlops_silhouette_score_stat_object.__func__,
+        ClusteringMetrics.V_MEASURE_SCORE: get_mlops_v_measure_score_stat_object.__func__
     }
 
     @staticmethod
