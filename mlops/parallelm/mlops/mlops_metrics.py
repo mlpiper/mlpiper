@@ -3,6 +3,41 @@ from parallelm.mlops.singelton import Singleton
 
 
 @Singleton
+class MLOpsClusterMetrics(object):
+    """
+    Class is responsible for giving user sklearn alike code representation for using ParallelM's mlops apis.
+    sklearn.metrics.cluster.<metric name>
+    Class supports clustering stats.
+    """
+
+    @staticmethod
+    def contingency_matrix(labels_true, labels_pred):
+        """
+        Method calculates contingency matrix and output it as table using MCenter.
+        :param labels_true: Ground truth class labels to be used as a reference
+        :param labels_pred: Cluster labels to evaluate
+        :return: contingency matrix
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        contingency_matrix = sklearn.metrics.cluster \
+            .contingency_matrix(labels_true, labels_pred)
+
+        # list of sorted labels. i.e. [0, 1, 2, ..]
+        true_labels = sorted(set(labels_true))
+        pred_labels = sorted(set(labels_pred))
+
+        mlops.set_stat(ClusteringMetrics.CONTINGENCY_MATRIX,
+                       data=contingency_matrix,
+                       true_labels=true_labels,
+                       pred_labels=pred_labels)
+
+        return contingency_matrix
+
+
+@Singleton
 class MLOpsMetrics(object):
     """
     Class is responsible for giving user sklearn alike code representation for using ParallelM's mlops apis.
@@ -11,6 +46,7 @@ class MLOpsMetrics(object):
     For Classification
 
     >>> from parallelm.mlops import mlops
+    >>> import sklearn
 
     >>> # Output ML Stat - For Example Confusion Matrix as Table
     >>> labels_pred = [1, 0, 1] # prediction labels
@@ -86,6 +122,8 @@ class MLOpsMetrics(object):
 
     >>> mlops.metrics.r2_score(y_true=labels, y_pred=labels_pred)
     """
+
+    cluster = MLOpsClusterMetrics.Instance()
 
     ##################################################################
     ###################### classification stats ######################

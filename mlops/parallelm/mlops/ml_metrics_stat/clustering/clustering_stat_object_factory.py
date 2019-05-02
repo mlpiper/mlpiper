@@ -1,5 +1,8 @@
+import numpy as np
+
 from parallelm.mlops.metrics_constants import ClusteringMetrics
 from parallelm.mlops.ml_metrics_stat.ml_stat_object_creator import MLStatObjectCreator
+from parallelm.mlops.mlops_exception import MLOpsStatisticsException
 
 
 class ClusteringStatObjectFactory(object):
@@ -71,12 +74,60 @@ class ClusteringStatObjectFactory(object):
 
         return single_value, category
 
+    @staticmethod
+    def get_mlops_contingency_matrix_stat_object(**kwargs):
+        """
+        Method creates MLOps Table stat object from ndarray and labels argument coming from kwargs (`true_labels` & `pred_labels`).
+        It is not recommended to access this method without understanding table data structure that it is returning.
+        :param kwargs: `data` - Array representation of confusion matrix & `true_labels` & `pred_labels` used for representation of contingency matrix
+        :return: MLOps Table object generated from array
+        """
+        cm_nd_array = kwargs.get('data', None)
+        true_labels = kwargs.get('true_labels', None)
+        pred_labels = kwargs.get('pred_labels', None)
+
+        if true_labels is not None and pred_labels is not None:
+            if isinstance(cm_nd_array, np.ndarray) and isinstance(true_labels, list) and isinstance(pred_labels, list):
+                if cm_nd_array.shape == (len(true_labels), len(pred_labels)):
+                    array_report = list()
+
+                    cm_cols_ordered_string = [str(i) for i in pred_labels]
+                    cm_rows_ordered_string = [str(i) for i in true_labels]
+
+                    array_report.append(cm_cols_ordered_string)
+                    for index in range(len(cm_nd_array)):
+                        row = list(cm_nd_array[index])
+                        # adding first col as class it represents
+                        row.insert(0, cm_rows_ordered_string[index])
+
+                        array_report.append(row)
+
+                    table_object, category = MLStatObjectCreator \
+                        .get_table_value_stat_object(name=ClusteringMetrics.CONTINGENCY_MATRIX.value,
+                                                     list_2d=array_report)
+
+                    return table_object, category
+
+                else:
+                    raise MLOpsStatisticsException \
+                        ("Contingency Matrix.shape = {} and (len(true_labels), len(pred_labels)) = {} does not match"
+                         .format(cm_nd_array.shape, (len(true_labels), len(pred_labels))))
+            else:
+                raise MLOpsStatisticsException \
+                    ("Contingency Matrix should be of type numpy nd-array and labels should be of type list")
+
+        else:
+            raise MLOpsStatisticsException \
+                    (
+                    "For outputting contingency matrix labels must be provided using extra `true_labels` & `pred_labels` argument to mlops apis.")
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClusteringMetrics.ADJUSTED_MUTUAL_INFO_SCORE: get_mlops_adjusted_mutual_info_score_stat_object.__func__,
         ClusteringMetrics.ADJUSTED_RAND_SCORE: get_mlops_adjusted_rand_score_stat_object.__func__,
         ClusteringMetrics.CALINSKI_HARABAZ_SCORE: get_mlops_calinski_harabaz_score_stat_object.__func__,
-        ClusteringMetrics.COMPLETENESS_SCORE: get_mlops_completeness_score_stat_object.__func__
+        ClusteringMetrics.COMPLETENESS_SCORE: get_mlops_completeness_score_stat_object.__func__,
+        ClusteringMetrics.CONTINGENCY_MATRIX: get_mlops_contingency_matrix_stat_object.__func__
     }
 
     @staticmethod
