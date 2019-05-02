@@ -939,3 +939,31 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.NORMALIZED_MUTUAL_INFO_SCORE, data=nmis)
 
         return nmis
+
+    @staticmethod
+    def silhouette_score(X, labels,
+                         metric='euclidean',
+                         sample_size=None,
+                         random_state=None, **kwds):
+        """
+        Method calculates silhouette score and output it using MCenter.
+        :param X: Feature set
+        :param labels: Estimated target values.
+        :param metric:  The metric to use when calculating distance between instances in a feature array.
+        :param sample_size: The size of the sample to use when computing the Silhouette Coefficient on a random subset of the data.
+        :param kwds: Any further parameters are passed directly to the distance function.
+        :return: silhouette score
+        """
+        # need to import only on run time.
+        from parallelm.mlops import mlops as mlops
+        import sklearn
+
+        ss = sklearn.metrics \
+            .silhouette_score(X=X, labels=labels,
+                              metric=metric,
+                              sample_size=sample_size,
+                              random_state=random_state, **kwds)
+
+        mlops.set_stat(ClusteringMetrics.SILHOUETTE_SCORE, data=ss)
+
+        return ss

@@ -201,6 +201,22 @@ class ClusteringStatObjectFactory(object):
 
         return single_value, category
 
+    @staticmethod
+    def get_mlops_silhouette_score_stat_object(**kwargs):
+        """
+        Method creates MLOps Single value stat object from numeric real number - silhouette score
+        It is not recommended to access this method without understanding single value data structure that it is returning.
+        :param kwargs: numeric value of silhouette score
+        :return: Single Value stat object which has silhouette score embedded inside
+        """
+        ss = kwargs.get('data', None)
+
+        single_value, category = MLStatObjectCreator. \
+            get_single_value_stat_object(name=ClusteringMetrics.SILHOUETTE_SCORE.value,
+                                         single_value=ss)
+
+        return single_value, category
+
     # registry holds name to function mapping. please add __func__ for making static object callable from below getter method.
     registry_name_to_function = {
         ClusteringMetrics.ADJUSTED_MUTUAL_INFO_SCORE: get_mlops_adjusted_mutual_info_score_stat_object.__func__,
@@ -212,7 +228,8 @@ class ClusteringStatObjectFactory(object):
         ClusteringMetrics.HOMOGENEITY_COMPLETENESS_V_MEASURE: get_mlops_homogeneity_completeness_v_measure_stat_object.__func__,
         ClusteringMetrics.HOMOGENEITY_SCORE: get_mlops_homogeneity_score_stat_object.__func__,
         ClusteringMetrics.MUTUAL_INFO_SCORE: get_mlops_mutual_info_score_stat_object.__func__,
-        ClusteringMetrics.NORMALIZED_MUTUAL_INFO_SCORE: get_mlops_normalized_mutual_info_score_stat_object.__func__
+        ClusteringMetrics.NORMALIZED_MUTUAL_INFO_SCORE: get_mlops_normalized_mutual_info_score_stat_object.__func__,
+        ClusteringMetrics.SILHOUETTE_SCORE: get_mlops_silhouette_score_stat_object.__func__,
     }
 
     @staticmethod
