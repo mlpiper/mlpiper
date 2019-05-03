@@ -1,8 +1,11 @@
 package com.parallelmachines.reflex.common.enums;
 
 import com.google.gson.annotations.SerializedName;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -35,8 +38,8 @@ public enum ModelFormat {
 	H2O_3 ("H2O_3"),
 
 	// H2O Driverless model
-	@SerializedName("H2O_Driveless_Ai")
-	H2O_DRIVERLESS_AI ("H2O_Driverless{Ai"),
+	@SerializedName("H2O_Driverless_Ai")
+	H2O_DRIVERLESS_AI ("H2O_Driverless_Ai"),
 
 	@SerializedName("Unknown")
 	UNKNOWN ("Unknown");
@@ -64,6 +67,17 @@ public enum ModelFormat {
 			}
 		}
 		return UNKNOWN;
+	}
+
+	public static List<String> getAllFormats() {
+		List<String> formats = new ArrayList<>();
+
+		for (ModelFormat mf : ModelFormat.values()) {
+			if (mf != UNKNOWN) {
+				formats.add(mf.toString());
+			}
+		}
+		return formats;
 	}
 
 	@Override
