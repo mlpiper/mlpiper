@@ -2,7 +2,6 @@ from parallelm.mlops.metrics_constants import ClassificationMetrics, RegressionM
 from parallelm.mlops.singelton import Singleton
 
 
-@Singleton
 class MLOpsClusterMetrics(object):
     """
     Class is responsible for giving user sklearn alike code representation for using ParallelM's mlops apis.
@@ -10,13 +9,21 @@ class MLOpsClusterMetrics(object):
     Class supports clustering stats.
     """
 
-    @staticmethod
-    def contingency_matrix(labels_true, labels_pred):
+    def contingency_matrix(self, labels_true, labels_pred):
         """
         Method calculates contingency matrix and output it as table using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.cluster.contingency_matrix(labels_actual, labels_pred)
+
         :param labels_true: Ground truth class labels to be used as a reference
         :param labels_pred: Cluster labels to evaluate
         :return: contingency matrix
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -38,136 +45,38 @@ class MLOpsClusterMetrics(object):
 
 
 @Singleton
+class MLOpsClusterMetricsSingleton(MLOpsClusterMetrics):
+    pass
+
+
 class MLOpsMetrics(object):
     """
     Class is responsible for giving user sklearn alike code representation for using ParallelM's mlops apis.
     Class supports classification, regression and clustering stats.
-    :Example:
-    For Classification
-
-    >>> from parallelm.mlops import mlops
-    >>> import sklearn
-
-    >>> labels_pred = [1, 0, 1] # prediction labels
-    >>> labels = [0, 1, 0] # actual labels
-    >>> labels_prob = [[0.4, 0.6],[0.9, 0.1],[0.3, 0.7]] # prediction probabilities
-    >>> labels_ordered = [0, 1] # order of labels to use for creating confusion matrix.
-    >>> labels_decision_values = [0.9, 0.85, 0.9] # distance from hyper plane
-    >>> label_pos_class_prob = [0.8, 0.2, 0.9] # probabilities of positive class classification
-
-    >>> pos_label = 1
-
-    >>> mlops.metrics.accuracy_score(y_true=labels, y_pred=labels_pred)
-
-    >>> fpr, tpr, thresholds = sklearn.metrics.roc_curve(labels, labels_pred, pos_label=pos_label)
-
-    >>> mlops.metrics.auc(x=fpr, y=tpr)
-
-    >>> mlops.metrics.average_precision_score(y_true=labels_pred, y_score=labels_decision_values)
-
-    >>> mlops.metrics.balanced_accuracy_score(y_true=labels, y_pred=labels_pred)
-
-    >>> mlops.metrics.brier_score_loss(y_true=labels, y_prob=label_pos_class_prob, pos_label=pos_label)
-
-    >>> mlops.metrics.classification_report(labels, labels_pred)
-
-    >>> mlops.metrics.cohen_kappa_score(labels, labels_pred)
-
-    >>> mlops.metrics.confusion_matrix(y_true=labels, y_pred=labels_pred, labels=labels_ordered)
-
-    >>> mlops.metrics.f1_score(labels, labels_pred, pos_label=1)
-
-    >>> mlops.metrics.fbeta_score(labels, labels_pred, pos_label=pos_label, beta=0.5)
-
-    >>> mlops.metrics.hamming_loss(labels, labels_pred)
-
-    >>> mlops.metrics.hinge_loss(labels, labels_decision_values)
-
-    >>> mlops.metrics.jaccard_similarity_score(labels, labels_pred)
-
-    >>> mlops.metrics.log_loss(labels, labels_prob)
-
-    >>> mlops.metrics.matthews_corrcoef(labels, labels_pred)
-
-    >>> mlops.metrics.precision_recall_curve(y_true=labels, probas_pred=labels_decision_values, pos_label=pos_label, average="macro")
-
-    >>> mlops.metrics.precision_score(labels, labels_pred, pos_label=pos_label, average=None)
-
-    >>> mlops.metrics.recall_score(labels, labels_pred, pos_label=pos_label, average=None)
-
-    >>> mlops.metrics.roc_auc_score(labels, labels_decision_values)
-
-    >>> mlops.metrics.roc_curve(y_true=labels, y_score=labels_decision_values, pos_label=pos_label)
-
-    >>> mlops.metrics.zero_one_loss(labels, labels_pred)
-
-    For Regression
-
-    >>> from parallelm.mlops import mlops
-
-    >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75] # prediction labels
-    >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25] # actual labels
-
-    >>> mlops.metrics.explained_variance_score(y_true=labels_actual, y_pred=labels_pred)
-
-    >>> mlops.metrics.mean_absolute_error(y_true=labels, y_pred=labels_pred)
-
-    >>> mlops.metrics.mean_squared_error(y_true=labels, y_pred=labels_pred)
-
-    >>> mlops.metrics.mean_squared_log_error(y_true=labels, y_pred=labels_pred)
-
-    >>> mlops.metrics.median_absolute_error(y_true=labels, y_pred=labels_pred)
-
-    >>> mlops.metrics.r2_score(y_true=labels, y_pred=labels_pred)
-
-    For Clustering
-
-    >>> from parallelm.mlops import mlops
-
-    >>> X = [[1, 2], [1, 3], [1, 2], [2, 4], [4, 5], [9, 9]] # feature set
-    >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
-    >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
-
-    >>> mlops.metrics.adjusted_mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred)
-
-    >>> mlops.metrics.adjusted_rand_score(labels_true=labels_actual, labels_pred=labels_pred)
-
-    >>> mlops.metrics.calinski_harabaz_score(X=X, labels=labels_pred)
-
-    >>> mlops.metrics.completeness_score(labels_true=labels_actual, labels_pred=labels_pred)
-
-    >>> mlops.metrics.cluster.contingency_matrix(labels_actual, labels_pred)
-
-    >>> mlops.metrics.fowlkes_mallows_score(labels_true=labels_actual, labels_pred=labels_pred)
-
-    >>> mlops.metrics.homogeneity_completeness_v_measure(labels_true=labels_actual, labels_pred=labels_pred)
-
-    >>> mlops.metrics.homogeneity_score(labels_true=labels_actual, labels_pred=labels_pred)
-
-    >>> mlops.metrics.mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred)
-
-    >>> mlops.metrics.normalized_mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred)
-
-    >>> mlops.metrics.silhouette_score(X=X, labels=labels_pred, metric='euclidean', sample_size=None, random_state=None)
-
-    >>> mlops.metrics.v_measure_score(labels_true=labels_actual, labels_pred=labels_pred)
-    
     """
 
-    cluster = MLOpsClusterMetrics.Instance()
+    cluster = MLOpsClusterMetricsSingleton.Instance()
 
     ##################################################################
     ###################### classification stats ######################
     ##################################################################
-    @staticmethod
-    def accuracy_score(y_true, y_pred, normalize=True, sample_weight=None):
+    def accuracy_score(self, y_true, y_pred, normalize=True, sample_weight=None):
         """
         Method calculates accuracy and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.accuracy_score(y_true=labels, y_pred=labels_pred)
+
         :param y_true: Ground truth (correct) labels.
         :param y_pred: Predicted labels, as returned by a classifier.
         :param normalize: If False, return the number of correctly classified samples. Otherwise, return the fraction of correctly classified samples.
         :param sample_weight: weight of samples
         :return: accuracy_score
+        :raises: MLOpsStatisticsException
         """
 
         # need to import only on run time.
@@ -181,14 +90,25 @@ class MLOpsMetrics(object):
 
         return accuracy_score
 
-    @staticmethod
-    def auc(x, y, reorder="deprecated"):
+    def auc(self, x, y, reorder="deprecated"):
         """
         Method calculates auc and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> import sklearn
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> pos_label = 1
+        >>> fpr, tpr, thresholds = sklearn.metrics.roc_curve(labels, labels_pred, pos_label=pos_label)
+        >>> mlops.metrics.auc(x=fpr, y=tpr)
+
         :param x: x coordinates. These must be either monotonic increasing or monotonic decreasing.
         :param y: y coordinates.
         :param reorder: Whether to sort x before computing.
         :return: auc score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -200,15 +120,23 @@ class MLOpsMetrics(object):
 
         return auc
 
-    @staticmethod
-    def average_precision_score(y_true, y_score, average="macro", sample_weight=None):
+    def average_precision_score(self, y_true, y_score, average="macro", sample_weight=None):
         """
         Method calculates average precision value and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels_decision_values = [0.9, 0.85, 0.9] # distance from hyper plane
+        >>> mlops.metrics.average_precision_score(y_true=labels_pred, y_score=labels_decision_values)
+
         :param y_true: True binary labels or binary label indicators.
         :param y_score: Target scores, can either be probability estimates of the positive class, confidence values, or non-thresholded measure of decisions (as returned by "decision_function" on some classifiers).
         :param average: If None, the scores for each class are returned. It can be "micro", "macro", "weighted" or "samples"
         :param sample_weight: Sample weights.
         :return: average precision score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -223,15 +151,23 @@ class MLOpsMetrics(object):
 
         return aps
 
-    @staticmethod
-    def balanced_accuracy_score(y_true, y_pred, sample_weight=None, adjusted=False):
+    def balanced_accuracy_score(self, y_true, y_pred, sample_weight=None, adjusted=False):
         """
         Method calculates balanced accuracy and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.balanced_accuracy_score(y_true=labels, y_pred=labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param sample_weight: Sample weights.
         :param adjusted: When true, the result is adjusted for chance, so that random performance would score 0, and perfect performance scores 1.
         :return: balanced accuracy score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -246,15 +182,25 @@ class MLOpsMetrics(object):
 
         return bas
 
-    @staticmethod
-    def brier_score_loss(y_true, y_prob, sample_weight=None, pos_label=None):
+    def brier_score_loss(self, y_true, y_prob, sample_weight=None, pos_label=None):
         """
         Method calculates brier score loss and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> label_pos_class_prob = [0.8, 0.2, 0.9] # probabilities of positive class classification
+        >>> mlops.metrics.brier_score_loss(y_true=labels, y_prob=label_pos_class_prob, pos_label=pos_label)
+
         :param y_true: True targets.
         :param y_prob: Probabilities of the positive class.
         :param sample_weight: Sample weights.
         :param pos_label: Label of the positive class. If None, the maximum label is used as positive class.
         :return: brier score
+        :raises: MLOpsStatisticsException
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -269,13 +215,21 @@ class MLOpsMetrics(object):
 
         return bsl
 
-    @staticmethod
-    def classification_report(y_true, y_pred,
+    def classification_report(self,
+                              y_true, y_pred,
                               labels=None, target_names=None,
                               sample_weight=None,
                               digits=2):
         """
         Method generates classification report and output it using MCenter as table.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.classification_report(labels, labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
@@ -283,6 +237,7 @@ class MLOpsMetrics(object):
         :param sample_weight: Sample weights.
         :param digits: Number of digits for formatting output floating point values.
         :return: classification report string
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -297,18 +252,25 @@ class MLOpsMetrics(object):
 
         return cr
 
-    @staticmethod
-    def cohen_kappa_score(y1, y2, labels=None, weights=None, sample_weight=None):
+    def cohen_kappa_score(self, y1, y2, labels=None, weights=None, sample_weight=None):
         """
         Method calculates cohen kappa score for two y1 and y2 distributions and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.cohen_kappa_score(labels, labels_pred)
+
         :param y1: Labels assigned by the first annotator.
         :param y2: Labels assigned by the second annotator.
         :param labels: List of labels to index the matrix. This may be used to select a subset of labels. It can be None,
         :param weights: List of weighting type to calculate the score. None means no weighted, "linear", "quadratic".
         :param sample_weight: Sample weights.
         :return: cohen kappa score
+        :raises: MLOpsStatisticsException
         """
-
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
@@ -323,15 +285,24 @@ class MLOpsMetrics(object):
 
         return cks
 
-    @staticmethod
-    def confusion_matrix(y_true, y_pred, labels, sample_weight=None):
+    def confusion_matrix(self, y_true, y_pred, labels, sample_weight=None):
         """
         Method calculates confusion matrix and output it using MCenter as table.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> labels_ordered = [0, 1] # order of labels to use for creating confusion matrix.
+        >>> mlops.metrics.confusion_matrix(y_true=labels, y_pred=labels_pred, labels=labels_ordered)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
         :param sample_weight: Sample weights.
         :return: confusion matrix
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -343,11 +314,21 @@ class MLOpsMetrics(object):
 
         return cm
 
-    @staticmethod
-    def f1_score(y_true, y_pred, labels=None, pos_label=1, average="binary", sample_weight=None):
+    def f1_score(self,
+                 y_true, y_pred,
+                 labels=None, pos_label=1, average="binary", sample_weight=None):
         """
         Method calculates the F1 score and output it using MCenter as single value.
         In the multi-class and multi-label case, this is the weighted average of the F1 score of each class.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> pos_label = 1
+        >>> mlops.metrics.f1_score(labels, labels_pred, pos_label=1)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
@@ -355,6 +336,7 @@ class MLOpsMetrics(object):
         :param average: Param is needed for multiclass problems. It can be any of [None, 'binary' (default), 'micro', 'macro', 'samples', 'weighted']
         :param sample_weight: Sample weights.
         :return: f1 score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -370,10 +352,20 @@ class MLOpsMetrics(object):
 
         return f1_score
 
-    @staticmethod
-    def fbeta_score(y_true, y_pred, beta, labels=None, pos_label=1, average="binary", sample_weight=None):
+    def fbeta_score(self,
+                    y_true, y_pred, beta,
+                    labels=None, pos_label=1, average="binary", sample_weight=None):
         """
         Method calculates the F-beta score and output it using MCenter as single value.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> pos_label = 1
+        >>> mlops.metrics.fbeta_score(labels, labels_pred, pos_label=pos_label, beta=0.5)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param beta: Weight of precision in harmonic mean.
@@ -382,7 +374,9 @@ class MLOpsMetrics(object):
         :param average: Param is needed for multiclass problems. It can be any of [None, 'binary' (default), 'micro', 'macro', 'samples', 'weighted']
         :param sample_weight: Sample weights.
         :return: f-beta score
+        :raises: MLOpsStatisticsException
         """
+        # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
 
@@ -396,16 +390,25 @@ class MLOpsMetrics(object):
 
         return fbeta_score
 
-    @staticmethod
-    def hamming_loss(y_true, y_pred, labels=None, sample_weight=None):
+    def hamming_loss(self, y_true, y_pred, labels=None, sample_weight=None):
         """
         Method calculates the hamming loss and output it using MCenter as single value.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.hamming_loss(labels, labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
         :param sample_weight: Sample weights.
         :return: hamming loss
+        :raises: MLOpsStatisticsException
         """
+        # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
 
@@ -417,16 +420,25 @@ class MLOpsMetrics(object):
 
         return hamming_loss
 
-    @staticmethod
-    def hinge_loss(y_true, pred_decision, labels=None, sample_weight=None):
+    def hinge_loss(self, y_true, pred_decision, labels=None, sample_weight=None):
         """
         Method calculates the hamming loss and output it using MCenter as single value.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels = [0, 1, 0] # actual labels
+        >>> labels_decision_values = [0.9, 0.85, 0.9] # distance from hyper plane
+        >>> mlops.metrics.hinge_loss(labels, labels_decision_values)
+
         :param y_true: Ground truth (correct) target values.
         :param pred_decision: Predicted decisions, as output by decision_function (floats).
         :param labels: List of labels to index the matrix.
         :param sample_weight: Sample weights.
         :return: hinge loss
+        :raises: MLOpsStatisticsException
         """
+        # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
 
@@ -439,16 +451,25 @@ class MLOpsMetrics(object):
 
         return hinge_loss
 
-    @staticmethod
-    def jaccard_similarity_score(y_true, y_pred, normalize=True, sample_weight=None):
+    def jaccard_similarity_score(self, y_true, y_pred, normalize=True, sample_weight=None):
         """
         Method calculates the Jaccard similarity score and output it using MCenter as single value.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.jaccard_similarity_score(labels, labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param normalize: If False, return the sum of the Jaccard similarity coefficient over the sample set. Otherwise, return the average.
         :param sample_weight: Sample weights.
         :return: Jaccard similarity score
+        :raises: MLOpsStatisticsException
         """
+        # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
 
@@ -460,10 +481,18 @@ class MLOpsMetrics(object):
 
         return jaccard_similarity_score
 
-    @staticmethod
-    def log_loss(y_true, y_pred, eps=1e-15, normalize=True, sample_weight=None, labels=None):
+    def log_loss(self, y_true, y_pred, eps=1e-15,
+                 normalize=True, sample_weight=None, labels=None):
         """
         Method calculates the log loss and output it using MCenter as single value.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.log_loss(labels, labels_prob)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Predicted probabilities.
         :param eps: probabilities are clipped to max(eps, min(1 - eps, p)).
@@ -471,7 +500,9 @@ class MLOpsMetrics(object):
         :param sample_weight: Sample weights.
         :param labels: List of labels to index the matrix.
         :return: Log loss
+        :raises: MLOpsStatisticsException
         """
+        # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
 
@@ -485,15 +516,24 @@ class MLOpsMetrics(object):
 
         return log_loss
 
-    @staticmethod
-    def matthews_corrcoef(y_true, y_pred, sample_weight=None):
+    def matthews_corrcoef(self, y_true, y_pred, sample_weight=None):
         """
         Method calculates the Matthews Correlation Coefficient and output it using MCenter as single value.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.matthews_corrcoef(labels, labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param sample_weight: Sample weights.
         :return: Matthews Correlation Coefficient
+        :raises: MLOpsStatisticsException
         """
+        # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
 
@@ -503,17 +543,28 @@ class MLOpsMetrics(object):
 
         return mcc
 
-    @staticmethod
-    def precision_recall_curve(y_true, probas_pred, pos_label=None, average="macro", sample_weight=None):
+    def precision_recall_curve(self, y_true, probas_pred,
+                               pos_label=None, average="macro", sample_weight=None):
         """
         Method is responsible for calculating precision recall curve and output it using graph stat object in MCenter
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels = [0, 1, 0] # actual labels
+        >>> labels_decision_values = [0.9, 0.85, 0.9] # distance from hyper plane
+        >>> pos_label = 1
+        >>> mlops.metrics.precision_recall_curve(y_true=labels, probas_pred=labels_decision_values, pos_label=pos_label, average="macro")
+
         :param y_true: Ground truth (correct) target values.
         :param probas_pred: Estimated probabilities or decision function.
         :param pos_label: The label of the positive class.
         :param average: This determines the type of averaging performed for calculating precision. It could be any from [None, 'micro', 'macro' (default), 'samples', 'weighted']
         :param sample_weight: Sample weights.
         :return: precision, recall, thresholds
+        :raises: MLOpsStatisticsException
         """
+        # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
         import numpy as np
@@ -535,11 +586,19 @@ class MLOpsMetrics(object):
 
         return precision, recall, thresholds
 
-    @staticmethod
-    def precision_score(y_true, y_pred, labels=None, pos_label=1, average="binary", sample_weight=None):
+    def precision_score(self, y_true, y_pred, labels=None,
+                        pos_label=1, average="binary", sample_weight=None):
         """
         Method calculates the precision score and output it using MCenter as single value or array of values.
         In the multi-class and multi-label case, this is the weighted average of the precision score of each class.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.precision_score(labels, labels_pred, pos_label=pos_label, average=None)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
@@ -547,6 +606,7 @@ class MLOpsMetrics(object):
         :param average: Param is needed for multiclass problems. It can be any of [None, 'binary' (default), 'micro', 'macro', 'samples', 'weighted']
         :param sample_weight: Sample weights.
         :return: precision score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -563,11 +623,18 @@ class MLOpsMetrics(object):
 
         return precision_score
 
-    @staticmethod
-    def recall_score(y_true, y_pred, labels=None, pos_label=1, average="binary", sample_weight=None):
+    def recall_score(self, y_true, y_pred, labels=None, pos_label=1, average="binary", sample_weight=None):
         """
         Method calculates the recall score and output it using MCenter as single value or array of values.
         In the multi-class and multi-label case, this is the weighted average of the recall score of each class.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.recall_score(labels, labels_pred, pos_label=pos_label, average=None)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param labels: List of labels to index the matrix.
@@ -575,6 +642,7 @@ class MLOpsMetrics(object):
         :param average: Param is needed for multiclass problems. It can be any of [None, 'binary' (default), 'micro', 'macro', 'samples', 'weighted']
         :param sample_weight: Sample weights.
         :return: recall score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -591,15 +659,23 @@ class MLOpsMetrics(object):
 
         return recall_score
 
-    @staticmethod
-    def roc_auc_score(y_true, y_score, average="macro", sample_weight=None):
+    def roc_auc_score(self, y_true, y_score, average="macro", sample_weight=None):
         """
         Method calculates the roc auc score and output it using MCenter as single value.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels = [0, 1, 0] # actual labels
+        >>> labels_decision_values = [0.9, 0.85, 0.9] # distance from hyper plane
+        >>> mlops.metrics.roc_auc_score(labels, labels_decision_values)
+
         :param y_true: Ground truth (correct) target values.
         :param y_score: Target scores, can either be probability estimates of the positive class, confidence values, or non-thresholded measure of decisions
         :param average: Param is needed for multiclass problems. It can be any of [None, 'micro', 'macro', 'samples', 'weighted']
         :param sample_weight: Sample weights.
         :return: roc auc score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -612,16 +688,25 @@ class MLOpsMetrics(object):
 
         mlops.set_stat(ClassificationMetrics.ROC_AUC_SCORE, data=roc_auc_score)
 
-    @staticmethod
-    def roc_curve(y_true, y_score, pos_label=None, sample_weight=None, drop_intermediate=True):
+    def roc_curve(self, y_true, y_score, pos_label=None, sample_weight=None, drop_intermediate=True):
         """
-        Method is responsible for calculating roc curve and output it using graph stat object in MCenter
+        Method is responsible for calculating roc curve and output it using graph stat object in MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels = [0, 1, 0] # actual labels
+        >>> labels_decision_values = [0.9, 0.85, 0.9] # distance from hyper plane
+        >>> pos_label = 1
+        >>> mlops.metrics.roc_curve(y_true=labels, y_score=labels_decision_values, pos_label=pos_label)
+
         :param y_true: Ground truth (correct) target values.
         :param y_score: Target scores, can either be probability estimates of the positive class, confidence values, or non-thresholded measure of decisions.
-        :param pos_label:Positive label.
+        :param pos_label: Positive label.
         :param sample_weight: Sample weights.
         :param drop_intermediate: Whether to drop some suboptimal thresholds which would not appear on a plotted ROC curve. This is useful in order to create lighter ROC curves.
         :return: fpr, tpr, thresholds
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -640,16 +725,25 @@ class MLOpsMetrics(object):
 
         return fpr, tpr, thresholds
 
-    @staticmethod
-    def zero_one_loss(y_true, y_pred, normalize=True, sample_weight=None):
+    def zero_one_loss(self, y_true, y_pred, normalize=True, sample_weight=None):
         """
         Method calculates the zero one loss and output it using MCenter as single value.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1] # prediction labels
+        >>> labels = [0, 1, 0] # actual labels
+        >>> mlops.metrics.zero_one_loss(labels, labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated targets as returned by a classifier.
         :param normalize: If ``False``, return the number of misclassifications. Otherwise, return the fraction of misclassifications.
         :param sample_weight: Sample weights.
         :return: zero one loss
+        :raises: MLOpsStatisticsException
         """
+        # need to import only on run time.
         from parallelm.mlops import mlops as mlops
         import sklearn
 
@@ -664,15 +758,23 @@ class MLOpsMetrics(object):
     ######################## regression stats ########################
     ##################################################################
 
-    @staticmethod
-    def explained_variance_score(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
+    def explained_variance_score(self, y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates explained variance score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75] # prediction labels
+        >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25] # actual labels
+        >>> mlops.metrics.explained_variance_score(y_true=labels_actual, y_pred=labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
         :param multioutput: Defines aggregating of multiple output scores. It can be "raw_values", "uniform_average", "variance_weighted"
         :return: explained variance score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -687,15 +789,23 @@ class MLOpsMetrics(object):
 
         return evs
 
-    @staticmethod
-    def mean_absolute_error(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
+    def mean_absolute_error(self, y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates mean absolute error and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75] # prediction labels
+        >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25] # actual labels
+        >>> mlops.metrics.mean_absolute_error(y_true=labels, y_pred=labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
         :param multioutput: Defines aggregating of multiple output scores. It can be "raw_values", "uniform_average"
         :return: mean absolute error
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -710,15 +820,23 @@ class MLOpsMetrics(object):
 
         return mae
 
-    @staticmethod
-    def mean_squared_error(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
+    def mean_squared_error(self, y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates mean squared error and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75] # prediction labels
+        >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25] # actual labels
+        >>> mlops.metrics.mean_squared_error(y_true=labels, y_pred=labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
         :param multioutput: Defines aggregating of multiple output scores. It can be "raw_values", "uniform_average"
         :return: mean squared error
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -733,15 +851,23 @@ class MLOpsMetrics(object):
 
         return mse
 
-    @staticmethod
-    def mean_squared_log_error(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
+    def mean_squared_log_error(self, y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates mean squared log error and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75] # prediction labels
+        >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25] # actual labels
+        >>> mlops.metrics.mean_squared_log_error(y_true=labels_actual, y_pred=labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
         :param multioutput: Defines aggregating of multiple output scores. It can be "raw_values", "uniform_average"
         :return: mean squared log error
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -756,13 +882,21 @@ class MLOpsMetrics(object):
 
         return msle
 
-    @staticmethod
-    def median_absolute_error(y_true, y_pred):
+    def median_absolute_error(self, y_true, y_pred):
         """
         Method calculates median absolute error and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75] # prediction labels
+        >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25] # actual labels
+        >>> mlops.metrics.median_absolute_error(y_true=labels_pred, y_pred=labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :return: median absolute error
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -775,15 +909,23 @@ class MLOpsMetrics(object):
 
         return mae
 
-    @staticmethod
-    def r2_score(y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
+    def r2_score(self, y_true, y_pred, sample_weight=None, multioutput="uniform_average"):
         """
         Method calculates r2 score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1.0, 0.5, 2.5, 4.75, 7.0, 0.75] # prediction labels
+        >>> labels_actual = [1.5, 0.75, 2.75, 4.5, 7.50, 0.25] # actual labels
+        >>> mlops.metrics.r2_score(y_true=labels_actual, y_pred=labels_pred)
+
         :param y_true: Ground truth (correct) target values.
         :param y_pred: Estimated target values.
         :param sample_weight: Sample weights.
         :param multioutput: Defines aggregating of multiple output scores. It can be "raw_values", "uniform_average", "variance_weighted"
         :return: r2 score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -802,13 +944,21 @@ class MLOpsMetrics(object):
     ######################## clustering stats ########################
     ##################################################################
 
-    @staticmethod
-    def adjusted_mutual_info_score(labels_true, labels_pred):
+    def adjusted_mutual_info_score(self, labels_true, labels_pred):
         """
         Method calculates adjusted mutual info score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.adjusted_mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred)
+
         :param labels_true: Ground truth (correct) target values.
         :param labels_pred: Estimated target values.
         :return: adjusted mutual info score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -820,13 +970,21 @@ class MLOpsMetrics(object):
 
         return amis
 
-    @staticmethod
-    def adjusted_rand_score(labels_true, labels_pred):
+    def adjusted_rand_score(self, labels_true, labels_pred):
         """
         Method calculates adjusted rand score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.adjusted_rand_score(labels_true=labels_actual, labels_pred=labels_pred)
+
         :param labels_true: Ground truth (correct) target values.
         :param labels_pred: Estimated target values.
         :return: adjusted rand score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -838,13 +996,21 @@ class MLOpsMetrics(object):
 
         return ars
 
-    @staticmethod
-    def calinski_harabaz_score(X, labels):
+    def calinski_harabaz_score(self, X, labels):
         """
         Method calculates calinski harabaz score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.calinski_harabaz_score(X=X, labels=labels_pred)
+
         :param X: Ground truth (correct) target values.
         :param labels: Estimated target values.
         :return: adjusted rand score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -856,13 +1022,21 @@ class MLOpsMetrics(object):
 
         return chs
 
-    @staticmethod
-    def completeness_score(labels_true, labels_pred):
+    def completeness_score(self, labels_true, labels_pred):
         """
         Method calculates completeness score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.completeness_score(labels_true=labels_actual, labels_pred=labels_pred)
+
         :param labels_true: Ground truth (correct) target values.
         :param labels_pred: Estimated target values.
         :return: completeness score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -874,13 +1048,21 @@ class MLOpsMetrics(object):
 
         return cs
 
-    @staticmethod
-    def fowlkes_mallows_score(labels_true, labels_pred, sparse=False):
+    def fowlkes_mallows_score(self, labels_true, labels_pred, sparse=False):
         """
         Method calculates fowlkes mallows score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.fowlkes_mallows_score(labels_true=labels_actual, labels_pred=labels_pred)
+
         :param labels_true: Ground truth (correct) target values.
         :param labels_pred: Estimated target values.
         :return: fowlkes mallows score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -892,13 +1074,21 @@ class MLOpsMetrics(object):
 
         return fms
 
-    @staticmethod
-    def homogeneity_completeness_v_measure(labels_true, labels_pred):
+    def homogeneity_completeness_v_measure(self, labels_true, labels_pred):
         """
         Method calculates homogeneity, completeness, v_measure and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.homogeneity_completeness_v_measure(labels_true=labels_actual, labels_pred=labels_pred)
+
         :param labels_true: Ground truth (correct) target values.
         :param labels_pred: Estimated target values.
         :return: homogeneity, completeness, v_measure
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -912,13 +1102,21 @@ class MLOpsMetrics(object):
 
         return homogeneity, completeness, v_measure
 
-    @staticmethod
-    def homogeneity_score(labels_true, labels_pred):
+    def homogeneity_score(self, labels_true, labels_pred):
         """
         Method calculates homogeneity score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.homogeneity_score(labels_true=labels_actual, labels_pred=labels_pred)
+
         :param labels_true: Ground truth (correct) target values.
         :param labels_pred: Estimated target values.
         :return: homogeneity score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -930,14 +1128,22 @@ class MLOpsMetrics(object):
 
         return hs
 
-    @staticmethod
-    def mutual_info_score(labels_true, labels_pred, contingency=None):
+    def mutual_info_score(self, labels_true, labels_pred, contingency=None):
         """
         Method calculates mutual info score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred)
+
         :param labels_true: Ground truth (correct) target values.
         :param labels_pred: Estimated target values.
         :param contingency: A contingency matrix
         :return: mutual info score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -952,13 +1158,21 @@ class MLOpsMetrics(object):
 
         return mis
 
-    @staticmethod
-    def normalized_mutual_info_score(labels_true, labels_pred):
+    def normalized_mutual_info_score(self, labels_true, labels_pred):
         """
         Method calculates normalized mutual info score and output it using MCenter.
+
+       :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.normalized_mutual_info_score(labels_true=labels_actual, labels_pred=labels_pred)
+
         :param labels_true: Ground truth (correct) target values.
         :param labels_pred: Estimated target values.
         :return: normalized mutual info score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -971,19 +1185,27 @@ class MLOpsMetrics(object):
 
         return nmis
 
-    @staticmethod
-    def silhouette_score(X, labels,
+    def silhouette_score(self, X, labels,
                          metric='euclidean',
                          sample_size=None,
                          random_state=None, **kwds):
         """
         Method calculates silhouette score and output it using MCenter.
+
+       :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.silhouette_score(X=X, labels=labels_pred, metric='euclidean', sample_size=None, random_state=None)
+
         :param X: Feature set
         :param labels: Estimated target values.
         :param metric:  The metric to use when calculating distance between instances in a feature array.
         :param sample_size: The size of the sample to use when computing the Silhouette Coefficient on a random subset of the data.
         :param kwds: Any further parameters are passed directly to the distance function.
         :return: silhouette score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -999,13 +1221,22 @@ class MLOpsMetrics(object):
 
         return ss
 
-    @staticmethod
-    def v_measure_score(labels_true, labels_pred):
+    def v_measure_score(self, labels_true, labels_pred):
         """
         Method calculates v measure score and output it using MCenter.
+
+        :Example:
+
+        >>> from parallelm.mlops import mlops
+        >>> X = [[1, 2], [1, 3], [1, 2], [2, 4], [4, 5], [9, 9]] # feature set
+        >>> labels_pred = [1, 0, 1, 2, 3, 0]  # prediction cluster
+        >>> labels_actual = [0, 1, 0, 1, 3, 1] # actual cluster
+        >>> mlops.metrics.v_measure_score(labels_true=labels_actual, labels_pred=labels_pred)
+
         :param labels_true: Ground truth (correct) target values.
         :param labels_pred: Estimated target values.
-        :return v measure score
+        :return: v measure score
+        :raises: MLOpsStatisticsException
         """
         # need to import only on run time.
         from parallelm.mlops import mlops as mlops
@@ -1018,3 +1249,8 @@ class MLOpsMetrics(object):
         mlops.set_stat(ClusteringMetrics.V_MEASURE_SCORE, data=vms)
 
         return vms
+
+
+@Singleton
+class MLOpsMetricsSingleton(MLOpsMetrics):
+    pass

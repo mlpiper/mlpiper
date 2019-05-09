@@ -81,10 +81,24 @@ KPI, and other information about the ML runtime environment.
     :member-order: bysource
 
 
+MLOps Metrics API
+=================
+
+Class is responsible for giving user sklearn alike code representation for using ParallelM's mlops apis.
+Class supports classification, regression and clustering stats.
+
+.. autoclass:: parallelm.mlops.mlops_metrics.MLOpsMetrics
+    :members:
+    :member-order: bysource
+
+.. autoclass:: parallelm.mlops.mlops_metrics.MLOpsClusterMetrics
+    :members:
+    :member-order: bysource
+
 Exceptions
 ==========
 
-The mlops library raises exceptions of type ``MLOpsException(Exception)``
+The mlops library raises exceptions of type ``MLOpsException(Exception)``; The mlops.metrics library raises exceptions of type ``MLOpsStatisticsException(Exception)``
 
 
 Spark Pipeline Model Helper
