@@ -32,7 +32,7 @@ from parallelm.mlops.logger_factory import logger_factory
 from parallelm.mlops.mlops_ctx import MLOpsCtx
 from parallelm.mlops.mlops_exception import MLOpsConnectionException, SuppressException
 from parallelm.mlops.mlops_exception import MLOpsException
-from parallelm.mlops.mlops_metrics import MLOpsMetrics
+from parallelm.mlops.mlops_metrics import MLOpsMetrics, MLOpsMetricsSingleton
 from parallelm.mlops.mlops_mode import MLOpsMode, OutputChannel
 from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
 from parallelm.mlops.models.model import Model
@@ -1030,7 +1030,7 @@ class MLOps(object):
 # An instance of the MLOps to be used when importing the pm library.
 @Singleton
 class MLOpsSingleton(MLOps):
-    metrics = MLOpsMetrics.Instance()
+    metrics = MLOpsMetricsSingleton.Instance()
 
     pass
 
