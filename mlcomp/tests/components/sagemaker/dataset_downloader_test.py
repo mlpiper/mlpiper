@@ -31,7 +31,8 @@ class DatasetDownloaderTest(ConnectableComponent):
         try:
             urllib.request.urlretrieve(self._dataset_url, tmp_dataset_filepath,
                                        reporthook=DatasetDownloaderTest._download_report_hook)
-            DatasetDownloaderTest._download_report(100.0)
+            self._logger.info("Dataset download completed ... 100%")
+
             train_set, valid_set, test_set = (None, None, None)
             with gzip.open(tmp_dataset_filepath, 'rb') as f:
                 loaded_artifacts = pickle.load(f, encoding='latin1')
@@ -84,7 +85,7 @@ class DatasetDownloaderTest(ConnectableComponent):
 
     @staticmethod
     def _download_report(percent):
-        DatasetDownloaderTest.logger.info("Dataset download: {:.2f}%".format(percent))
+        DatasetDownloaderTest.logger.info("Dataset download in progress ... {:.2f}%".format(percent))
 
     def _save_to_csv(self, dataset, filepath):
         self._logger.info("Saving to csv ... {}".format(filepath))

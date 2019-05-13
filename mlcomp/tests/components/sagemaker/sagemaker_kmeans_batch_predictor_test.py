@@ -139,6 +139,7 @@ class SageMakerKMeansBatchPredictorTest(ConnectableComponent):
                 msg = 'Transform job failed! message: {}'.format(response['FailureReason'])
                 self._logger.error(msg)
                 raise MLCompException(msg)
+
             self._logger.info("Transform job is still running, status: {} ... {} sec"
                               .format(status, index * SageMakerKMeansBatchPredictorTest.MONITOR_INTERVAL_SEC))
             index += 1
