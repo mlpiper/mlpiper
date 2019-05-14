@@ -8,7 +8,7 @@
     "program": "sagemaker_kmeans_batch_predictor_it.py",
     "componentClass": "SageMakerKMeansBatchPredictorIT",
     "group": "Algorithms",
-    "includeGlobPatterns" : "__init__.py | common/** | sagemaker_kmeans_batch_predictor*",
+    "includeGlobPatterns" : "__init__.py | common/** | monitor/** | sagemaker_kmeans_batch_predictor*",
     "useMLOps": true,
     "inputInfo": [
         {

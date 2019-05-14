@@ -16,8 +16,8 @@ verbose=0
 while [ -n "$1" ]; do
     case $1 in
         --dir)          artifacts_dir=$2; validate_arg $1 $2 ; shift ;;
-        --skip-train)   skip_train=1; shift ;;
-        --skip-predict) skip_predict=1; shift ;;
+        --skip-train)   skip_train=1 ;;
+        --skip-predict) skip_predict=1 ;;
         --verbose)      verbose=1 ;;
         --help)         echo $USAGE; exit 0 ;;
     esac
@@ -29,8 +29,10 @@ artifacts_dir_prefix="/tmp/sagemaker-mnist-artifacts-"
 if [ -z ${artifacts_dir} ]; then
     artifacts_dir=$(mktemp -d ${artifacts_dir_prefix}XXXXX)
 else
-    rm -rf ${artifacts_dir}
-    mkdir -p ${artifacts_dir}
+    if [[ ${skip_train} == 0 ]]; then
+        rm -rf ${artifacts_dir}
+        mkdir -p ${artifacts_dir}
+    fi
 fi
 echo "Artifacts dir: ${artifacts_dir}"
 

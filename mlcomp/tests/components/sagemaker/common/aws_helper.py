@@ -49,8 +49,9 @@ class AwsHelper(object):
             boto3.client('s3').upload_file(local_filepath, bucket_name, aws_s3_filepath,
                                            Callback=monitor.callback)
             monitor.done()
-
-        self._logger.info("File uploaded successfully!")
+            self._logger.info("File uploaded successfully!")
+        else:
+            self._logger.info("Skip uploading (test mode)!")
 
         return s3_url
 
@@ -65,8 +66,9 @@ class AwsHelper(object):
                 .Object(aws_s3_filepath)\
                 .upload_fileobj(file_obj, Callback=monitor.callback)
             monitor.done()
-
-        self._logger.info("File obj uploaded successfully!")
+            self._logger.info("File obj uploaded successfully!")
+        else:
+            self._logger.info("Skip uploading (test mode)!")
 
         return s3_url
 

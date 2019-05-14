@@ -1,21 +1,17 @@
-import boto3
-import logging
 import os
-import pprint
-from sagemaker.session import Session
-import time
 from time import gmtime, strftime
 
+import boto3
+from sagemaker.session import Session
+
+from monitor.job_monitor_transformer import JobMonitorTransformer
 from parallelm.common.mlcomp_exception import MLCompException
 from parallelm.components import ConnectableComponent
 
 from common.aws_helper import AwsHelper
-from common.report import Report
 
 
 class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
-    MONITOR_INTERVAL_SEC = 10.0
-
     def __init__(self, engine):
         super(SageMakerKMeansBatchPredictorIT, self).__init__(engine)
         self._dataset_s3_url = None
@@ -29,6 +25,7 @@ class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
         self._sagemaker_session = Session()
         self._sagemaker_client = boto3.client('sagemaker')
         self._aws_helper = AwsHelper(self._logger)
+        self._job_monitor = None
 
     def _materialize(self, parent_data_objs, user_data):
         if not parent_data_objs:
@@ -39,7 +36,8 @@ class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
 
         self._upload_model_to_s3()
         self._create_model()
-        self._perform_predictions()
+        self._create_transformation_job()
+        self._monitor_job()
         return [self._predictions_s3_url()]
 
     def _init_params(self, parent_data_objs):
@@ -87,10 +85,6 @@ class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
         model_arn = create_model_response['ModelArn']
         self._logger.info("Model created successfully! name: {}, arn: {}".format(self._model_name, model_arn))
 
-    def _perform_predictions(self):
-        self._create_transformation_job()
-        self._monitor_job()
-
     def _create_transformation_job(self):
         self._job_name = 'kmeans-batch-prediction-' + strftime("%Y-%m-%d-%H-%M-%S", gmtime())
         self._logger.info("Setup transform job, job-name: {}, input-dataset: {}, output-path-root:{}"
@@ -126,31 +120,7 @@ class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
         self._logger.info("Created transform job with name: {}".format(self._job_name))
 
     def _monitor_job(self):
-        self._logger.info("Monitoring transform job ... {}".format(self._job_name))
-        start_running_time_sec = time.time() - 1
-        while True:
-            response = self._sagemaker_client.describe_transform_job(TransformJobName=self._job_name)
-
-            running_time_sec = int(time.time() - start_running_time_sec)
-            if self._logger.isEnabledFor(logging.DEBUG):
-                self._logger.debug(pprint.pformat(response, indent=4))
-
-            status = response['TransformJobStatus']
-            Report.job_status(self._job_name, running_time_sec, status)
-            if status == 'Completed':
-                self._logger.info("Transform job ended! status: {}".format(status))
-                break
-            if status == 'Failed':
-                msg = 'Transform job failed! message: {}'.format(response['FailureReason'])
-                self._logger.error(msg)
-                raise MLCompException(msg)
-
-            self._logger.info("Transform job is still running, status: {} ... {} sec"
-                              .format(status, running_time_sec))
-            time.sleep(SageMakerKMeansBatchPredictorIT.MONITOR_INTERVAL_SEC)
-
-    def _report_final_metrics(self):
-        pass
+        JobMonitorTransformer(self._sagemaker_client, self._job_name, self._logger).monitor()
 
     def _predictions_s3_url(self):
         _, input_rltv_path = AwsHelper.s3_url_parse(self._dataset_s3_url)

@@ -1,22 +1,17 @@
-import datetime
 import io
-import logging
-import pprint
-import time
 from time import gmtime, strftime
 
-from sagemaker.session import Session
-from sagemaker.analytics import TrainingJobAnalytics
-
 import boto3
+from sagemaker.session import Session
+
 from sagemaker.amazon.amazon_estimator import get_image_uri
 from sagemaker.amazon.common import write_numpy_to_dense_tensor
 
+from monitor.job_monitor_estimator import JobMonitorEstimator
 from parallelm.common.mlcomp_exception import MLCompException
 from parallelm.components import ConnectableComponent
 
 from common.aws_helper import AwsHelper
-from common.report import Report
 
 
 class SageMakerKMeansTrainerIT(ConnectableComponent):
@@ -45,8 +40,6 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
         self._job_name = None
         self._sagemaker_client = boto3.client('sagemaker')
         self._aws_helper = AwsHelper(self._logger)
-        self._analytics = None
-        self._metric_names = None
 
     def _materialize(self, parent_data_objs, user_data):
 
@@ -57,6 +50,7 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
         self._init_params(parent_data_objs)
         self._convert_and_upload()
         self._do_training()
+        self._monitor_job()
         self._download_model()
 
     def _init_params(self, parent_data_objs):
@@ -81,6 +75,8 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
         else:
             self._output_location = 's3://{}/{}'.format(self._bucket_name, self._output_location)
 
+        self._skip_s3_dataset_uploading = self._params.get('skip_s3_dataset_uploading', 'false').lower() == 'true'
+
         self._instance_count = self._params.get('instance_count', 2)
         self._instance_type = self._params.get('instance_type', 'ml.c4.xlarge')
         self._volume_size_in_gb = self._params.get('volume_size_in_gb', 50)
@@ -97,14 +93,16 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
         self._logger.info("First image caption in training set: '{}'".format(train_set[1][0]))
 
     def _convert_and_upload(self):
-        self._logger.info("Converting the data into the format required by the SageMaker KMeans algorithm ...")
         buf = io.BytesIO()
-        write_numpy_to_dense_tensor(buf, self._train_set[0], self._train_set[1])
-        buf.seek(0)
+        if not self._skip_s3_dataset_uploading:
+            self._logger.info("Converting the data into the format required by the SageMaker KMeans algorithm ...")
+            write_numpy_to_dense_tensor(buf, self._train_set[0], self._train_set[1])
+            buf.seek(0)
 
         self._logger.info("Uploading the converted data to S3, bucket: {}, location: {} ..."
                           .format(self._bucket_name, self._data_location))
-        self._data_s3_url = self._aws_helper.upload_file_obj(buf, self._bucket_name, self._data_location)
+        self._data_s3_url = self._aws_helper.upload_file_obj(buf, self._bucket_name, self._data_location,
+                                                             self._skip_s3_dataset_uploading)
 
     def _do_training(self):
         self._logger.info('Training data is located in: {}'.format(self._data_s3_url))
@@ -157,59 +155,14 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
 
         self._logger.info("Creating training job ... {}".format(self._job_name))
         self._sagemaker_client.create_training_job(**create_training_params)
-        self._analytics = TrainingJobAnalytics(training_job_name=self._job_name,
-                                               metric_names=self._metric_names_for_training_job(),
-                                               start_time=datetime.datetime.utcnow())
-
-        self._monitor_job()
-
-    def _metric_names_for_training_job(self):
-        if self._metric_names is None:
-            training_description = self._sagemaker_client.describe_training_job(TrainingJobName=self._job_name)
-
-            metric_definitions = training_description['AlgorithmSpecification']['MetricDefinitions']
-            self._metric_names = [md['Name'] for md in metric_definitions if md['Name'].startswith('train:')]
-
-        return self._metric_names
 
     def _monitor_job(self):
-        self._logger.info("Monitoring training job ... {}".format(self._job_name))
-        start_running_time_sec = time.time() - 1
-        while True:
-            response = self._sagemaker_client.describe_training_job(TrainingJobName=self._job_name)
-            running_time_sec = int(time.time() - start_running_time_sec)
-            if self._logger.isEnabledFor(logging.DEBUG):
-                self._logger.debug(pprint.pformat(response, indent=4))
+        job_monitor = JobMonitorEstimator(self._sagemaker_client, self._job_name, self._logger)
+        job_monitor.set_on_complete_callback(self._on_complete_callback)
+        job_monitor.monitor()
 
-            status = response['TrainingJobStatus']
-            Report.job_status(self._job_name, running_time_sec, status)
-            if status == 'Completed':
-                self._model_artifact_s3_url = response['ModelArtifacts']['S3ModelArtifacts']
-                self._logger.info("Training job ended! status: {}".format(status))
-                self._report_final_metrics(response['FinalMetricDataList'])
-                break
-            if status == 'Failed':
-                msg = 'Training job failed! message: {}'.format(response['FailureReason'])
-                self._logger.error(msg)
-                raise MLCompException(msg)
-
-            self._report_online_metrics()
-            self._logger.info("Training job is still running, status: {} ... {} sec"
-                              .format(status, running_time_sec))
-            time.sleep(SageMakerKMeansTrainerIT.MONITOR_INTERVAL_SEC)
-
-    def _report_online_metrics(self):
-        metrics_df = self._analytics.dataframe(force_refresh=True)
-        if not metrics_df.empty:
-            for index, row in metrics_df.iterrows():
-                Report.job_metric(row.get('metric_name', "Unknown"), row.get('value', 0))
-        else:
-            for metric_name in self._metric_names_for_training_job():
-                Report.job_metric(metric_name, 0)
-
-    def _report_final_metrics(self, final_metrics):
-        for metric in final_metrics:
-            Report.job_metric(metric.get('MetricName', "Unknown"), metric.get('Value', 0))
+    def _on_complete_callback(self, describe_response):
+        self._model_artifact_s3_url = describe_response['ModelArtifacts']['S3ModelArtifacts']
 
     def _download_model(self):
         if self._output_model_filepath and self._model_artifact_s3_url:

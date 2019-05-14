@@ -8,7 +8,7 @@
     "program": "sagemaker_kmeans_trainer_it.py",
     "componentClass": "SageMakerKMeansTrainerIT",
     "group": "Algorithms",
-    "includeGlobPatterns" : "__init__.py | common/** | sagemaker_kmeans_trainer*",
+    "includeGlobPatterns" : "__init__.py | common/** | monitor/** | sagemaker_kmeans_trainer*",
     "useMLOps": true,
     "inputInfo": [
         {
