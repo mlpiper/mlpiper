@@ -27,11 +27,20 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
         self._bucket_name = None
         self._train_set = None
         self._num_features = None
+
+        self._output_model_filepath = None
         self._data_location = None
         self._data_s3_url = None
         self._output_location = None
+        self._skip_s3_dataset_uploading = None
+        self._instance_count = None
+        self._instance_type = None
+        self._volume_size_in_gb = None
+        self._hyper_parameter_k = None
+        self._mini_batch_size = None
+        self._max_runtime_in_seconds = None
+
         self._model_artifact_s3_url = None
-        self._output_model_filepath = None
         self._kmeans = None
         self._job_name = None
         self._sagemaker_client = boto3.client('sagemaker')
@@ -72,6 +81,13 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
         else:
             self._output_location = 's3://{}/{}'.format(self._bucket_name, self._output_location)
 
+        self._instance_count = self._params.get('instance_count', 2)
+        self._instance_type = self._params.get('instance_type', 'ml.c4.xlarge')
+        self._volume_size_in_gb = self._params.get('volume_size_in_gb', 50)
+        self._hyper_parameter_k = self._params.get('hyper_parameter_k', 10)
+        self._mini_batch_size = self._params.get('mini_batch_size', 500)
+        self._max_runtime_in_seconds = self._params.get('max_runtime_in_seconds', 86400)
+
     def _print_statistics_info(self, train_set, valid_set, test_set):
         self._logger.info("Number of features: {}".format(len(train_set[0][0])))
         self._logger.info("Number of samples in training set: {}".format(len(train_set[0])))
@@ -107,19 +123,19 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
                     "S3OutputPath": self._output_location
                 },
                 "ResourceConfig": {
-                    "InstanceCount": 2,
-                    "InstanceType": "ml.c4.xlarge",
-                    "VolumeSizeInGB": 50
+                    "InstanceCount": self._instance_count,
+                    "InstanceType": self._instance_type,
+                    "VolumeSizeInGB": self._volume_size_in_gb
                 },
                 "TrainingJobName": self._job_name,
                 "HyperParameters": {
-                    "k": "10",
+                    "k": str(self._hyper_parameter_k),
                     "feature_dim": str(self._num_features),
-                    "mini_batch_size": "500",
+                    "mini_batch_size": str(self._mini_batch_size),
                     "force_dense": "True"
                 },
                 "StoppingCondition": {
-                    "MaxRuntimeInSeconds": 60 * 60
+                    "MaxRuntimeInSeconds": self._max_runtime_in_seconds
                 },
                 "InputDataConfig": [
                     {
