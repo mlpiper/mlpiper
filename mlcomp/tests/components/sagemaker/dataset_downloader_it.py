@@ -8,7 +8,7 @@ from parallelm.components import ConnectableComponent
 from common import os_util
 
 
-class DatasetDownloaderTest(ConnectableComponent):
+class DatasetDownloaderIT(ConnectableComponent):
     DEFAULT_DATASET_URL = 'http://deeplearning.net/data/mnist/mnist.pkl.gz'
     logger = None
     last_update_time = time.time()
@@ -19,7 +19,7 @@ class DatasetDownloaderTest(ConnectableComponent):
         self._train_set_local_csv_filepath = None
         self._valid_set_local_csv_filepath = None
         self._test_set_local_csv_filepath = None
-        DatasetDownloaderTest.logger = self._logger
+        DatasetDownloaderIT.logger = self._logger
 
     def _materialize(self, parent_data_objs, user_data):
 
@@ -30,7 +30,7 @@ class DatasetDownloaderTest(ConnectableComponent):
 
         try:
             urllib.request.urlretrieve(self._dataset_url, tmp_dataset_filepath,
-                                       reporthook=DatasetDownloaderTest._download_report_hook)
+                                       reporthook=DatasetDownloaderIT._download_report_hook)
             self._logger.info("Dataset download completed ... 100%")
 
             train_set, valid_set, test_set = (None, None, None)
@@ -68,7 +68,7 @@ class DatasetDownloaderTest(ConnectableComponent):
     def _init_params(self):
         self._dataset_url = self._params.get('dataset_url')
         if not self._dataset_url:
-            self._dataset_url = DatasetDownloaderTest.DEFAULT_DATASET_URL
+            self._dataset_url = DatasetDownloaderIT.DEFAULT_DATASET_URL
         self._logger.info("Dataset url to download is '{}'".format(self._dataset_url))
 
         self._train_set_local_csv_filepath = self._params.get('train_set_local_csv_filepath')
@@ -78,14 +78,14 @@ class DatasetDownloaderTest(ConnectableComponent):
     @staticmethod
     def _download_report_hook(chunk_number, chunk_max_size, download_total_size):
         now = time.time()
-        if now - DatasetDownloaderTest.last_update_time > 1.0:
-            DatasetDownloaderTest.last_update_time = now
+        if now - DatasetDownloaderIT.last_update_time > 1.0:
+            DatasetDownloaderIT.last_update_time = now
             percent = 100.0 * chunk_number * chunk_max_size / download_total_size
-            DatasetDownloaderTest._download_report(percent)
+            DatasetDownloaderIT._download_report(percent)
 
     @staticmethod
     def _download_report(percent):
-        DatasetDownloaderTest.logger.info("Dataset download in progress ... {:.2f}%".format(percent))
+        DatasetDownloaderIT.logger.info("Dataset download in progress ... {:.2f}%".format(percent))
 
     def _save_to_csv(self, dataset, filepath):
         self._logger.info("Saving to csv ... {}".format(filepath))

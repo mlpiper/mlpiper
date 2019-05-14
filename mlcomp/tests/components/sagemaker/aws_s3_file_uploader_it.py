@@ -4,9 +4,9 @@ from sagemaker.session import Session
 from common.aws_helper import AwsHelper
 
 
-class AwsS3FileUploaderTest(ConnectableComponent):
+class AwsS3FileUploaderIT(ConnectableComponent):
     def __init__(self, engine):
-        super(AwsS3FileUploaderTest, self).__init__(engine)
+        super(AwsS3FileUploaderIT, self).__init__(engine)
 
     def _materialize(self, parent_data_objs, user_data):
 

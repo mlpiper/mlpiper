@@ -11,11 +11,11 @@ from common.aws_helper import AwsHelper
 from common.report import Report
 
 
-class SageMakerKMeansBatchPredictorTest(ConnectableComponent):
+class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
     MONITOR_INTERVAL_SEC = 10.0
 
     def __init__(self, engine):
-        super(SageMakerKMeansBatchPredictorTest, self).__init__(engine)
+        super(SageMakerKMeansBatchPredictorIT, self).__init__(engine)
         self._dataset_s3_url = None
         self._bucket_name = None
         self._local_model_filepath = None
@@ -141,9 +141,9 @@ class SageMakerKMeansBatchPredictorTest(ConnectableComponent):
                 raise MLCompException(msg)
 
             self._logger.info("Transform job is still running, status: {} ... {} sec"
-                              .format(status, index * SageMakerKMeansBatchPredictorTest.MONITOR_INTERVAL_SEC))
+                              .format(status, index * SageMakerKMeansBatchPredictorIT.MONITOR_INTERVAL_SEC))
             index += 1
-            time.sleep(SageMakerKMeansBatchPredictorTest.MONITOR_INTERVAL_SEC)
+            time.sleep(SageMakerKMeansBatchPredictorIT.MONITOR_INTERVAL_SEC)
 
     def _download_results(self):
         if self._downloaded_results_filepath:

@@ -19,11 +19,11 @@ from common.aws_helper import AwsHelper
 from common.report import Report
 
 
-class SageMakerKMeansTrainerTest(ConnectableComponent):
+class SageMakerKMeansTrainerIT(ConnectableComponent):
     MONITOR_INTERVAL_SEC = 10.0
 
     def __init__(self, engine):
-        super(SageMakerKMeansTrainerTest, self).__init__(engine)
+        super(SageMakerKMeansTrainerIT, self).__init__(engine)
         self._bucket_name = None
         self._train_set = None
         self._num_features = None
@@ -176,9 +176,9 @@ class SageMakerKMeansTrainerTest(ConnectableComponent):
 
             self._report_online_metrics()
             self._logger.info("Training job is still running, status: {} ... {} sec"
-                              .format(status, index * SageMakerKMeansTrainerTest.MONITOR_INTERVAL_SEC))
+                              .format(status, index * SageMakerKMeansTrainerIT.MONITOR_INTERVAL_SEC))
             index += 1
-            time.sleep(SageMakerKMeansTrainerTest.MONITOR_INTERVAL_SEC)
+            time.sleep(SageMakerKMeansTrainerIT.MONITOR_INTERVAL_SEC)
 
     def _report_online_metrics(self):
         metrics_df = self._analytics.dataframe(force_refresh=True)
