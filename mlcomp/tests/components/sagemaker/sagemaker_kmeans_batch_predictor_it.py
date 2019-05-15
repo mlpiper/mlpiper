@@ -1,5 +1,7 @@
 import boto3
+import logging
 import os
+import pprint
 from sagemaker.session import Session
 import time
 from time import gmtime, strftime
@@ -21,7 +23,6 @@ class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
         self._local_model_filepath = None
         self._model_s3_filepath = None
         self._results_s3_location = None
-        self._downloaded_results_filepath = None
         self._model_name = None
         self._job_name = None
 
@@ -39,7 +40,7 @@ class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
         self._upload_model_to_s3()
         self._create_model()
         self._perform_predictions()
-        self._download_results()
+        return [self._predictions_s3_url()]
 
     def _init_params(self, parent_data_objs):
         self._dataset_s3_url = parent_data_objs[0]
@@ -61,7 +62,6 @@ class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
             self._results_s3_location = "s3://{}/prediction/results".format(bucket_name)
 
         self._skip_s3_model_uploading = self._params.get('skip_s3_model_uploading', "false").lower() == "true"
-        self._downloaded_results_filepath = self._params.get('downloaded_results_filepath')
 
         return True
 
@@ -127,11 +127,16 @@ class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
 
     def _monitor_job(self):
         self._logger.info("Monitoring transform job ... {}".format(self._job_name))
-        index = 1
+        start_running_time_sec = time.time() - 1
         while True:
             response = self._sagemaker_client.describe_transform_job(TransformJobName=self._job_name)
+
+            running_time_sec = int(time.time() - start_running_time_sec)
+            if self._logger.isEnabledFor(logging.DEBUG):
+                self._logger.debug(pprint.pformat(response, indent=4))
+
             status = response['TransformJobStatus']
-            Report.job_status(self._job_name, status)
+            Report.job_status(self._job_name, running_time_sec, status)
             if status == 'Completed':
                 self._logger.info("Transform job ended! status: {}".format(status))
                 break
@@ -141,12 +146,13 @@ class SageMakerKMeansBatchPredictorIT(ConnectableComponent):
                 raise MLCompException(msg)
 
             self._logger.info("Transform job is still running, status: {} ... {} sec"
-                              .format(status, index * SageMakerKMeansBatchPredictorIT.MONITOR_INTERVAL_SEC))
-            index += 1
+                              .format(status, running_time_sec))
             time.sleep(SageMakerKMeansBatchPredictorIT.MONITOR_INTERVAL_SEC)
 
-    def _download_results(self):
-        if self._downloaded_results_filepath:
-            _, input_rltv_path = AwsHelper.s3_url_parse(self._dataset_s3_url)
-            results_s3_url = "{}/{}.out".format(self._results_s3_location, input_rltv_path)
-            self._aws_helper.download_file(results_s3_url, self._downloaded_results_filepath)
+    def _report_final_metrics(self):
+        pass
+
+    def _predictions_s3_url(self):
+        _, input_rltv_path = AwsHelper.s3_url_parse(self._dataset_s3_url)
+        predictions_s3_url = "{}/{}.out".format(self._results_s3_location, input_rltv_path)
+        return predictions_s3_url

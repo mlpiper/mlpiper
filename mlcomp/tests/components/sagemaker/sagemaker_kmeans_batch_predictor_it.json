@@ -19,7 +19,15 @@
             "group": "data"
         }
     ],
-    "outputInfo": [],
+    "outputInfo": [
+        {
+            "description": "S3 url of the predictions file",
+            "label": "Predictions S3 url",
+            "defaultComponent": "",
+            "type": "str",
+            "group": "data"
+        }
+    ],
     "arguments": [
         {
             "key": "local_model_filepath",
@@ -48,13 +56,6 @@
             "label": "Results S3 location",
             "type": "str",
             "description": "The Amazon S3 path where you want Amazon SageMaker to store the results of the transform job (refer to: https://docs.aws.amazon.com/sagemaker/latest/dg/API_TransformOutput.html#SageMaker-Type-TransformOutput-S3OutputPath)",
-            "optional": true
-        },
-        {
-            "key": "downloaded_results_filepath",
-            "label": "Downloaded results filepath [OPTIONAL]",
-            "type": "str",
-            "description": "If specified, download the results to the local file system",
             "optional": true
         },
         {

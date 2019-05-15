@@ -76,7 +76,6 @@
             "type": "int",
             "label": "Number of compute instances [Default: 2]",
             "description": "The number of ML compute instances to use. For distributed training, provide a value greater than 1",
-            "default": 2,
             "optional": true
         },
         {
@@ -84,7 +83,6 @@
             "type": "str",
             "label": "Compute instance type [Default: ml.c4.xlarge]",
             "description": "The ML compute instance type (https://docs.aws.amazon.com/sagemaker/latest/dg/API_ResourceConfig.html)",
-            "default": "ml.c4.xlarge",
             "optional": true
         },
         {
@@ -92,7 +90,6 @@
             "type": "int",
             "label": "Volume size in GB [Default: 50]",
             "description": "The size of the ML storage volume that you want to provision",
-            "default": 50,
             "optional": true
         },
         {
@@ -100,7 +97,13 @@
             "type": "int",
             "label": "Number of required clusters [Default: 10]",
             "description": "The number of required clusters",
-            "default": 10,
+            "optional": true
+        },
+        {
+            "key": "epochs",
+            "type": "int",
+            "label": "epochs [Default: 1]",
+            "description": "The number of passes done over the training data",
             "optional": true
         },
         {
@@ -108,7 +111,6 @@
             "type": "int",
             "label": "Mini batch size [Default: 500]",
             "description": "The number of observations per mini-batch for the data iterator",
-            "default": 500,
             "optional": true
         },
         {
@@ -116,7 +118,6 @@
             "type": "int",
             "label": "Max runtime in seconds [Default: 86400]",
             "description": "The maximum length of time, in seconds, that the training job can run.",
-            "default": 86400,
             "optional": true
         }
     ],

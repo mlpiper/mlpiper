@@ -13,8 +13,8 @@
     "inputInfo": [],
     "outputInfo": [
         {
-            "description": "S3 url filepath",
-            "label": "S3 url filepath",
+            "description": "S3 url of the uploaded file",
+            "label": "S3 url",
             "defaultComponent": "",
             "type": "str",
             "group": "data"

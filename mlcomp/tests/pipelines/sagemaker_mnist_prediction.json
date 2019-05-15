@@ -3,19 +3,19 @@
     "engineType": "SageMaker",
     "pipe": [
         {
-            "name": "AWS S3 file uploader (Test)",
+            "name": "AWS S3 file uploader (IT)",
             "id": 1,
-            "type": "aws_s3_file_uploader_test",
+            "type": "aws_s3_file_uploader_it",
             "parents": [],
             "arguments": {
-                "local_filepath": "/tmp/sagemaker_mnist_test_dataset.csv",
+                "local_filepath": "/tmp/sagemaker-mnist-test-dataset.csv",
                 "skip_uploading": "false"
             }
         },
         {
-            "name": "SageMaker KMeans Batch Predictor (Test)",
+            "name": "SageMaker KMeans Batch Predictor (IT)",
             "id": 2,
-            "type": "sagemaker_kmeans_batch_predictor_test",
+            "type": "sagemaker_kmeans_batch_predictor_it",
             "parents": [
                 {
                     "parent": 1,
@@ -23,9 +23,23 @@
                 }
             ],
             "arguments": {
-                "downloaded_results_filepath": "/tmp/sagemaker_mnist_test_dataset.out",
                 "skip_s3_model_uploading": "false"
             }
+        },
+        {
+            "name": "AWS S3 file downloader (IT)",
+            "id": 3,
+            "type": "aws_s3_file_downloader_it",
+            "parents": [
+                {
+                    "parent": 2,
+                    "output": 0
+                }
+            ],
+            "arguments": {
+                "local_filepath": "/tmp/sagemaker-mnist-predictions.csv"
+            }
+
         }
     ],
     "systemConfig": {

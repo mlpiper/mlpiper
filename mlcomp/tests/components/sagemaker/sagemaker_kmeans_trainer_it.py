@@ -85,6 +85,7 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
         self._instance_type = self._params.get('instance_type', 'ml.c4.xlarge')
         self._volume_size_in_gb = self._params.get('volume_size_in_gb', 50)
         self._hyper_parameter_k = self._params.get('hyper_parameter_k', 10)
+        self._epochs = self._params.get('epochs', 1)
         self._mini_batch_size = self._params.get('mini_batch_size', 500)
         self._max_runtime_in_seconds = self._params.get('max_runtime_in_seconds', 86400)
 
@@ -130,6 +131,7 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
                 "TrainingJobName": self._job_name,
                 "HyperParameters": {
                     "k": str(self._hyper_parameter_k),
+                    "epochs": str(self._epochs),
                     "feature_dim": str(self._num_features),
                     "mini_batch_size": str(self._mini_batch_size),
                     "force_dense": "True"
@@ -172,14 +174,15 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
 
     def _monitor_job(self):
         self._logger.info("Monitoring training job ... {}".format(self._job_name))
-        index = 1
+        start_running_time_sec = time.time() - 1
         while True:
             response = self._sagemaker_client.describe_training_job(TrainingJobName=self._job_name)
+            running_time_sec = int(time.time() - start_running_time_sec)
             if self._logger.isEnabledFor(logging.DEBUG):
                 self._logger.debug(pprint.pformat(response, indent=4))
 
             status = response['TrainingJobStatus']
-            Report.job_status(self._job_name, status)
+            Report.job_status(self._job_name, running_time_sec, status)
             if status == 'Completed':
                 self._model_artifact_s3_url = response['ModelArtifacts']['S3ModelArtifacts']
                 self._logger.info("Training job ended! status: {}".format(status))
@@ -192,8 +195,7 @@ class SageMakerKMeansTrainerIT(ConnectableComponent):
 
             self._report_online_metrics()
             self._logger.info("Training job is still running, status: {} ... {} sec"
-                              .format(status, index * SageMakerKMeansTrainerIT.MONITOR_INTERVAL_SEC))
-            index += 1
+                              .format(status, running_time_sec))
             time.sleep(SageMakerKMeansTrainerIT.MONITOR_INTERVAL_SEC)
 
     def _report_online_metrics(self):
