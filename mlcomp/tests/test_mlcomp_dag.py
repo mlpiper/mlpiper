@@ -108,7 +108,7 @@ class TestPythonIO:
 
     def test_component_info(self):
         comp_desc = {
-            "version": 1,
+            "version": "1.0.2",
             "engineType": "Generic",
             "language": "Python",
             "userStandalone": False,

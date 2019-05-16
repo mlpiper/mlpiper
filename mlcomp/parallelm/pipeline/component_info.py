@@ -127,6 +127,8 @@ class ComponentInfo(object):
             self._include_glob_patterns = comp_desc_json.get(json_fields.COMPONENT_DESC_INCLUDE_GLOB_PATTERNS)
             self._exclude_glob_patterns = comp_desc_json.get(json_fields.COMPONENT_DESC_EXCLUDE_GLOB_PATTERNS)
 
+            self.version = str(self.version) if self.version is not None else None
+
             input_connections = comp_desc_json.get(json_fields.COMPONENT_DESC_INPUT_INFO_FIELD)
             if input_connections:
                 self._inputs = []
