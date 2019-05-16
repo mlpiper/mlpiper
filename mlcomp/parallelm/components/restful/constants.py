@@ -92,7 +92,7 @@ class NginxConstants:
     SERVER_CONF_DIR_REDHAT = '/etc/nginx/conf.d'
     SERVER_CONF_DIR_MACOS = '/usr/local/etc/nginx/servers'
 
-    SERVER_ENABLED_DIR_DEBIAN = '/etc/nginx/sites-enabled'
+    SERVER_ENABLED_DIR = '/etc/nginx/sites-enabled'
 
     SUPPORTED_PLATFORMS_DEBIAN = r'debian|ubuntu'
     SUPPORTED_PLATFORMS_REDHAT = r'redhat|centro|fedora'

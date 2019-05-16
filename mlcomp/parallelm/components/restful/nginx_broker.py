@@ -57,10 +57,16 @@ class NginxBroker(Base):
         with open(nginx_server_conf_filepath, 'w') as f:
             f.write(conf_content)
 
-        if self._debian_platform(platform_name):
-            sym_link = os.path.join(NginxConstants.SERVER_ENABLED_DIR_DEBIAN,
+        if self._debian_platform(platform_name) or self._redhat_platform(platform_name):
+            # Newer versions of nginx requires the folder sites-enabled in their installation folder,
+            # in order to enable extended server configurations, which are configured in conf.d.
+            # Apparently, on 'redhat' platforms the given folder does not exits after nginx installation.
+            if not os.path.exists(NginxConstants.SERVER_ENABLED_DIR):
+                os.mkdir(NginxConstants.SERVER_ENABLED_DIR, 0o644)
+
+            sym_link = os.path.join(NginxConstants.SERVER_ENABLED_DIR,
                                     NginxConstants.SERVER_CONF_FILENAME)
-            self._logger.info("Creating nginx server sym link (only on debian) ... {}".format(sym_link))
+            self._logger.info("Creating nginx server sym link ... {}".format(sym_link))
             os.symlink(nginx_server_conf_filepath, sym_link)
 
         self._logger.info("Done with _generate_configuration ...")
