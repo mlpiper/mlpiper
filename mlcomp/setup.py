@@ -11,7 +11,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 README = open(ROOT + "/README.md").read()
 
 install_requires = ['ml-ops', 'termcolor', 'flask', 'flask_cors', 'psutil', 'py4j', 'nbformat', 'nbconvert',
-                    'uwsgidecorators', 'sagemaker']
+                    'uwsgidecorators', 'sagemaker', 'pypsi']
 if sys.version_info[0] < 3:
     install_requires.append('enum')
 

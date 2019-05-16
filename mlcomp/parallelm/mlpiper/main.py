@@ -40,6 +40,8 @@ import sys
 import tempfile
 
 from parallelm.mlpiper.mlpiper import MLPiper
+from parallelm.mlpiper.wizard_shell import ComponentWizardShell
+from parallelm.mlpiper.wizard_flow import WizardFlowStateMachine
 from parallelm.pipeline.component_language import ComponentLanguage
 from parallelm.mlcomp import version
 
@@ -55,6 +57,7 @@ def parse_args():
     _add_deploy_sub_parser(subparsers, 'run', 'Prepare and run pipeline/component')
     _add_run_deployment_sub_parser(subparsers)
     _add_deps_sub_parser(subparsers)
+    _add_wizard_sub_parser(subparsers)
 
     # General arguments
     parser.add_argument('--version', action='version',
@@ -143,6 +146,12 @@ def _add_deps_sub_parser(subparsers):
     deps.add_argument('-r', '--comp-root', default=None, required=True,
                                 help='MLPiper components root dir. Recursively detecting components')
 
+def _add_wizard_sub_parser(subparsers):
+    # Get Python/R modules dependencies for the given pipeline or component
+    wizard_parser = subparsers.add_parser('wizard', help='Start component creation wizard')
+    wizard_parser.add_argument('--editor', action='store_true',
+                                help='Start wizard in editor mode')
+
 
 def main(bin_dir=None):
     options = parse_args()
@@ -196,6 +205,16 @@ def main(bin_dir=None):
 
         ml_piper.deps(options.lang)
         shutil.rmtree(tmp_dir)
+
+    elif options.subparser_name in ("wizard"):
+        shell = ComponentWizardShell(shell_name="mlpiper", wizard_edit_mode=options.editor)
+        if options.editor:
+            rc = shell.cmdloop()
+            sys.exit(rc)
+        else:
+            shell.set_readline_completer()
+            sm = WizardFlowStateMachine(shell=shell)
+            sm.run()
 
     else:
         raise Exception("subcommand: {} is not supported".format(options.subparser_name))
