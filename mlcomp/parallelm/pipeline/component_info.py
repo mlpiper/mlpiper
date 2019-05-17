@@ -109,6 +109,9 @@ class ComponentInfo(object):
 
         self.load_from_json(comp_desc_json)
 
+    def __str__(self):
+        return json.dumps(self, indent=4, cls=ComponentInfoEncoder)
+
     def load_from_json(self, comp_desc_json):
         if comp_desc_json:
             self.version = comp_desc_json.get(json_fields.COMPONENT_DESC_VERSION_FIELD)

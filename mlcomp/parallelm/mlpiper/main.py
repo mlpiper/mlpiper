@@ -46,7 +46,6 @@ from parallelm.mlpiper.wizard_flow import WizardFlowStateMachine
 from parallelm.pipeline.component_language import ComponentLanguage
 from parallelm.mlcomp import version
 
-
 LOG_LEVELS = {'debug': logging.DEBUG, 'info': logging.INFO, 'warn': logging.WARN, 'error': logging.ERROR}
 
 
@@ -70,6 +69,7 @@ def parse_args():
     _add_run_deployment_sub_parser(subparsers)
     _add_deps_sub_parser(subparsers)
     _add_wizard_sub_parser(subparsers)
+    _add_run_component_sub_parser(subparsers)
 
     # General arguments
     parser.add_argument('--version', action='version',
@@ -156,14 +156,27 @@ def _add_deps_sub_parser(subparsers):
                        help='A json file path, whose content is a pipeline. Or component JSON')
 
     deps.add_argument('-r', '--comp-root', default=None, required=True, action=CompRootDirCheck,
-                                help='MLPiper components root dir. Recursively detecting components')
+                      help='MLPiper components root dir. Recursively detecting components')
 
 
 def _add_wizard_sub_parser(subparsers):
     # Get Python/R modules dependencies for the given pipeline or component
     wizard_parser = subparsers.add_parser('wizard', help='Start component creation wizard')
     wizard_parser.add_argument('--editor', action='store_true',
-                                help='Start wizard in editor mode')
+                               help='Start wizard in editor mode')
+
+
+def _add_run_component_sub_parser(subparsers):
+    # Get Python/R modules dependencies for the given pipeline or component
+    run_component_parser = subparsers.add_parser('run_component', help='Start component creation wizard')
+    run_component_parser.add_argument('-r', '--comp-root', default=None, required=True,
+                                      help='MLPiper components root dir. Recursively detecting components')
+    run_component_parser.add_argument('-d', '--deployment-dir', default=None, required=True,
+                                      help="Deployment directory to use for placing the pipeline artifacts")
+    run_component_parser.add_argument('-a', '--args', default=None, required=False,
+                                      help='File with arguments')
+    run_component_parser.add_argument('--force', action='store_true',
+                                      help='Overwrite any previous generated files/directories (.e.g deployed dir)')
 
 
 def main(bin_dir=None):
@@ -229,6 +242,20 @@ def main(bin_dir=None):
             shell.set_readline_completer()
             sm = WizardFlowStateMachine(shell=shell)
             sm.run()
+
+    elif options.subparser_name in ("run_component"):
+        print("Running standalone component")
+
+        ml_piper = MLPiper(options) \
+            .comp_repo(options.comp_root) \
+            .deployment_dir(options.deployment_dir) \
+            .bin_dir(bin_dir) \
+            .use_color(not options.no_color) \
+            .force(options.force)
+
+        ml_piper.prepare_run_component(options.args)
+        ml_piper.deploy()
+        ml_piper.run_deployment()
 
     else:
         raise Exception("subcommand: {} is not supported".format(options.subparser_name))
