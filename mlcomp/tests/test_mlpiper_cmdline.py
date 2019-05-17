@@ -307,7 +307,7 @@ class TestMLPiper:
         os.write(fd, json.dumps(java_connected_pipeline).encode())
         os.close(fd)
 
-        cmd = "{} run -r {} -f {} --deployment-dir {} --mlcomp-jar {}" \
+        cmd = "{} run -r {} -f {} --deployment-dir {} --mlcomp-jar {} --test-mode" \
             .format(TestMLPiper.mlpiper_script, comp_dir, pipeline_file, self._deployment_dir, self.mlcomp_jar)
         try:
             self._exec_shell_cmd(cmd, "Failed in running pipeline with input/output models!")
