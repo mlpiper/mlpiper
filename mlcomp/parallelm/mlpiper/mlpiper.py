@@ -30,6 +30,7 @@ class MLPiper(Base):
         super(MLPiper, self).__init__()
         self.set_logger(logging.getLogger(self.logger_name()))
         self._comp_repo_info = None
+        self._comp_repo_path = None
         self._comp_root_path = None
         self._deploy_dir = None
         self._bin_dir = None
@@ -50,8 +51,9 @@ class MLPiper(Base):
         self._logger.info("comp_root_path: {}".format(self._comp_root_path))
         self._logger.info("bin_dir: {}".format(self._bin_dir))
 
-    def comp_repo(self, comp_root_path):
-        self._comp_repo_info = ComponentScanner().scan_dir(comp_root_path)
+    def comp_repo(self, comp_repo_path):
+        self._comp_repo_path = comp_repo_path
+        self._comp_repo_info = ComponentScanner().scan_dir(comp_repo_path)
         return self
 
     def mlcomp_jar(self, mlcomp_jar):
@@ -138,7 +140,7 @@ class MLPiper(Base):
 
     def _validate_pipeline(self):
         if self._engine not in self._comp_repo_info:
-            raise Exception("Pipeline Engine: {} has not component".format(self._engine))
+            raise Exception("No component found for '{}' pipeline engine in '{}'".format(self._engine, self._comp_repo_path))
 
         for comp_name in self._get_pipeline_components():
             try:
