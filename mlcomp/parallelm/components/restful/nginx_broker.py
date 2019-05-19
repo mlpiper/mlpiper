@@ -6,6 +6,7 @@ import os
 import subprocess
 import platform
 import re
+import shutil
 
 from parallelm.common.base import Base
 from parallelm.components.restful import util
@@ -15,6 +16,8 @@ from parallelm.common.mlcomp_exception import MLCompException
 
 
 class NginxBroker(Base):
+    origin_nginx_conf_filepath_pattern = '{}/nginx.conf'
+    new_nginx_conf_filepath_pattern = '{}/nginx.conf.new'
 
     def __init__(self, ml_engine, dry_run=False):
         super(NginxBroker, self).__init__()
@@ -62,14 +65,44 @@ class NginxBroker(Base):
             # in order to enable extended server configurations, which are configured in conf.d.
             # Apparently, on 'redhat' platforms the given folder does not exits after nginx installation.
             if not os.path.exists(NginxConstants.SERVER_ENABLED_DIR):
-                os.mkdir(NginxConstants.SERVER_ENABLED_DIR, 0o644)
+                self._fix_missing_sites_enabled_conf(NginxConstants.NGINX_ROOT)
 
             sym_link = os.path.join(NginxConstants.SERVER_ENABLED_DIR,
                                     NginxConstants.SERVER_CONF_FILENAME)
-            self._logger.info("Creating nginx server sym link ... {}".format(sym_link))
-            os.symlink(nginx_server_conf_filepath, sym_link)
+            if not os.path.isfile(sym_link):
+                self._logger.info("Creating nginx server sym link ... {}".format(sym_link))
+                os.symlink(nginx_server_conf_filepath, sym_link)
 
         self._logger.info("Done with _generate_configuration ...")
+
+    def _fix_missing_sites_enabled_conf(self, nginx_root):
+        origin_nginx_conf_filepath = NginxBroker.origin_nginx_conf_filepath_pattern.format(nginx_root)
+        new_nginx_conf_filepath = NginxBroker.new_nginx_conf_filepath_pattern.format(nginx_root)
+
+        fix_configuration = True
+        pattern_conf_d = re.compile(r'^\s*include\s+{}/conf\.d/\*\.conf;\s*$'.format(nginx_root))
+        pattern_sites_enabled = re.compile(r'^\s*include\s+{}/sites-enabled/.*;\s*$'.format(nginx_root))
+        line_to_add = '    include {}/sites-enabled/*;\n'.format(nginx_root)
+
+        with open(origin_nginx_conf_filepath, 'r') as fr:
+            with open(new_nginx_conf_filepath, 'w') as fw:
+                for line in fr:
+                    fw.write(line)
+                    group = pattern_conf_d.match(line)
+                    if group:
+                        fw.write(line_to_add)
+                    elif pattern_sites_enabled.match(line):
+                        # sites-enabled already configured! Close and remove new file"
+                        fix_configuration = False
+                        break
+
+        if fix_configuration:
+            shutil.copyfile(new_nginx_conf_filepath, origin_nginx_conf_filepath)
+
+        if os.path.exists(new_nginx_conf_filepath):
+            os.remove(new_nginx_conf_filepath)
+
+        os.mkdir(NginxConstants.SERVER_ENABLED_DIR, 0o644)
 
     def _server_conf_filepath(self, platform_name):
         if self._debian_platform(platform_name):

@@ -68,7 +68,7 @@ class UwsgiStatistics(object):
         if sock:
             try:
                 data = sock.recv(UwsgiStatistics.STATS_JSON_MAX_SIZE_BYTES)
-                return json.loads(data)
+                return json.loads(data.decode('utf-8'))
             except ValueError as e:
                 self._logger.error("Invalid statistics json format! {}, data:\n{}\n".format(e.message, data))
             finally:

@@ -1,4 +1,7 @@
 import platform
+import subprocess
+
+from parallelm.common.os_util import service_installed
 
 
 class SharedConstants:
@@ -82,20 +85,23 @@ class UwsgiConstants:
 class NginxConstants:
     DEV_AGAINST_VERSION = 'nginx/1.10.3'
 
-    START_CMD = 'service nginx start' if platform.system() == "Linux" else 'nginx'
-    STOP_CMD = 'service nginx stop' if platform.system() == "Linux" else 'nginx -s quit'
+    START_CMD = 'service nginx start' if service_installed('dbus') else 'nginx'
+    STOP_CMD = 'service nginx stop' if service_installed('dbus') else 'nginx -s quit'
     VER_CMD = 'nginx -v'
 
     SERVER_CONF_FILENAME = 'parallelm.pipeline.restful'
 
-    SERVER_CONF_DIR_DEBIAN = '/etc/nginx/sites-available'
-    SERVER_CONF_DIR_REDHAT = '/etc/nginx/conf.d'
-    SERVER_CONF_DIR_MACOS = '/usr/local/etc/nginx/servers'
+    NGINX_ROOT = '/etc/nginx'
+    SERVER_CONF_DIR_DEBIAN = NGINX_ROOT + '/sites-available'
+    SERVER_CONF_DIR_REDHAT = NGINX_ROOT + '/conf.d'
 
-    SERVER_ENABLED_DIR = '/etc/nginx/sites-enabled'
+    NGINX_ROOT_MACOS = '/usr/local/etc/nginx'
+    SERVER_CONF_DIR_MACOS = NGINX_ROOT_MACOS + '/servers'
+
+    SERVER_ENABLED_DIR = NGINX_ROOT + '/sites-enabled'
 
     SUPPORTED_PLATFORMS_DEBIAN = r'debian|ubuntu'
-    SUPPORTED_PLATFORMS_REDHAT = r'redhat|centro|fedora'
+    SUPPORTED_PLATFORMS_REDHAT = r'redhat|centos|fedora'
     SUPPORTED_PLATFORMS_MACOS = r'darwin'
 
     DISABLE_ACCESS_LOG_KEY = 'disable_access_log'
