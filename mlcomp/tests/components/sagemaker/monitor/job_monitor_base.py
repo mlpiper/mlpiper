@@ -4,6 +4,7 @@ import pprint
 import time
 
 from monitor.report import Report
+from monitor.sm_api_constants import SMApiConstants
 from parallelm.common.mlcomp_exception import MLCompException
 
 
@@ -27,17 +28,17 @@ class JobMonitorBase(object):
 
             status = self._job_status(response)
             Report.job_status(self._job_name, running_time_sec, status)
-            if status == 'Completed':
+            if status == SMApiConstants.JOB_COMPLETED:
                 self._logger.info("Job '{}' completed!".format(self._job_name))
                 self._report_final_metrics(response)
                 if self._on_complete_callback:
                     self._on_complete_callback(response)
                 break
-            elif status == 'Failed':
-                msg = "Job '{}' failed! message: {}".format(self._job_name, response['FailureReason'])
+            elif status == SMApiConstants.JOB_FAILED:
+                msg = "Job '{}' failed! message: {}".format(self._job_name, response[SMApiConstants.FAILURE_REASON])
                 self._logger.error(msg)
                 raise MLCompException(msg)
-            elif status != 'InProgress':
+            elif status != SMApiConstants.JOB_IN_PROGRESS:
                 self._logger.warning("Unexpected job status! job-name: {}, status: {}".format(self._job_name, status))
 
             self._report_online_metrics(response)
