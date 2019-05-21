@@ -1,5 +1,4 @@
 from datetime import timedelta
-import pprint
 
 from parallelm.mlops import mlops
 from parallelm.mlops.stats.table import Table
@@ -24,8 +23,6 @@ class Report(object):
 
     @staticmethod
     def transform_job_final_metrics(job_name, metrics_data):
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(metrics_data)
         tbl = Table().name("Job Host Metrics").cols(["Metric", "Value"])
         for metric_data in metrics_data:
             tbl.add_row([metric_data['Label'], metric_data['Values'][0] if metric_data['Values'] else 0])

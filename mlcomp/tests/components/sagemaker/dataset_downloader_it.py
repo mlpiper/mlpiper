@@ -4,6 +4,7 @@ import pickle
 import urllib.request
 import time
 
+from parallelm.common.mlcomp_exception import MLCompException
 from parallelm.components import ConnectableComponent
 from common import os_util
 
@@ -60,7 +61,9 @@ class DatasetDownloaderIT(ConnectableComponent):
 
             return [train_set, valid_set, test_set]
         except Exception as e:
-            self._logger.error("Failed to download and read dataset!\n{}".format(e))
+            msg = "Failed to download and read dataset!\n{}".format(e)
+            self._logger.error(msg)
+            raise MLCompException(msg)
         finally:
             self._logger.info("Cleaning up temporary dataset file path: {}".format(tmp_dataset_filepath))
             os_util.remove_file_safely(tmp_dataset_filepath)

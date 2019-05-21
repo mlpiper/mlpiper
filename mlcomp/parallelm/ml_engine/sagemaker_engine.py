@@ -8,6 +8,17 @@ from parallelm.ml_engine.python_engine import PythonEngine
 
 
 class SageMakerEngine(PythonEngine):
+    TYPE = 'sagemaker'
+
+    SERVICE_ROLE_PATH = '/service-role/'
+    ROLE_RESPONSE_GROUP = 'Role'
+    ROLE_RESPONSE_NAME_KEY = 'RoleName'
+    ROLE_RESPONSE_ARN_KEY = 'Arn'
+
+    AWS_DEFAULT_REGION = 'AWS_DEFAULT_REGION'
+    AWS_ACCESS_KEY_ID = 'AWS_ACCESS_KEY_ID'
+    AWS_SECRET_ACCESS_KEY = 'AWS_SECRET_ACCESS_KEY'
+
     def __init__(self, pipeline):
         super(SageMakerEngine, self).__init__(pipeline, None)
         self._iam_role = None
@@ -48,14 +59,14 @@ class SageMakerEngine(PythonEngine):
 
             try:
                 response = client.create_role(
-                    Path='/service-role/',
+                    Path=SageMakerEngine.SERVICE_ROLE_PATH,
                     RoleName=role_name,
                     AssumeRolePolicyDocument='<URL-encoded-JSON>',
                     Description='Auto generated sagemaker aim role by ParallelM',
                     Tags=tags
                 )
-                self._iam_role_name = response['Role']['RoleName']
-                self._iam_role = response['Role']['Arn']
+                self._iam_role_name = response[SageMakerEngine.ROLE_RESPONSE_GROUP][SageMakerEngine.ROLE_RESPONSE_NAME_KEY]
+                self._iam_role = response[SageMakerEngine.ROLE_RESPONSE_GROUP][SageMakerEngine.ROLE_RESPONSE_ARN_KEY]
             except ClientError as e:
                 self._logger.error("Failed to create a an iam role for sagemaker service!\n{}".format(e))
                 raise e
@@ -69,9 +80,9 @@ class SageMakerEngine(PythonEngine):
         if not eng_config:
             raise MLCompException("Missing execution environment engine section in pipeline json!")
 
-        if eng_config['type'] != 'sagemaker':
-            raise MLCompException("Unexpected engine type in execution environment! expected: 'sagemake', got: {}"
-                                  .format(eng_config['type']))
+        if eng_config['type'] != SageMakerEngine.TYPE:
+            raise MLCompException("Unexpected engine type in execution environment! expected: '{}', got: {}"
+                                  .format(SageMakerEngine.TYPE, eng_config['type']))
 
         return eng_config['arguments']
 
@@ -86,9 +97,9 @@ class SageMakerEngine(PythonEngine):
         if not aws_secret_access_key:
             raise MLCompException("Missing 'aws_secret_access_key' parameter in execution environment!")
 
-        os.environ['AWS_DEFAULT_REGION'] = region  # 'us-west-2'
-        os.environ['AWS_ACCESS_KEY_ID'] = aws_access_key_id  # 'AKIAJHWNRUZE3LJMNFIA'
-        os.environ['AWS_SECRET_ACCESS_KEY'] = aws_secret_access_key  # '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'
+        os.environ[SageMakerEngine.AWS_DEFAULT_REGION] = region
+        os.environ[SageMakerEngine.AWS_ACCESS_KEY_ID] = aws_access_key_id
+        os.environ[SageMakerEngine.AWS_SECRET_ACCESS_KEY] = aws_secret_access_key
 
     def _setup_logger(self, eng_args_config):
         logging_level_name = EeArg(eng_args_config.get('logging_level',)).value
