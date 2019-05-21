@@ -73,9 +73,8 @@ if [[ ${skip_predict} == 0 ]]; then
     echo # Prediction
     echo #
 
-
-    pipeline_comp_test_set_local_csv_filepath="/tmp/sagemaker_mnist_test_dataset.csv"
-    pipeline_comp_attr_download_results="/tmp/sagemaker_mnist_test_dataset.out"
+    pipeline_comp_attr_download_results=$(cat $script_dir/../pipelines/sagemaker_mnist_prediction.json |\
+        python3 -c "import json; import sys; print(json.load(sys.stdin)['pipe'][0]['arguments']['local_filepath'])")
 
     deployment_path=${artifacts_dir}/predict-mlpiper-deployment
     pipeline_filepath="$mlcomp_root/tests/pipelines/sagemaker_mnist_prediction.json"
