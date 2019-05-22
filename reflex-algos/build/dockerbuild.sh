@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 Reflex_Algo_DIR=`git rev-parse --show-toplevel`/reflex-algos
-docker_container="parallelm/pm-reflex-algo-builder:1.0.0"
+docker_container="parallelm/pm-reflex-algo-builder:2.0.0"
 
 if [ ! -d ${HOME}/.m2 ]; then
     mkdir ${HOME}/.m2
