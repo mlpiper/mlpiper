@@ -4,11 +4,10 @@
 
 * OSX or Linux system (currently do not support Windows) * [Docker](https://docs.docker.com/engine/installation/) installation
 * Reflex_ALgo Build container
-([Guide](https://bitbucket.org/parallelmachines/reflex-algos/src/master/build/packer/README.md))
 
 ## Containerized User Builds
-The `dockerbuild.sh` script can be used to run a build inside of the official build environments
-produced by [Packer](https://bitbucket.org/parallelmachines/reflex_algo/src/master/build/packer/README.md).
+The `dockerbuild.sh` script can be used to run a build inside of the official build environments.
+To create Reflex_ALgo Build container, run *src/reflex/tools/dockers/create-algos-docker.sh*
 
 **NOTE:** Containers are run in
 *[ephemeral](https://docs.docker.com/engine/reference/run/#/clean-up---rm)*
