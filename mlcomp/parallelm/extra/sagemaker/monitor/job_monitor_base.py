@@ -3,9 +3,9 @@ import logging
 import pprint
 import time
 
-from monitor.report import Report
-from monitor.sm_api_constants import SMApiConstants
 from parallelm.common.mlcomp_exception import MLCompException
+from parallelm.extra.sagemaker.monitor.report import Report
+from parallelm.extra.sagemaker.monitor.sm_api_constants import SMApiConstants
 
 
 class JobMonitorBase(object):

@@ -2,7 +2,6 @@ import boto3
 import os
 import time
 
-from sagemaker.amazon.amazon_estimator import get_image_uri
 
 try:  # Python3
     from urllib.parse import urlparse, urlencode
@@ -100,6 +99,3 @@ class AwsHelper(object):
             rltv_path = path_parts[1]
 
         return bucket_name, rltv_path
-
-    def kmeans_image_uri(self):
-        return get_image_uri(boto3.Session().region_name, 'kmeans')

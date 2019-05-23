@@ -2,9 +2,9 @@ from datetime import datetime
 
 from sagemaker import TrainingJobAnalytics
 
-from monitor.job_monitor_base import JobMonitorBase
-from monitor.report import Report
-from monitor.sm_api_constants import SMApiConstants
+from parallelm.extra.sagemaker.monitor.job_monitor_base import JobMonitorBase
+from parallelm.extra.sagemaker.monitor.report import Report
+from parallelm.extra.sagemaker.monitor.sm_api_constants import SMApiConstants
 
 
 class JobMonitorEstimator(JobMonitorBase):
