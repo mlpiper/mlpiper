@@ -3,11 +3,11 @@
 ## Requirements
 
 * OSX or Linux system (currently do not support Windows) * [Docker](https://docs.docker.com/engine/installation/) installation
-* Reflex_ALgo Build container
+* MCenter Builder container
 
 ## Containerized User Builds
-The `dockerbuild.sh` script can be used to run a build inside of the official build environments.
-To create Reflex_ALgo Build container, run *src/reflex/tools/dockers/create-algos-docker.sh*
+The `dockerbuild.sh` script can be used to run a build inside of the official build environment.
+To create MCenter Builder container, run *src/reflex/tools/dockers/create-mcenter-builder-docker.sh*
 
 **NOTE:** Containers are run in
 *[ephemeral](https://docs.docker.com/engine/reference/run/#/clean-up---rm)*

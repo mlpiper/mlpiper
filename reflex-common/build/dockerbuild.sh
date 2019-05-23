@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 REFLEX_COMMON_DIR=`git rev-parse --show-toplevel`/reflex-common
+DOCKER_CONTAINER="parallelm/pm-mcenter-builder:1.0.0"
 
 echo "REFLEX_COMMON_DIR : $REFLEX_COMMON_DIR"
 
@@ -18,5 +19,5 @@ docker run \
     -e "REPO_DIR=${REFLEX_COMMON_DIR}" \
     -v ${HOME}:${HOME} \
     -v ${HOME}/.m2:/tmp/m2 \
-    parallelm/pm-reflex-common-builder:latest \
+    ${DOCKER_CONTAINER} \
     ${REFLEX_COMMON_DIR}/build/docker-entrypoint.sh "$@"
