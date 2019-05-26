@@ -1,5 +1,7 @@
 import datetime
+import json
 import os
+import pprint
 
 from parallelm.common import constants
 from parallelm.common.mlcomp_exception import MLCompException
@@ -14,6 +16,7 @@ class SageMakerEngine(PythonEngine):
     ROLE_RESPONSE_GROUP = 'Role'
     ROLE_RESPONSE_NAME_KEY = 'RoleName'
     ROLE_RESPONSE_ARN_KEY = 'Arn'
+    FULL_ACCESS_POLICY = 'arn:aws:iam::aws:policy/AmazonSageMakerFullAccess'
 
     AWS_DEFAULT_REGION = 'AWS_DEFAULT_REGION'
     AWS_ACCESS_KEY_ID = 'AWS_ACCESS_KEY_ID'
@@ -47,29 +50,64 @@ class SageMakerEngine(PythonEngine):
     def _setup_iam_role(self, eng_args_config):
         self._iam_role = EeArg(eng_args_config.get('iam_role')).value
         if not self._iam_role:
-            # acount_id = boto3.client('sts').get_caller_identity().get('Account')
+            self._create_role()
 
-            now = datetime.datetime.now()
-            role_name = 'AmazonSageMaker-ExecutionRole-{y}{month}{d}T{h}{minute}{s}' \
-                .format(y=now.year, month=now.month, d=now.day, h=now.hour, minute=now.minute, s=now.second)
+    def _create_role(self):
+        """
+        Creates an IAM role for SageMaker service (
+        https://docs.aws.amazon.com/sagemaker/latest/dg/sagemaker-roles.html#sagemaker-roles-amazonsagemakerfullaccess-policy)
 
-            tags = [{'Key': self._tag_key, 'Value': self._tag_value}] if self._tag_key else []
+        Please note that in order to be able to execute this function, proper permissions should be set upfront for
+        the given user. To set permissions, do the following:
+        1. Enter to AWS console ==> "My Security Credentials" ==> Users ==> <relevant-user> ==> "Add inline policy"
+        2. set the following write permissions:
+            "iam:DetachRolePolicy", "iam:CreateRole", "iam:DeleteRole", "iam:AttachRolePolicy"
+        3. Provides a name to the new attached permissions and save
+        4. Make sure there are no any other contradicting permission policy that block one of the permissions
+        above.
+        """
+        now = datetime.datetime.now()
+        role_name = 'AmazonSageMaker-ExecutionRole-{y}{month}{d}T{h}{minute}{s}' \
+            .format(y=now.year, month=now.month, d=now.day, h=now.hour, minute=now.minute, s=now.second)
 
-            client = boto3.client('iam')
+        tags = [{'Key': self._tag_key, 'Value': self._tag_value}] if self._tag_key else []
 
-            try:
-                response = client.create_role(
-                    Path=SageMakerEngine.SERVICE_ROLE_PATH,
-                    RoleName=role_name,
-                    AssumeRolePolicyDocument='<URL-encoded-JSON>',
-                    Description='Auto generated sagemaker aim role by ParallelM',
-                    Tags=tags
-                )
-                self._iam_role_name = response[SageMakerEngine.ROLE_RESPONSE_GROUP][SageMakerEngine.ROLE_RESPONSE_NAME_KEY]
-                self._iam_role = response[SageMakerEngine.ROLE_RESPONSE_GROUP][SageMakerEngine.ROLE_RESPONSE_ARN_KEY]
-            except ClientError as e:
-                self._logger.error("Failed to create a an iam role for sagemaker service!\n{}".format(e))
-                raise e
+        trust_policy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Principal": {
+                        "Service": "sagemaker.amazonaws.com"
+                    },
+                    "Action": "sts:AssumeRole"
+                }
+            ]
+        }
+
+        client = boto3.client('iam')
+
+        try:
+            self._logger.info("Creating sagemaker role, name: {}".format(role_name))
+            response = client.create_role(
+                Path=SageMakerEngine.SERVICE_ROLE_PATH,
+                RoleName=role_name,
+                AssumeRolePolicyDocument=json.dumps(trust_policy),
+                Description='Auto generated sagemaker aim role by ParallelM',
+                Tags=tags
+            )
+            self._logger.debug(pprint.pformat(response))
+
+            self._iam_role_name = response[SageMakerEngine.ROLE_RESPONSE_GROUP][SageMakerEngine.ROLE_RESPONSE_NAME_KEY]
+            self._iam_role = response[SageMakerEngine.ROLE_RESPONSE_GROUP][SageMakerEngine.ROLE_RESPONSE_ARN_KEY]
+
+            self._logger.info("Attaching sagemaker role to full access policy, name: {}, policy: {}"
+                              .format(role_name, SageMakerEngine.FULL_ACCESS_POLICY))
+            response = client.attach_role_policy(PolicyArn=SageMakerEngine.FULL_ACCESS_POLICY, RoleName=role_name)
+            self._logger.debug(pprint.pformat(response))
+        except ClientError as e:
+            self._logger.error("Failed to create a an IAM role for sagemaker service!\n{}".format(e))
+            raise e
 
     def _read_execution_env_params(self):
         ee_config = self._pipeline.get('executionEnvironment', dict()).get('configs')
@@ -114,7 +152,10 @@ class SageMakerEngine(PythonEngine):
         if self._iam_role_name:
             client = boto3.client('iam')
             try:
-                client.delete_role(RoleName=self._iam_role_name)
+                self._logger.info("Cleaning up sagemaker iam role: {}".format(self._iam_role_name))
+                client.detach_role_policy(RoleName=self._iam_role_name, PolicyArn=SageMakerEngine.FULL_ACCESS_POLICY)
+                response = client.delete_role(RoleName=self._iam_role_name)
+                self._logger.debug(pprint.pformat(response))
             except ClientError as e:
                 self._logger.error("Failed to delete the auto-generated iam role for sagemaker service!\n{}"
                                    .format(e))
