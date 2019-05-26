@@ -13,6 +13,8 @@ class PythonEngine(MLEngine):
             "mlcomp_jar": mlcomp_jar
         }
 
+        self.set_logger(self.get_engine_logger(self.logger_name()))
+
     def finalize(self):
         pass
 

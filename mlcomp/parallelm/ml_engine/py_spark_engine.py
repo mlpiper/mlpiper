@@ -17,6 +17,8 @@ class PySparkEngine(MLEngine):
         self._init_session(spark_jars)
         self._interim_directory_path = "/tmp"
 
+        self.set_logger(self.get_engine_logger(self.logger_name()))
+
     def _init_session(self, spark_jars):
         spark_builder = SparkSession.builder.appName(self.pipeline_name)
         if self._run_locally:

@@ -187,7 +187,6 @@ class Executor(Base):
             from parallelm.ml_engine.py_spark_engine import PySparkEngine
 
             self._ml_engine = PySparkEngine(pipeline, self._run_locally, self._spark_jars)
-            self.set_logger(self._ml_engine.get_engine_logger(self.logger_name()))
             if mlops_loaded:
                 mlops.init(self._ml_engine.context)
 
@@ -212,7 +211,6 @@ class Executor(Base):
                 self._logger.info("Using SageMaker engine")
                 self._ml_engine = SageMakerEngine(pipeline)
 
-            self.set_logger(self._ml_engine.get_engine_logger(self._ml_engine.logger_name()))
             if mlops_loaded:
                 # This initialization applies only to Python components and not to components
                 # that are written in other languages (.e.g R). The reason for that is that
