@@ -19,6 +19,7 @@ object RestApis {
   private val logger = LoggerFactory.getLogger(getClass)
 
   private var scheme: String = "http"
+  private var apiVersion: String = "v1"
 
   private def isReady: Boolean = {
     val ready = MLOpsEnvVariables.agentRestHost.isDefined && MLOpsEnvVariables.agentRestPort.isDefined
@@ -156,7 +157,7 @@ object RestApis {
       "pipelineInstanceId" -> pipelineInstanceId,
       "modelType" -> "lastApproved")
     val cl = new RestClient(scheme, MLOpsEnvVariables.agentRestHost.get, Some(MLOpsEnvVariables.agentRestPort.get.toInt))
-    val uri = buildURIPath(RestApiName.mlopsPrefix.toString, RestApiName.models.toString)
+    val uri = buildURIPath(RestApiName.mlopsPrefix.toString, apiVersion, RestApiName.models.toString)
     val response = cl.getRequestAsString(uri, params)
 
     implicit val format: DefaultFormats.type = DefaultFormats
@@ -200,10 +201,9 @@ object RestApis {
     val metadataMap: Option[Map[String, Any]] = this.getLastApprovedModelMetadata(mlAppId, pipelineInstanceId)
     if (metadataMap.isDefined) {
       val metadata = metadataMap.get
-      val m = Model(metadata("name").asInstanceOf[String],
-        ModelFormat.fromString(metadata("format").asInstanceOf[String]),
-        metadata("stateDescription").asInstanceOf[String],
-        Some(metadata("modelId").asInstanceOf[String]))
+      val m = Model(name = metadata("modelName").asInstanceOf[String],
+        format = ModelFormat.fromString(metadata("format").asInstanceOf[String]),
+        id = Some(metadata("id").asInstanceOf[String]))
       val modelData = downloadModelById(m.getId)
       m.setData(modelData.get)
       retModel = Some(m)
