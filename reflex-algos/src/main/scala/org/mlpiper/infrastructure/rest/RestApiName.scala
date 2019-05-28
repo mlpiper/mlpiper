@@ -2,7 +2,7 @@ package org.mlpiper.infrastructure.rest
 
 object RestApiName extends Enumeration {
 
-  type ModelFormat = Value
+  type RestApiName = Value
   val mlopsPrefix = Value("mlops")
   val uuid = Value("uuid")
   val models = Value("models")
