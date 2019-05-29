@@ -39,6 +39,7 @@ import shutil
 import sys
 import tempfile
 
+from parallelm.common.constants import LOGGER_NAME_PREFIX
 from parallelm.mlpiper.mlpiper import MLPiper
 from parallelm.mlpiper.wizard_shell import ComponentWizardShell
 from parallelm.mlpiper.wizard_flow import WizardFlowStateMachine
@@ -146,6 +147,7 @@ def _add_deps_sub_parser(subparsers):
     deps.add_argument('-r', '--comp-root', default=None, required=True,
                                 help='MLPiper components root dir. Recursively detecting components')
 
+
 def _add_wizard_sub_parser(subparsers):
     # Get Python/R modules dependencies for the given pipeline or component
     wizard_parser = subparsers.add_parser('wizard', help='Start component creation wizard')
@@ -158,7 +160,8 @@ def main(bin_dir=None):
     if not options:
         return
 
-    logging.basicConfig(level=options.logging_level, format='%(asctime)-15s %(levelname)s %(name)s:  %(message)s')
+    logging.basicConfig(format='%(asctime)-15s %(levelname)s %(name)s:  %(message)s')
+    logging.getLogger(LOGGER_NAME_PREFIX).setLevel(options.logging_level)
 
     if options.subparser_name in ("deploy", "run"):
         logging.debug("component_root: {}".format(options.comp_root))

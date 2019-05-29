@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import os
 import pprint
 
@@ -140,9 +141,13 @@ class SageMakerEngine(PythonEngine):
         os.environ[SageMakerEngine.AWS_SECRET_ACCESS_KEY] = aws_secret_access_key
 
     def _setup_logger(self, eng_args_config):
-        logging_level_name = EeArg(eng_args_config.get('logging_level',)).value
-        logging_level = constants.LOG_LEVELS.get('info' if not logging_level_name else logging_level_name.lower())
-        boto3.set_stream_logger('boto3.resources', logging_level)
+        modules_logging_level = EeArg(eng_args_config.get('boto3_logging_level')).value
+        if modules_logging_level:
+            for module, level in modules_logging_level.items():
+                logging_level = constants.LOG_LEVELS.get('info' if not level else level.lower(), logging.INFO)
+                self._logger.info("Set logging level, '{}' ==> {}"
+                                  .format(module, logging.getLevelName(logging_level)))
+                boto3.set_stream_logger(module, logging_level)
 
     def cleanup(self):
         # TODO: Cleanup all resources that were created during this session.
@@ -159,5 +164,3 @@ class SageMakerEngine(PythonEngine):
             except ClientError as e:
                 self._logger.error("Failed to delete the auto-generated iam role for sagemaker service!\n{}"
                                    .format(e))
-
-
