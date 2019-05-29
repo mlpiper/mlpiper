@@ -11,7 +11,7 @@ ln -s /tmp/m2 ${HOME}/.m2
 DEFAULT_BUILD="mvn clean install -Dmaven.javadoc.skip=true"
 MVN_ARGS=""
 
-if [ ! -z "$1" ] && [ "$1" == "-DskipTests" ]; then
+if [ "$1" = "-DskipTests" ]; then
     MVN_ARGS="-DskipTests"
 fi
 
