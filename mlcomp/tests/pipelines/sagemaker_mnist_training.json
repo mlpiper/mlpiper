@@ -74,6 +74,14 @@
                         "label": "IAM Role",
                         "description": "An IAM identity that has specific permissions",
                         "editable": true
+                    },
+                    "boto3_logging_level": {
+                        "value": {},
+                        "type": "map<string,string>",
+                        "optional": false,
+                        "label": "boto3 logging level",
+                        "description": "Enables to set logging level of any boto3 sub-module ",
+                        "editable": true
                     }
                 }
             }

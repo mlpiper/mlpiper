@@ -8,7 +8,7 @@
             "type": "aws_s3_file_uploader_it",
             "parents": [],
             "arguments": {
-                "local_filepath": "/tmp/sagemaker_mnist_test_dataset.csv",
+                "local_filepath": "/tmp/sagemaker-mnist-test-dataset.csv",
                 "skip_uploading": "false"
             }
         },
@@ -23,7 +23,8 @@
                 }
             ],
             "arguments": {
-                "skip_s3_model_uploading": "false"
+                "skip_s3_model_uploading": "false",
+                "instance_count": 1
             }
         },
         {
@@ -81,6 +82,14 @@
                         "optional": false,
                         "label": "IAM Role",
                         "description": "An IAM identity that has specific permissions",
+                        "editable": true
+                    },
+                    "boto3_logging_level": {
+                        "value": {},
+                        "type": "map<string,string>",
+                        "optional": false,
+                        "label": "boto3 logging level",
+                        "description": "Enables to set logging level of any boto3 sub-module ",
                         "editable": true
                     }
                 }

@@ -3,7 +3,7 @@
 script_name=$(basename ${BASH_SOURCE[0]})
 script_dir=$(realpath $(dirname ${BASH_SOURCE[0]}))
 
-USAGE="Usage: ${script_name} [--help] [--dir <artifacts-dir>] [--skip-train] [--skip-predict] [--verbose]"
+USAGE="Usage: ${script_name} [--help] [--dir <artifacts-dir>] [--skip-train] [--skip-predict] [--log-level <level>]"
 
 function validate_arg {
     [ -z $2 ] && { echo "Missing '$1' arg value!"; exit -1; }
@@ -12,14 +12,15 @@ function validate_arg {
 artifacts_dir=""
 skip_train=0
 skip_predict=0
-verbose=0
+log_level="info"
 while [ -n "$1" ]; do
     case $1 in
         --dir)          artifacts_dir=$2; validate_arg $1 $2 ; shift ;;
         --skip-train)   skip_train=1 ;;
         --skip-predict) skip_predict=1 ;;
-        --verbose)      verbose=1 ;;
+        --log-level)    log_level=$2; validate_arg $1 $2 ; shift ;;
         --help)         echo $USAGE; exit 0 ;;
+        *)              echo $USAGE; exit 0 ;;
     esac
     shift
 done
@@ -49,7 +50,8 @@ if [[ ${skip_train} == 0 ]]; then
     pipeline_filepath="$mlcomp_root/tests/pipelines/sagemaker_mnist_training.json"
 
     set -x
-    PYTHONPATH=${mlcomp_root}:${mlcomp_root}/../mlops $mlcomp_root/bin/mlpiper run \
+    PYTHONPATH=${mlcomp_root}:${mlcomp_root}/../mlops $mlcomp_root/bin/mlpiper --logging-level ${log_level} \
+        run \
         --output-model ${model_filepath} \
         -f ${pipeline_filepath} \
         -r ${components_root} \
@@ -81,7 +83,8 @@ if [[ ${skip_predict} == 0 ]]; then
     prediction_results_filepath="${artifacts_dir}/sagemaker_mnist_test_dataset.out"
 
     set -x
-    PYTHONPATH=${mlcomp_root}:${mlcomp_root}/../mlops ${mlcomp_root}/bin/mlpiper run \
+    PYTHONPATH=${mlcomp_root}:${mlcomp_root}/../mlops ${mlcomp_root}/bin/mlpiper  --logging-level ${log_level} \
+        run \
         --input-model ${model_filepath} \
         -f ${pipeline_filepath} \
         -r ${components_root} \
