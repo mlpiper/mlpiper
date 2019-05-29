@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.3.1] - [Unreleased]
 ### Added
-- add ComponentInfo, ComponentArgumentInfo, ComponentConnectionInfo infrastructure
-- add 'mlpiper wizard' tool to build components
+- Add ComponentInfo, ComponentArgumentInfo, ComponentConnectionInfo infrastructure
+- Add 'mlpiper wizard' tool to build components
+- Add SageMaker support
 
 ## [1.2.2] - 2019-05-01
 ### Added

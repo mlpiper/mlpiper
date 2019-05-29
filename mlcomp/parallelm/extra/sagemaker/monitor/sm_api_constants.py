@@ -3,6 +3,8 @@
 class SMApiConstants:
 
     # Constants from sagemaker_client.describe_training_job, sagemaker.describe_transform_job
+    CREATE_TIME = 'CreationTime'
+
     JOB_COMPLETED = 'Completed'
     JOB_IN_PROGRESS = 'InProgress'
     JOB_FAILED = 'Failed'
@@ -11,6 +13,11 @@ class SMApiConstants:
 
     class Estimator:
         JOB_STATUS = 'TrainingJobStatus'
+        START_TIME = 'TrainingStartTime'
+        END_TIME = 'TrainingEndTime'
+
+        SECONDARY_TRANSITIONS = 'SecondaryStatusTransitions'
+
         FINAL_METRIC_DATA_LIST = 'FinalMetricDataList'
         METRIC_NAME = 'MetricName'
         METRIC_VALUE = 'Value'

@@ -8,10 +8,21 @@ class Report(object):
     _last_metric_values = {}
 
     @staticmethod
-    def job_status(job_name, running_time_sec, status):
+    def job_status(job_name, running_time_sec, billing_time_sec, status=""):
         Report._last_metric_values[job_name] = status
-        tbl = Table().name("SageMaker Job Status").cols(["Job Name", "Running Time (sec)", "Status"])
-        tbl.add_row([job_name, str(timedelta(seconds=running_time_sec)), status])
+        tbl = Table().name("SageMaker Job Status").cols(["Job Name", "Total Running Time",
+                                                         "Time for Billing", "Status"])
+        tbl.add_row([job_name, Report.seconds_fmt(running_time_sec), Report.seconds_fmt(billing_time_sec),
+                     status])
+        mlops.set_stat(tbl)
+
+    @staticmethod
+    def job_secondary_transitions(rows):
+        tbl = Table().name("SageMaker Job Transitions")\
+                     .cols(["Start Time", "End Time", "Time Span", "Status", "Description"])
+        for row in rows:
+            tbl.add_row(row)
+
         mlops.set_stat(tbl)
 
     @staticmethod
@@ -22,8 +33,12 @@ class Report(object):
             mlops.set_stat(metric_name, value)
 
     @staticmethod
-    def transform_job_final_metrics(job_name, metrics_data):
+    def transform_job_metrics(job_name, metrics_data):
         tbl = Table().name("Job Host Metrics").cols(["Metric", "Value"])
         for metric_data in metrics_data:
             tbl.add_row([metric_data['Label'], metric_data['Values'][0] if metric_data['Values'] else 0])
         mlops.set_stat(tbl)
+
+    @staticmethod
+    def seconds_fmt(seconds):
+        return str(timedelta(seconds=int(seconds))) if seconds else "~"

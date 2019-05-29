@@ -46,8 +46,8 @@
         {
             "key": "bucket_name",
             "type": "str",
-            "label": "Bucket name [Default: Session().default_bucket()]",
-            "description": "AWS bucket name",
+            "label": "Bucket name",
+            "description": "AWS bucket name [Default: Session().default_bucket()]",
             "optional": true
         },
         {

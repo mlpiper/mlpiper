@@ -31,6 +31,7 @@
                 }
             ],
             "arguments": {
+                "instance_count": 2
             }
         }
     ],
@@ -80,7 +81,7 @@
                         "type": "map<string,string>",
                         "optional": false,
                         "label": "boto3 logging level",
-                        "description": "Enables to set logging level of any boto3 sub-module ",
+                        "description": "Enables to set logging level of any boto3 sub-module",
                         "editable": true
                     }
                 }
