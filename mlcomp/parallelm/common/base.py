@@ -36,7 +36,7 @@ class Base(object):
     def info(self, msg):
         self._msg_container.append(msg)
 
-    def warn(self, msg):
+    def warning(self, msg):
         self._msg_container.append(msg)
 
     def error(self, msg):
