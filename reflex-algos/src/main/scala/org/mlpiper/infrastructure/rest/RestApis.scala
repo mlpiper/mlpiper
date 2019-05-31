@@ -222,10 +222,9 @@ object RestApis {
     if (!isReady) {
       return ret
     }
-    val params = Map[String, String](
-      "modelId" -> model.getId)
+    val params = Map[String, String]()
     val cl = new RestClient(scheme, MLOpsEnvVariables.agentRestHost.get, Some(MLOpsEnvVariables.agentRestPort.get.toInt))
-    val uri = buildURIPath(RestApiName.mlopsPrefix.toString, RestApiName.modelStats.toString)
+    val uri = buildURIPath(RestApiName.mlopsPrefix.toString, apiVersion, RestApiName.models.toString, model.getId, RestApiName.metrics.toString)
     val response = cl.getRequestAsString(uri, params)
 
     implicit val format: DefaultFormats.type = DefaultFormats
