@@ -44,7 +44,7 @@
                 "type": "sagemaker",
                 "arguments": {
                     "region": {
-                        "value": "us-west-2",
+                        "value": "__REGION_PLACEHOLDER__",
                         "type": "string",
                         "optional": false,
                         "label": "Region",
@@ -52,7 +52,7 @@
                         "editable": true
                     },
                     "aws_access_key_id": {
-                        "value": "",
+                        "value": "__AWS_ACCESS_KEY_ID_PLACEHOLDER__",
                         "type": "string",
                         "optional": false,
                         "label": "Access Key ID",
@@ -60,7 +60,7 @@
                         "editable": true
                     },
                     "aws_secret_access_key": {
-                        "value": "",
+                        "value": "__AWS_SECRET_ACCESS_KEY_PLACEHOLDER__",
                         "type": "string",
                         "optional": false,
                         "label": "Secret Access Key",

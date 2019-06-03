@@ -39,7 +39,26 @@ echo "Artifacts dir: ${artifacts_dir}"
 
 mlcomp_root="$script_dir/../.."
 components_root="$mlcomp_root/tests/components/sagemaker"
+pipelines_root="$mlcomp_root/tests/pipelines"
 model_filepath="${artifacts_dir}/sagemaker-kmeans-model.tar.gz"
+
+function pipeline_with_creds {
+    pipeline_name=$1
+    pipeline_filepath=${pipelines_root}/${pipeline_name}
+    local pipeline_with_creds_filepath="/tmp/${pipeline_name}"
+
+    cp ${pipeline_filepath} ${pipeline_with_creds_filepath}
+
+    region=$(grep region ~/.aws/config | awk '{print $3}')
+    aws_access_key_id=$(grep aws_access_key_id ~/.aws/credentials | awk '{print $3}')
+    aws_secret_access_key=$(grep aws_secret_access_key ~/.aws/credentials | awk '{print $3}')
+
+    sed -i'' -e "s/__REGION_PLACEHOLDER__/${region}/g" ${pipeline_with_creds_filepath}
+    sed -i'' -e "s/__AWS_ACCESS_KEY_ID_PLACEHOLDER__/${aws_access_key_id}/g" ${pipeline_with_creds_filepath}
+    sed -i'' -e "s/__AWS_SECRET_ACCESS_KEY_PLACEHOLDER__/${aws_secret_access_key}/g" /${pipeline_with_creds_filepath}
+
+    echo ${pipeline_with_creds_filepath}
+}
 
 if [[ ${skip_train} == 0 ]]; then
     echo
@@ -47,17 +66,19 @@ if [[ ${skip_train} == 0 ]]; then
     echo # Training
     echo #
     deployment_path=${artifacts_dir}/train-mlpiper-deployment
-    pipeline_filepath="$mlcomp_root/tests/pipelines/sagemaker_mnist_training.json"
+    tmp_pipeline_filepath=$(pipeline_with_creds "sagemaker_mnist_training.json")
 
     set -x
     PYTHONPATH=${mlcomp_root}:${mlcomp_root}/../mlops $mlcomp_root/bin/mlpiper --logging-level ${log_level} \
         run \
         --output-model ${model_filepath} \
-        -f ${pipeline_filepath} \
+        -f ${tmp_pipeline_filepath} \
         -r ${components_root} \
         -d ${deployment_path} \
         --force
     set +x
+
+    rm -rf ${tmp_pipeline_filepath}
 
     if [ -f $model_filepath ]; then
         rm -rf $deployment_path
@@ -79,18 +100,20 @@ if [[ ${skip_predict} == 0 ]]; then
         python3 -c "import json; import sys; print(json.load(sys.stdin)['pipe'][0]['arguments']['local_filepath'])")
 
     deployment_path=${artifacts_dir}/predict-mlpiper-deployment
-    pipeline_filepath="$mlcomp_root/tests/pipelines/sagemaker_mnist_prediction.json"
+    tmp_pipeline_filepath=$(pipeline_with_creds "sagemaker_mnist_prediction.json")
     prediction_results_filepath="${artifacts_dir}/sagemaker_mnist_test_dataset.out"
 
     set -x
     PYTHONPATH=${mlcomp_root}:${mlcomp_root}/../mlops ${mlcomp_root}/bin/mlpiper  --logging-level ${log_level} \
         run \
         --input-model ${model_filepath} \
-        -f ${pipeline_filepath} \
+        -f ${tmp_pipeline_filepath} \
         -r ${components_root} \
         -d ${deployment_path} \
         --force
     set +x
+
+    rm -rf ${tmp_pipeline_filepath}
 
     if [ -f ${pipeline_comp_attr_download_results} ]; then
         cp ${pipeline_comp_attr_download_results} ${prediction_results_filepath}
