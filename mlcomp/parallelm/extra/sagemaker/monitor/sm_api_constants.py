@@ -11,8 +11,26 @@ class SMApiConstants:
 
     FAILURE_REASON = 'FailureReason'
 
+    METRIC_CPU_UTILIZATION = 'CPUUtilization'
+    METRIC_MEMORY_UTILIZATION = 'MemoryUtilization'
+    METRIC_DISK_UTILIZATION = 'DiskUtilization'
+
+    STAT_AVG = 'Average'
+    STAT_MIN = 'Minimum'
+    STAT_MAX = 'Maximum'
+
+    LIST_METRICS_NAME = 'Metrics'
+    LIST_METRICS_DIM = 'Dimensions'
+    LIST_METRICS_DIM_VALUE = 'Value'
+
+    HOST_KEY = 'Host'
+    TIMESTAMP_ASC = 'TimestampAscending'
+
+    METRICS_RESULTS = 'MetricDataResults'
+
     class Estimator:
         JOB_STATUS = 'TrainingJobStatus'
+        NAMESPACE = '/aws/sagemaker/TrainingJobs'
         START_TIME = 'TrainingStartTime'
         END_TIME = 'TrainingEndTime'
 
@@ -32,23 +50,5 @@ class SMApiConstants:
         JOB_STATUS = 'TransformJobStatus'
         NAMESPACE = '/aws/sagemaker/TransformJobs'
 
-        METRIC_CPU_UTILIZATION = 'CPUUtilization'
-        METRIC_MEMORY_UTILIZATION = 'MemoryUtilization'
-
-        STAT_AVG = 'Average'
-        STAT_MIN = 'Minimum'
-        STAT_MAX = 'Maximum'
-
-        LIST_METRICS_NAME = 'Metrics'
-        LIST_METRICS_DIM = 'Dimensions'
-        LIST_METRICS_DIM_VALUE = 'Value'
-
         START_TIME = 'TransformStartTime'
         END_TIME = 'TransformEndTime'
-        TIMESTAMP_ASC = 'TimestampAscending'
-
-        METRICS_RESULTS = 'MetricDataResults'
-
-        HOST_KEY = 'Host'
-
-

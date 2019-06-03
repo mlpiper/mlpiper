@@ -3,6 +3,7 @@ import pytz
 
 from sagemaker import TrainingJobAnalytics
 
+from parallelm.common.cached_property import cached_property
 from parallelm.extra.sagemaker.monitor.job_monitor_base import JobMonitorBase
 from parallelm.extra.sagemaker.monitor.report import Report
 from parallelm.extra.sagemaker.monitor.sm_api_constants import SMApiConstants
@@ -27,7 +28,35 @@ class JobMonitorEstimator(JobMonitorBase):
     def _job_end_time(self, describe_response):
         return describe_response.get(SMApiConstants.Estimator.END_TIME)
 
-    def _report_online_metrics(self, describe_response):
+    @cached_property
+    def _host_metrics_defs(self):
+        return [
+            JobMonitorBase.MetricMeta('cpuavg_{}', SMApiConstants.METRIC_CPU_UTILIZATION,
+                                      SMApiConstants.STAT_AVG),
+            JobMonitorBase.MetricMeta('cpumin_{}', SMApiConstants.METRIC_CPU_UTILIZATION,
+                                      SMApiConstants.STAT_MIN),
+            JobMonitorBase.MetricMeta('cpumax_{}', SMApiConstants.METRIC_CPU_UTILIZATION,
+                                      SMApiConstants.STAT_MAX),
+
+            JobMonitorBase.MetricMeta('memavg_{}', SMApiConstants.METRIC_MEMORY_UTILIZATION,
+                                      SMApiConstants.STAT_AVG),
+            JobMonitorBase.MetricMeta('memmin_{}', SMApiConstants.METRIC_MEMORY_UTILIZATION,
+                                      SMApiConstants.STAT_MIN),
+            JobMonitorBase.MetricMeta('memmax_{}', SMApiConstants.METRIC_MEMORY_UTILIZATION,
+                                      SMApiConstants.STAT_MAX),
+
+            JobMonitorBase.MetricMeta('diskavg_{}', SMApiConstants.METRIC_MEMORY_UTILIZATION,
+                                      SMApiConstants.STAT_AVG),
+            JobMonitorBase.MetricMeta('diskmin_{}', SMApiConstants.METRIC_MEMORY_UTILIZATION,
+                                      SMApiConstants.STAT_MIN),
+            JobMonitorBase.MetricMeta('diskmax_{}', SMApiConstants.METRIC_MEMORY_UTILIZATION,
+                                      SMApiConstants.STAT_MAX)
+        ]
+
+    def _metrics_namespace(self):
+        return SMApiConstants.Estimator.NAMESPACE
+
+    def _report_extended_online_metrics(self, describe_response):
         self._report_secondary_transitions(describe_response)
 
         # No reason to start reading metrics before the job is actually starting
@@ -75,7 +104,7 @@ class JobMonitorEstimator(JobMonitorBase):
 
         return self._metric_names
 
-    def _report_final_metrics(self, describe_response):
+    def _report_extended_final_metrics(self, describe_response):
         final_metrics = describe_response.get(SMApiConstants.Estimator.FINAL_METRIC_DATA_LIST)
         if final_metrics:
             for metric in final_metrics:

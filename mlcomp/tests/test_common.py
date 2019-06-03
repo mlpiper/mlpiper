@@ -1,7 +1,11 @@
+import abc
+from future.utils import with_metaclass
 import os
 from tempfile import mkstemp
+import uuid
 
 from parallelm.common.buff_to_lines import BufferToLines
+from parallelm.common.cached_property import cached_property
 from parallelm.common.topological_sort import TopologicalSort
 
 
@@ -113,3 +117,22 @@ class TestCommon:
 
     def _graph_str(self, graph):
         return " <= ".join([str(n) for n in graph])
+
+    def test_cached_property(self):
+        class Base(with_metaclass(abc.ABCMeta, object)):
+            @cached_property
+            @abc.abstractmethod
+            def uuid_property(self):
+                pass
+
+        class CachedPropTester(Base):
+            @cached_property
+            def uuid_property(self):
+                # Supposed to be called once per instance
+                return str(uuid.uuid4())
+
+        a = CachedPropTester()
+        assert a.uuid_property == a.uuid_property
+
+        b = CachedPropTester()
+        assert b.uuid_property != a.uuid_property

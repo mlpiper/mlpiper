@@ -9,7 +9,7 @@
             "parents": [],
             "arguments": {
                 "local_filepath": "/tmp/sagemaker-mnist-test-dataset.csv",
-                "skip_uploading": "false"
+                "skip_uploading": false
             }
         },
         {
@@ -23,7 +23,7 @@
                 }
             ],
             "arguments": {
-                "skip_s3_model_uploading": "false",
+                "skip_s3_model_uploading": false,
                 "instance_count": 2
             }
         },

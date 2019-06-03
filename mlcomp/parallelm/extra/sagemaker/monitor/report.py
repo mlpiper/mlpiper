@@ -33,7 +33,7 @@ class Report(object):
             mlops.set_stat(metric_name, value)
 
     @staticmethod
-    def transform_job_metrics(job_name, metrics_data):
+    def job_host_metrics(job_name, metrics_data):
         tbl = Table().name("Job Host Metrics").cols(["Metric", "Value"])
         for metric_data in metrics_data:
             tbl.add_row([metric_data['Label'], metric_data['Values'][0] if metric_data['Values'] else 0])

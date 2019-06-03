@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import pprint
+import time
 
 from parallelm.common import constants
 from parallelm.common.mlcomp_exception import MLCompException
@@ -106,6 +107,11 @@ class SageMakerEngine(PythonEngine):
                               .format(role_name, SageMakerEngine.FULL_ACCESS_POLICY))
             response = client.attach_role_policy(PolicyArn=SageMakerEngine.FULL_ACCESS_POLICY, RoleName=role_name)
             self._logger.debug(pprint.pformat(response))
+
+            # Give the AWS IAM service enough time to setup the role properly. Trying to query the IAM role did
+            # not help, so using an artificial delay here.
+            time.sleep(3.0)
+
         except ClientError as e:
             self._logger.error("Failed to create a an IAM role for sagemaker service!\n{}".format(e))
             raise e

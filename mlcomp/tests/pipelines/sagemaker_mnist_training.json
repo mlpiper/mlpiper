@@ -31,6 +31,7 @@
                 }
             ],
             "arguments": {
+                "skip_s3_dataset_uploading": false,
                 "instance_count": 2
             }
         }
