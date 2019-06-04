@@ -41,6 +41,10 @@ public enum ModelFormat {
 	@SerializedName("H2O_Driverless_Ai")
 	H2O_DRIVERLESS_AI ("H2O_Driverless_Ai"),
 
+	// DataRobot Jar model
+	@SerializedName("DataRobot_Jar")
+	DATAROBOT_JAR ("DataRobot_Jar"),
+
 	@SerializedName("Unknown")
 	UNKNOWN ("Unknown");
 
@@ -48,7 +52,7 @@ public enum ModelFormat {
 	// Now, SPARKPMML and SAVEDMODEL are marked as directory. JSON, BINARY, PMML, TEXT and UNKNOWN are marked as file.
 	public static final Set<ModelFormat> DIRECTORY = EnumSet.of(SPARKML, SAVEDMODEL);
 	public static final Set<ModelFormat> FILE = EnumSet.of(JSON, BINARY, TEXT, PMML, UNKNOWN, SCIKITLEARN_2,
-			SCIKITLEARN_3, H2O_3, H2O_DRIVERLESS_AI);
+			SCIKITLEARN_3, H2O_3, H2O_DRIVERLESS_AI, DATAROBOT_JAR);
 
 	// TODO: add the link set here
 
