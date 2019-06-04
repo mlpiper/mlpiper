@@ -1,8 +1,9 @@
-from abc import ABCMeta, abstractmethod
+import abc
+from future.utils import with_metaclass
 from random import randint
 
 
-class StreamInput(object):
+class StreamInput(with_metaclass(abc.ABCMeta, object)):
     def __init__(self, total_records, stop_at_record=-1, random=False):
         self._total_records = total_records
         self._stop_at_record = stop_at_record

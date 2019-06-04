@@ -1,9 +1,11 @@
 import abc
+from future.utils import with_metaclass
+
 from parallelm.common.base import Base
 from parallelm.pipeline import json_fields
 
 
-class MLEngine(Base):
+class MLEngine(with_metaclass(abc.ABCMeta, Base)):
     """
     An abstract class, which defines the interface of any implemented engine. An example for such engines
     are PySpark, Tensorflow and so on.

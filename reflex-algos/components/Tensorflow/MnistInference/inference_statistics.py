@@ -1,14 +1,15 @@
-from abc import ABCMeta, abstractmethod
+import abc
+from future.utils import with_metaclass
 
 
-class InferenceStatistics(object):
+class InferenceStatistics(with_metaclass(abc.ABCMeta, object)):
     def __init__(self, report_interval):
         self._report_interval = report_interval
         self._total = 0
         self._correct = 0
         self._low_conf = 0
 
-    @abstractmethod
+    @abc.abstractmethod
     def infer_stats(self, sample, label, inference):
         pass
 
@@ -37,7 +38,7 @@ class InferenceStatistics(object):
     def is_time_to_report(self):
         return self._total % self._report_interval == 0
 
-    @abstractmethod
+    @abc.abstractmethod
     def report_stats(self):
         pass
 

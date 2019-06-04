@@ -1,11 +1,13 @@
 """
 MLOps helper class to fetch objects from the ECO server using REST interfaces.
 """
-from abc import abstractmethod
+import abc
+from future.utils import with_metaclass
 
 from parallelm.mlops.base_obj import BaseObj
 
-class MlOpsRestHelper(BaseObj):
+
+class MlOpsRestHelper(with_metaclass(abc.ABCMeta, BaseObj)):
     """
     This class is a set of helpers to fetch configuration information and models from the MLOps server.
     """
@@ -26,7 +28,7 @@ class MlOpsRestHelper(BaseObj):
         self._prefix = prefix
         return self
 
-    @abstractmethod
+    @abc.abstractmethod
     def login(self, user='admin', auth='admin'):
         """
         This should be the only ECO REST API call not requiring a security token. Instead, use the account username
@@ -42,7 +44,7 @@ class MlOpsRestHelper(BaseObj):
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_model_list(self):
         """
         Requests the list of models from MLOps
@@ -50,7 +52,7 @@ class MlOpsRestHelper(BaseObj):
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def post_model_as_file(self, model_file_path, params, metadata):
         """
         Posts a file to the server
@@ -61,7 +63,7 @@ class MlOpsRestHelper(BaseObj):
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_groups(self):
         """
         Requests the list of groups from MLOps
@@ -69,7 +71,7 @@ class MlOpsRestHelper(BaseObj):
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_agents(self):
         """
         Requests the list of agents from MLOps
@@ -77,7 +79,7 @@ class MlOpsRestHelper(BaseObj):
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_workflow_instance(self, ion_instance_id):
         """
         Requests the workflow instance for the given ION
@@ -86,11 +88,11 @@ class MlOpsRestHelper(BaseObj):
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_health_thresholds(self, ion_instance_id):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def download_model(self, model_id):
         """
         Requests the model corresponding to the given model_id
@@ -100,7 +102,7 @@ class MlOpsRestHelper(BaseObj):
         """
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_stat(self, stat_name, ion_id, workflow_node_id, agent_id, pipeline_id, start_time, end_time):
         """
         Get the given statistic from MLOps server
@@ -117,18 +119,18 @@ class MlOpsRestHelper(BaseObj):
         # TODO Add try-except
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_model_stats(self, model_id):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_alerts(self, query_args):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def done(self):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def get_uuid(self, type):
         pass

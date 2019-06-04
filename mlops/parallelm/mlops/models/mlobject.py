@@ -1,15 +1,13 @@
-from abc import abstractmethod
-from abc import ABCMeta
+import abc
 from enum import Enum
+from future.utils import with_metaclass
 
 
 class MLObjectType(Enum):
     MODEL = "model"
 
 
-class MLObject:
-    # This is supported by Python 2 and 3
-    __metaclass__ = ABCMeta
+class MLObject(with_metaclass(abc.ABCMeta, object)):
     """
     Base class for the all MLObjects
     """
@@ -24,10 +22,10 @@ class MLObject:
     def get_id(self):
         return self._id
 
-    @abstractmethod
+    @abc.abstractmethod
     def _get_object_type(self):
         pass
 
-    @abstractmethod
+    @abc.abstractmethod
     def __str__(self):
         pass

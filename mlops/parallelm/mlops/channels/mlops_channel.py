@@ -3,16 +3,16 @@ Class representing the output channel to be used to report statistics/operations
 """
 
 import abc
+from future.utils import with_metaclass
 
 from parallelm.mlops.stats.table import is_list_of_lists
 from parallelm.mlops.stats_category import StatCategory, StatsMode, StatGraphType
 
 
-class MLOpsChannel:
+class MLOpsChannel(with_metaclass(abc.ABCMeta, object)):
     """
     The MLOpsChannel is providing the way to communicate with the MLOPs system.
     """
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def done(self):
