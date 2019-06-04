@@ -182,7 +182,7 @@ object RestApis {
   private def downloadModelById(modelId: String): Option[Array[Byte]] = {
     val params = Map[String, String]()
     val cl = new RestClient(scheme, MLOpsEnvVariables.agentRestHost.get, Some(MLOpsEnvVariables.agentRestPort.get.toInt))
-    val uri = buildURIPath(RestApiName.mlopsPrefix.toString, RestApiName.models.toString, modelId, RestApiName.download.toString)
+    val uri = buildURIPath(RestApiName.mlopsPrefix.toString, apiVersion, RestApiName.models.toString, modelId, RestApiName.download.toString)
     cl.getRequestAsByteArray(uri, params)
   }
 
