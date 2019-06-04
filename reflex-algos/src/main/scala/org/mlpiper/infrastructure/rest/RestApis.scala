@@ -201,7 +201,7 @@ object RestApis {
     val metadataMap: Option[Map[String, Any]] = this.getLastApprovedModelMetadata(mlAppId, pipelineInstanceId)
     if (metadataMap.isDefined) {
       val metadata = metadataMap.get
-      val m = Model(name = metadata("modelName").asInstanceOf[String],
+      val m = Model(name = metadata("name").asInstanceOf[String],
         format = ModelFormat.fromString(metadata("format").asInstanceOf[String]),
         id = Some(metadata("id").asInstanceOf[String]))
       val modelData = downloadModelById(m.getId)
