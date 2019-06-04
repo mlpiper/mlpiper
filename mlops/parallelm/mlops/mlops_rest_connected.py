@@ -56,6 +56,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
         self._mlops_port = mlops_port
         self._token = token
         self._prefix = None
+        self._api_version = "v1"
         self._service_unavail_sleep_time = 5
 
     def _return_cookie(self):
@@ -131,7 +132,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
         return self._get_url_request_response_as_json(url)
 
     def get_last_approved_model(self, workflow_run_id, pipeline_inst_id):
-        url = build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.MODELS,
+        url = build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS,
                         ionId=workflow_run_id, pipelineInstanceId=pipeline_inst_id, modelType="lastApproved")
         return self._get_url_request_response_as_json(url)
 
@@ -147,7 +148,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
         if metadata and not isinstance(metadata, ModelMetadata):
             raise MLOpsException("metadata argument must be a ModelMetadata object, got {}".format(type(metadata)))
 
-        required_params = ["modelName", "modelId", "format", "workflowInstanceId", "pipelineInstanceId", "description"]
+        required_params = ["name", "id", "format", "pipelineInstanceId", "description"]
 
         for param_name in required_params:
             if param_name not in params:
@@ -252,7 +253,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
         :return: the model
         :raises MLOpsException
         """
-        url = build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.MODELS, model_id, MLOpsRestHandles.DOWNLOAD)
+        url = build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS, model_id, MLOpsRestHandles.DOWNLOAD)
         self._info("Downloading model [{}]".format(url))
         r = self._get_url_request_response(url)
         return r.content
@@ -341,7 +342,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
             raise MLOpsException('Call ' + str(url) + ' failed with error ' + str(e))
 
     def url_get_model_stats(self, model_id):
-        return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.MODEL_STATS, modelId=model_id)
+        return build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS, model_id, MLOpsRestHandles.METRICS)
 
     def get_model_stats(self, model_id):
         url = self.url_get_model_stats(model_id)
