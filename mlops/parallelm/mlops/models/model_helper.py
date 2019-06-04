@@ -7,6 +7,7 @@ from parallelm.mlops.base_obj import BaseObj
 from parallelm.mlops.constants import Constants
 from parallelm.mlops.models.model import Model
 from parallelm.mlops.models.model import ModelFormat
+from parallelm.mlops.models import json_fields
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.packer import DirectoryPack
 from parallelm.mlops.utils import datetime_to_timestamp_milli
@@ -166,11 +167,13 @@ class ModelHelper(BaseObj):
         return Model(self._stats_helper, self._rest_helper, name, model_format, description, user_defined, id=id)
 
     def create_model_from_json(self, model_dict):
-        model_format = ModelFormat.from_str(model_dict['format'])
-        model = self.create_model(name=model_dict['name'], model_format=model_format, id=model_dict['id'])
-        model.metadata.state = model_dict['state']
-        model.metadata.creation_time = model_dict['createdTimestamp']
-        model.metadata.size = model_dict['modelSize']
+        model_format = ModelFormat.from_str(model_dict[json_fields.MODEL_FORMAT_FIELD])
+        model = self.create_model(name=model_dict[json_fields.MODEL_NAME_FIELD],
+                                  model_format=model_format,
+                                  id=model_dict[json_fields.MODEL_ID_FIELD])
+        #model.metadata.state = model_dict['state']
+        model.metadata.creation_time = model_dict[json_fields.MODEL_CREATED_ON_FIELD]
+        model.metadata.size = model_dict[json_fields.MODEL_SIZE_FIELD]
         return model
 
     def publish_model(self, model, pipelineInstanceId):
@@ -193,11 +196,10 @@ class ModelHelper(BaseObj):
             else:
                 raise MLOpsException("Path to model with format {} expected to be a file".format(model.metadata.modelFormat.value))
 
-        params = {"modelName": model.metadata.name,
+        params = {"name": model.metadata.name,
                   "format": model.metadata.modelFormat.value,
-                  "workflowInstanceId": model.metadata.workflowRunId,
                   "pipelineInstanceId": pipelineInstanceId,
-                  "modelId": model.metadata.modelId,
+                  "id": model.metadata.modelId,
                   "description": model.metadata.description}
 
         ret = self._rest_helper.post_model_as_file(model_file_to_publish, params, model.metadata)

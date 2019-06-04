@@ -7,7 +7,7 @@ from parallelm.mlops.mlops_ctx import MLOpsCtx
 from parallelm.mlops.mlops_mode import MLOpsMode
 from parallelm.mlops.mlops_env_constants import MLOpsEnvConstants
 from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
-
+from parallelm.mlops import models
 
 class ION1:
 
@@ -403,51 +403,34 @@ test_agents_info = [{
 }]
 
 test_models_info = [
-    {'ionName': 'mlops-tests',
-     'raiseAlert': False,
-     'sequence': 4,
-     'eventType': 'Model',
-     'clearedTimestamp': 0,
-     'id': ION1.MODEL_ID,
-     'state': 'APPROVED',
-     'msgType': 'UNKNOWN',
-     'type': 'Model',
-     'modelId': '8c95deaf-87e4-4c21-bc92-e5b1a0454f9a',
-     'pipelineInstanceId': ION1.PIPELINE_INST_ID_0,
-     'format': 'TEXT',
-     'deletedTimestamp': 0,
-     'createdTimestamp': 1518460283900,
-     'host': 'localhost',
-     'modelSize': 0,
-     'name': 'model-4',
-     'stateDescription': '',
-     'modelFormat': 'TEXT',
-     'created': 1518460765161,
-     'workflowRunId': '13445bb4-535a-4d45-b2f2-77293026e3da',
-     'reviewedBy': ''
+    {
+     models.json_fields.MODEL_ID_FIELD: ION1.MODEL_ID,
+     models.json_fields.MODEL_NAME_FIELD: 'model-4',
+     models.json_fields.MODEL_FORMAT_FIELD: 'TEXT',
+     models.json_fields.MODEL_VERSION_FIELD: '1',
+     models.json_fields.MODEL_TRAIN_VERSION_FIELD: '3',
+     models.json_fields.MODEL_SIZE_FIELD: 0,
+     models.json_fields.MODEL_OWNER_FIELD: 'admin',
+     models.json_fields.MODEL_CREATED_ON_FIELD: 1518460283900,
+     models.json_fields.MODEL_FLAG_VALUES_FIELD: [],
+     models.json_fields.MODEL_ANNOTATIONS_FIELD: {},
+     models.json_fields.MODEL_ACTIVE_FIELD: False,
+     models.json_fields.MODEL_USAGE_FIELD: {}
      },
-    {'ionName': 'mlops-tests',
-     'raiseAlert': False,
-     'sequence': 8,
-     u'eventType': 'Model',
-     u'clearedTimestamp': 0,
-     'id': u'9d1d4a81-29a0-492f-a6c7-d35489250368',
-     'state': u'APPROVED',
-     'msgType': u'UNKNOWN',
-     'type': u'Model',
-     'modelId': u'9d1d4a81-29a0-492f-a6c7-d35489250368',
-     'pipelineInstanceId': ION1.PIPELINE_INST_ID_0,
-     'format': u'PMML',
-     'deletedTimestamp': 0,
-     'createdTimestamp': 1518460573573,
-     'host': u'localhost',
-     'modelSize': 0,
-     'name': u'model-8',
-     'stateDescription': '',
-     'modelFormat': u'PMML',
-     'created': 1518460765161,
-     'workflowRunId': u'bdc2ee10-767c-4524-ba72-8268a3894bff',
-     'reviewedBy': u''},
+    {
+     models.json_fields.MODEL_ID_FIELD: u'9d1d4a81-29a0-492f-a6c7-d35489250368',
+     models.json_fields.MODEL_NAME_FIELD: u'model-8',
+     models.json_fields.MODEL_FORMAT_FIELD: u'PMML',
+     models.json_fields.MODEL_VERSION_FIELD: '1',
+     models.json_fields.MODEL_TRAIN_VERSION_FIELD: '3',
+     models.json_fields.MODEL_SIZE_FIELD: 0,
+     models.json_fields.MODEL_OWNER_FIELD: 'operator',
+     models.json_fields.MODEL_CREATED_ON_FIELD: 1518460573573,
+     models.json_fields.MODEL_FLAG_VALUES_FIELD: [],
+     models.json_fields.MODEL_ANNOTATIONS_FIELD: {},
+     models.json_fields.MODEL_ACTIVE_FIELD: True,
+     models.json_fields.MODEL_USAGE_FIELD: {}
+    },
 ]
 
 test_health_info = {

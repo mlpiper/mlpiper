@@ -1,4 +1,5 @@
 import os
+import io
 from enum import Enum
 
 from parallelm.mlops.mlops_exception import MLOpsException
@@ -224,7 +225,7 @@ class Model(MLObject):
             raise MLOpsException("Unexpected downloaded model size! model id: {}, expected size: {},"
                                  " downloaded size: {}".format(self.get_id(), self.metadata.size, len(content)))
 
-        with open(filepath, 'w') as f:
+        with io.open(filepath, mode='wb') as f:
             f.write(content)
 
         self.set_model_path(filepath)

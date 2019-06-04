@@ -65,13 +65,13 @@ class MlOpsRestStandAlone(MlOpsRestHelper):
         if metadata and not isinstance(metadata, ModelMetadata):
             raise MLOpsException("metadata argument must be a ModelMetadata object, got {}".format(type(metadata)))
 
-        required_params = ["modelId"]
+        required_params = ["id"]
 
         for param_name in required_params:
             if param_name not in params:
                 raise MLOpsException('parameter {} is required for publishing model'.format(param_name))
 
-        model_id = params["modelId"]
+        model_id = params["id"]
 
         if metadata:
             model_meta_file = os.path.join(self._meta_dir, model_id)

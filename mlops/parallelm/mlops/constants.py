@@ -60,7 +60,7 @@ class MLOpsRestHandles:
     HEALTH_THRESHOLDS = "health/thresholds"
     DOWNLOAD = "download"
     STATS = "stats"
-    MODEL_STATS = "modelStats"
+    METRICS = "metrics"
     EVENTS = "events"
     UUID = "uuid"
 
