@@ -93,14 +93,13 @@ object RestApis {
       logger.error(s"Model data is not defined, model will not be published")
       return
     }
-    val params = mutable.Map[String, String]("modelName" -> model.getName,
-      "description" -> model.getDescription,
-      "modelId" -> model.getId,
+    val params = mutable.Map[String, String](
+      "name" -> model.getName,
+      "id" -> model.getId,
       "format" -> model.getFormat.toString,
-      "workflowInstanceId" -> MLOpsEnvVariables.workflowInstanceId.getOrElse(""),
-      "pipelineInstanceId" -> MLOpsEnvVariables.pipelineInstanceId.getOrElse("")
+      "description" -> model.getDescription
     )
-    val uri = buildURIPath(RestApiName.models.toString, params("pipelineInstanceId"))
+    val uri = buildURIPath(RestApiName.models.toString, MLOpsEnvVariables.pipelineInstanceId.getOrElse(""))
     RestApis.postBinaryContent(MLOpsEnvVariables.agentRestHost.get, MLOpsEnvVariables.agentRestPort.get.toInt, uri, model.getData.get, params.toMap)
   }
 
