@@ -361,3 +361,6 @@ class MlOpsRestConnected(MlOpsRestHelper):
     def get_uuid(self, type):
         url = self.url_get_uuid(type)
         return self._get_url_request_response_as_json(url)["id"]
+
+    def done(self):
+        pass
