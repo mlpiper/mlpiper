@@ -118,20 +118,20 @@ class StatsHelper(BaseObj):
             self._output_channel.stat_object(data.get_mlops_stat(model_id))
             return self
 
-        if name in ClassificationMetrics:
+        if isinstance(name, ClassificationMetrics):
             self._set_classification_stat(name=name,
                                           data=data,
                                           model_id=model_id,
                                           timestamp=timestamp, **kwargs)
 
             return self
-        elif name in RegressionMetrics:
+        elif isinstance(name, RegressionMetrics):
             self._set_regression_stat(name=name,
                                       data=data,
                                       model_id=model_id,
                                       timestamp=timestamp, **kwargs)
             return self
-        elif name in ClusteringMetrics:
+        elif isinstance(name, ClusteringMetrics):
             self._set_clustering_stat(name=name,
                                       data=data,
                                       model_id=model_id,
