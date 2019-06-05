@@ -1,4 +1,6 @@
+from datetime import datetime
 import os
+import pytz
 import subprocess
 import tempfile
 
@@ -21,3 +23,7 @@ def service_installed(service_name):
         return True
     except:
         return False
+
+
+def utcnow():
+    return datetime.now(pytz.UTC)

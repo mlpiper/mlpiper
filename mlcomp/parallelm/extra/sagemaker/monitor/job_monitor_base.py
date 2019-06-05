@@ -1,15 +1,15 @@
 from collections import namedtuple
-from datetime import datetime, timedelta
+from datetime import timedelta
 from future.utils import with_metaclass
 import abc
 import boto3
 import logging
 import pprint
-import pytz
 import time
 
 from parallelm.common.cached_property import cached_property
 from parallelm.common.mlcomp_exception import MLCompException
+from parallelm.common.os_util import utcnow
 from parallelm.extra.sagemaker.monitor.report import Report
 from parallelm.extra.sagemaker.monitor.sm_api_constants import SMApiConstants
 
@@ -28,7 +28,6 @@ class JobMonitorBase(with_metaclass(abc.ABCMeta, object)):
         self._job_name = job_name
         self._on_complete_callback = None
         self._host_metrics_fetched_successfully = False
-        self._job_start_local_time = None  # designed to avoid potential clock differences between AWS and local computer
         self._cloudwatch_client = boto3.client('cloudwatch')
 
     def monitor(self):
@@ -74,30 +73,27 @@ class JobMonitorBase(with_metaclass(abc.ABCMeta, object)):
         if create_time is None:
             return None
 
-        end_time = self._job_end_time(describe_response)
-        if end_time:
-            return (end_time - create_time).total_seconds()
-        else:
-            return (datetime.now(pytz.UTC) - create_time).total_seconds()
+        return (self._last_running_ref_time(describe_response) - create_time).total_seconds()
 
     def _billing_time_sec(self, response):
         start_time = self._job_start_time(response)
-        if start_time:
-            end_time = self._job_end_time(response)
-            if end_time:
-                return (end_time - start_time).total_seconds()
-            else:
-                # In order to avoid issues with clock differences between AWS to local computer, the calculated
-                # billing time here is only an approximation. The billing time starts when we first discover
-                # the job start time, which ensures that the job was actually started
-                if self._job_start_local_time is None:
-                    self._job_start_local_time = datetime.now(pytz.UTC)
-                return (datetime.now(pytz.UTC) - self._job_start_local_time).total_seconds()
-        else:
-            return None
+        return (self._last_running_ref_time(response) - start_time).total_seconds() if start_time else None
+
+    def _last_running_ref_time(self, describe_response):
+        end_time = self._job_end_time(describe_response)
+        return end_time if end_time else utcnow()
 
     def _job_create_time(self, describe_response):
-        return describe_response.get(SMApiConstants.CREATE_TIME)
+        create_time = describe_response.get(SMApiConstants.CREATE_TIME)
+        if create_time:
+            if (utcnow() - create_time).total_seconds() > JobMonitorBase.MONITOR_INTERVAL_SEC * 2:
+                self._logger.warning("The local machine clock and AWS CloudWatch clock are not synchronized!!!")
+
+        return create_time
+
+    def _job_is_running(self, describe_response):
+        return self._job_start_time(describe_response) is not None and \
+               self._job_end_time(describe_response) is None
 
     def _report_online_metrics(self, describe_response):
         self._report_job_host_metrics(describe_response, JobMonitorBase.ONLINE_METRICS_FETCHING_NUM_RETRIES)
@@ -159,7 +155,8 @@ class JobMonitorBase(with_metaclass(abc.ABCMeta, object)):
         # Example - Log time - 2018-10-22 08:25:55
         #           Here calculated end time would also be 2018-10-22 08:25:55 (without 1 min addition)
         #           CW will consider end time as 2018-10-22 08:25 and will not be able to search the correct log.
-        end_time = self._job_end_time(describe_response) + timedelta(minutes=1)
+        end_time = self._last_running_ref_time(describe_response) + timedelta(minutes=1)
+
         d, r = divmod((end_time - start_time).total_seconds(), 60)
         period = int(d) * 60 + 60  # must be a multiplier of 60
         self._logger.debug("Start time: {}, end time: {}, period: {} sec".format(start_time, end_time, period))
