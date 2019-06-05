@@ -3,6 +3,7 @@ import math
 import os
 import psutil
 import sys
+import pprint
 
 from py4j.java_gateway import JavaGateway
 from py4j.java_gateway import GatewayParameters, CallbackServerParameters, launch_gateway
@@ -92,6 +93,7 @@ class JavaConnectedComponentRunner(ComponentRunner):
                 callback_server_parameters=CallbackServerParameters(port=0),
                 python_server_entry_point=MLOpsPY4JWrapper()
             )
+
             python_port = java_gateway.get_callback_server().get_listening_port()
             self._logger.debug("Python port: {}".format(python_port))
 
@@ -107,6 +109,10 @@ class JavaConnectedComponentRunner(ComponentRunner):
             # Configure
             m = java_gateway.jvm.java.util.HashMap()
             for key in self._params.keys():
+                # py4j does not handle nested structures. So the configs which is a dict will not be passed to the java
+                # layer now.
+                if isinstance(self._params[key], dict):
+                    continue
                 m[key] = self._params[key]
 
             component_via_py4j.configure(m)
