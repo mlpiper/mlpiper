@@ -97,6 +97,12 @@ class MlOpsRestStandAlone(MlOpsRestHelper):
     def get_health_thresholds(self, ion_instance_id):
         raise NotImplementedError
 
+    def get_groups(self):
+        raise NotImplementedError
+
+    def done(self):
+        raise NotImplementedError
+
     def download_model(self, model_id):
         """
         Return the model data with the given ID
