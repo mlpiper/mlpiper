@@ -47,7 +47,7 @@ class RESTfulComponent(ConnectableComponent):
     def _post_validation(self, objs):
         pass
 
-    def materialize(self, parent_data_objs):
+    def _materialize(self, parent_data_objs, user_data):
         monitor_info = {UwsgiConstants.MONITOR_ERROR_KEY: None, UwsgiConstants.MONITOR_THREAD_KEY: None}
         self._setup(self._ml_engine.pipeline_name, monitor_info)
         self._wait_and_monitor_errors(monitor_info)
