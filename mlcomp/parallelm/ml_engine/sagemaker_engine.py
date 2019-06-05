@@ -4,6 +4,7 @@ import logging
 import os
 import pprint
 import time
+import uuid
 
 from parallelm.common import constants
 from parallelm.common.mlcomp_exception import MLCompException
@@ -69,8 +70,9 @@ class SageMakerEngine(PythonEngine):
         above.
         """
         now = datetime.datetime.now()
-        role_name = 'AmazonSageMaker-ExecutionRole-{y}{month}{d}T{h}{minute}{s}' \
-            .format(y=now.year, month=now.month, d=now.day, h=now.hour, minute=now.minute, s=now.second)
+        role_name = 'AmazonSageMaker-ExecutionRole-{y}{month}{d}T{h:02}{minute:02}{s:02}-{unique}' \
+            .format(y=now.year, month=now.month, d=now.day, h=now.hour, minute=now.minute, s=now.second,
+                    unique=uuid.uuid4().hex[:10])
 
         tags = [{'Key': self._tag_key, 'Value': self._tag_value}] if self._tag_key else []
 
