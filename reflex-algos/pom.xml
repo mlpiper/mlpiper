@@ -262,6 +262,41 @@
             </activation>
             <build>
                 <plugins>
+
+                    <!--
+                    This plugin defines runtime flag skipPyTests to skip mlops/mlcom tests
+                    when user provides -Dexec.skip or -DskipPyTests
+
+                    exec.skip is exec-maven-plugin flag. The plugin doesn't run if flag set to true, t.e. -Dexec.skip.
+                    But for the tests, the skip section depends on skipPyTests and not on the exec.skip, so when
+                    exec.skip is set to true, skipPyTests must be explicitly set to true.
+                    -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>bsh-property</id>
+                                <goals>
+                                    <goal>bsh-property</goal>
+                                </goals>
+                                <configuration>
+                                    <source>
+                                        skipExec = session.getUserProperties().getProperty("exec.skip", "false");
+                                        skipPyTests = session.getUserProperties().getProperty("skipPyTests", "false");
+                                        if (skipExec.equals("true")) {
+                                            skipPyTests = "true";
+                                        }
+                                    </source>
+                                    <properties>
+                                        <property>skipPyTests</property>
+                                    </properties>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                     <!-- Scala Code Style -->
                     <plugin>
                         <groupId>org.scalastyle</groupId>
@@ -374,6 +409,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
+                                    <skip>${skipPyTests}</skip>
                                     <workingDirectory>${project.basedir}/../mlops</workingDirectory>
                                     <environmentVariables>
                                         <PYTHONPATH>./:$PYTHONPATH</PYTHONPATH>
@@ -416,6 +452,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
+                                    <skip>${skipPyTests}</skip>
                                     <workingDirectory>${project.basedir}/../mlcomp</workingDirectory>
                                     <environmentVariables>
                                         <PYTHONPATH>./:$PYTHONPATH</PYTHONPATH>
@@ -525,7 +562,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>1.7</version>
+                        <version>3.0.0</version>
                         <executions>
                             <!-- Add src/main/scala to eclipse build path -->
                             <execution>
