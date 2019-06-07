@@ -79,9 +79,7 @@ class MlOpsRestStandAlone(MlOpsRestHelper):
                 json.dump(metadata.to_dict(), outfile)
 
         model_data_file = os.path.join(self._data_dir, model_id)
-        with open(model_data_file, "w+") as data_file:
-            # maybe should be changed to shutil.copyfile
-            data_file.write(open(model_file_path, "r").read())
+        shutil.copyfile(model_file_path, model_data_file)
 
         return model_id
 
