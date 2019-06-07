@@ -5,6 +5,9 @@ from tempfile import mkstemp, mkdtemp
 import shutil
 import subprocess
 import sys
+import pytest
+from parallelm.pipeline import java_mapping
+from parallelm.mlpiper.mlpiper_exception import MLPiperException
 
 from constants import PYTHON_COMPONENTS_PATH, JAVA_COMPONENTS_PATH
 
@@ -259,6 +262,39 @@ class TestMLPiper:
             os.remove(output_model)
             os.remove(input_model)
 
+    def test_input_output_models_args(self):
+        self._deployment_dir = mkdtemp(prefix='test_mlpiper_deploy', dir='/tmp')
+        os.rmdir(self._deployment_dir)
+
+        comp_dir = os.path.join(os.path.dirname(__file__), PYTHON_COMPONENTS_PATH)
+
+        fd, pipeline_file = mkstemp(prefix='test_mlpiper_pipeline_', dir='/tmp')
+        os.write(fd, json.dumps(model_src_sink_pipeline).encode())
+        os.close(fd)
+
+        os.environ["PYTHONPATH"] = ":".join(TestMLPiper.egg_paths)
+
+        cmd = "{} run -r {} -f {} --output-model out_model --deployment-dir {}" \
+            .format(TestMLPiper.mlpiper_script, comp_dir, pipeline_file, self._deployment_dir)
+
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=os.environ)
+        _, stderr = p.communicate()
+
+        assert (p.returncode == 1)
+        assert (stderr.find(b"Component in pipeline expects to receive a model, please provide '--input-model' argument") != -1)
+
+        shutil.rmtree(self._deployment_dir)
+        cmd = "{} run -r {} -f {} --input-model /tmp --deployment-dir {}" \
+            .format(TestMLPiper.mlpiper_script, comp_dir, pipeline_file, self._deployment_dir)
+
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, env=os.environ)
+        _, stderr = p.communicate()
+
+        assert (p.returncode == 1)
+        assert (stderr.find(b"Component in pipeline outputs a model, please provide '--output-model' argument") != -1)
+
+        os.remove(pipeline_file)
+
     def test_run_show_deps(self):
         cmdline_action = "deps"
         comp_dir = os.path.join(os.path.dirname(__file__), PYTHON_COMPONENTS_PATH)
@@ -280,7 +316,6 @@ class TestMLPiper:
             assert ("dep456" in l_deps)
         finally:
             os.remove(pipeline_file)
-
 
     def test_parse_component_with_unicode_symbol(self):
         cmdline_action = "deps"

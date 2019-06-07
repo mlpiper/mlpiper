@@ -10,6 +10,7 @@ import sys
 import tempfile
 
 from parallelm.mlpiper.component_scanner import ComponentScanner
+from parallelm.mlpiper.mlpiper_exception import MLPiperException
 from parallelm.pipeline import json_fields
 from parallelm.common.base import Base
 from parallelm.pipeline import java_mapping
@@ -274,7 +275,15 @@ class MLPiper(Base):
             if py_deps:
                 self._install_deps(py_deps)
 
-        pipeline_runner.go()
+        try:
+            pipeline_runner.go()
+        except KeyError as e:
+            if str(e).find(java_mapping.MODEL_FILE_SINK_PATH_KEY) != -1:
+                raise MLPiperException("Component in pipeline outputs a model, please provide '--output-model' argument")
+            elif str(e).find(java_mapping.MODEL_FILE_SOURCE_PATH_KEY) != -1:
+                raise MLPiperException("Component in pipeline expects to receive a model, please provide '--input-model' argument")
+            else:
+                raise
 
     def deps(self, lang):
         self._logger.info("Showing dependencies information...")
