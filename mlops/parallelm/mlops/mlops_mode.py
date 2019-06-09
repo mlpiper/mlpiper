@@ -31,11 +31,10 @@ class MLOpsMode:
     STAND_ALONE = "stand_alone"     # MLOps is running in stand_alone mode, MLOps is not present
     ATTACH = "attach"               # MLOps is attaching to MLOps
     AGENT = "agent"                 # MLOps is running as an ION node by an MLOps agent
-    REST_ACCUMULATOR = "rest_accumulator"
 
     @staticmethod
     def from_str(mode):
-        if mode in (MLOpsMode.STAND_ALONE, MLOpsMode.ATTACH, MLOpsMode.AGENT, MLOpsMode.REST_ACCUMULATOR):
+        if mode in (MLOpsMode.STAND_ALONE, MLOpsMode.ATTACH, MLOpsMode.AGENT):
             return mode
         raise Exception("Operation mode: [{}] is not supported".format(mode))
 

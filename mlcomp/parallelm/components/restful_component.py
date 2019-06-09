@@ -32,7 +32,7 @@ from parallelm.components.restful.metric import Metric, MetricType, MetricRelati
 mlops_loaded = False
 try:
     from parallelm.mlops import mlops
-    from parallelm.mlops.mlops_mode import MLOpsMode
+    from parallelm.mlops.mlops_mode import OutputChannel
     mlops_loaded = True
 except ImportError as e:
     print("Note: 'mlops' was not loaded")
@@ -53,7 +53,9 @@ class RESTfulComponent(ConnectableComponent):
         if mlops_loaded:
             from os import environ
             if environ.get(RestfulConstants.STATS_AGGREGATE_FLAG) is not None:
-                mlops.init(mlops_mode=MLOpsMode.REST_ACCUMULATOR)
+                mlops.init(out_channel=OutputChannel.REST_ACCUMULATOR)
+                self._logger.info("Rest Aggregator mode")
+
             else:
                 mlops.init()
 
@@ -213,8 +215,8 @@ class RESTfulComponent(ConnectableComponent):
         UwsgiBroker._application.run(host='localhost', port=port)
 
     # NOTE: do not rename this route or over-ride it
-    @FlaskRoute('/{}'.format(RestfulConstants.STATS_ROUTE))
-    #@FlaskRoute('/statsinternal')
+    #@FlaskRoute('/{}'.format(RestfulConstants.STATS_ROUTE))
+    @FlaskRoute('/statsinternal')
     def stats(self, url_params, form_params):
         status_code = 200
 
