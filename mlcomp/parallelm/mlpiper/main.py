@@ -50,6 +50,17 @@ from parallelm.mlcomp import version
 LOG_LEVELS = {'debug': logging.DEBUG, 'info': logging.INFO, 'warn': logging.WARN, 'error': logging.ERROR}
 
 
+class CompRootDirCheck(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        comp_root_dir = values
+        if not os.path.isdir(comp_root_dir):
+            raise argparse.ArgumentTypeError("--comp-root argument value '{}' has to be existing dir".format(comp_root_dir))
+        if os.access(comp_root_dir, os.R_OK):
+            setattr(namespace, self.dest, comp_root_dir)
+        else:
+            raise argparse.ArgumentTypeError("--comp-root argument value '{}' is not a readable dir".format(comp_root_dir))
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Run MLPiper pipelines and components")
     subparsers = parser.add_subparsers(dest='subparser_name', help="Commands")
@@ -99,7 +110,7 @@ def _add_deploy_sub_parser(subparsers, sub_parser_name, sub_parser_help):
     action.add_argument('-f', '--file', type=argparse.FileType('r'),
                         help='A json file path, whose content is a pipeline. Or component JSON')
 
-    parser_prepare.add_argument('-r', '--comp-root', default=None, required=True,
+    parser_prepare.add_argument('-r', '--comp-root', default=None, required=True, action=CompRootDirCheck,
                                 help='MLPiper components root dir. Recursively detecting components')
 
     parser_prepare.add_argument('--input-model',
@@ -144,7 +155,7 @@ def _add_deps_sub_parser(subparsers):
     group.add_argument('-f', '--file', type=argparse.FileType('r'),
                        help='A json file path, whose content is a pipeline. Or component JSON')
 
-    deps.add_argument('-r', '--comp-root', default=None, required=True,
+    deps.add_argument('-r', '--comp-root', default=None, required=True, action=CompRootDirCheck,
                                 help='MLPiper components root dir. Recursively detecting components')
 
 
