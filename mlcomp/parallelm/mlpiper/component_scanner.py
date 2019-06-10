@@ -37,8 +37,11 @@ class ComponentScanner(object):
 
             comp_name = comp_desc[json_fields.COMPONENT_DESC_NAME_FIELD]
             if comp_name in comps[engine_type]:
-                raise Exception("Component already defined!\n\tPrev comp root: {}\n\tCurr comp root: {}"
-                                .format(comps[engine_type][comp_name]["root"], root))
+                raise Exception("Component already defined!\n\tPrev comp file: {}\n\tCurr comp file: {}"
+                                .format(
+                                    os.path.join(comps[engine_type][comp_name]["root"], comps[engine_type][comp_name]["comp_filename"]),
+                                    os.path.join(root, comp_filename))
+                                )
 
             comps[engine_type][comp_name] = {}
             comps[engine_type][comp_name]["comp_desc"] = comp_desc
@@ -46,6 +49,7 @@ class ComponentScanner(object):
             comps[engine_type][comp_name]["files"] = self._include_files(root, comp_desc)
             # Always include current component json file regardless of its name.
             comps[engine_type][comp_name]["files"].append(comp_filename)
+            comps[engine_type][comp_name]["comp_filename"] = comp_filename
 
             logging.debug("Found component, root: {}, engine: {}, name: ".format(root, engine_type, comp_name))
         return comps
