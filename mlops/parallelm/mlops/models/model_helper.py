@@ -187,7 +187,6 @@ class ModelHelper(BaseObj):
         model = self.create_model(name=model_dict[json_fields.MODEL_NAME_FIELD],
                                   model_format=model_format,
                                   id=model_dict[json_fields.MODEL_ID_FIELD])
-        #model.metadata.state = model_dict['state']
         model.metadata.creation_time = model_dict[json_fields.MODEL_CREATED_ON_FIELD]
         model.metadata.size = model_dict[json_fields.MODEL_SIZE_FIELD]
         return model
