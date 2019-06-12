@@ -422,8 +422,8 @@ def test_publish_model_api():
     pm.init(ctx=None, mlops_mode=MLOpsMode.STAND_ALONE)
 
     model_data = "MODEL_DATA"
-    model = pm.Model(name="my model", model_format=ModelFormat.TEXT, description="test model",
-                     user_defined="whatever I want goes here")
+    annotation = {"a":"b"}
+    model = pm.Model(name="my model", model_format=ModelFormat.TEXT, description="test model")
 
     model_file = os.path.join(os.path.sep, "tmp", str(uuid.uuid4()))
     f = open(model_file, 'w')
@@ -431,6 +431,7 @@ def test_publish_model_api():
     f.close()
 
     model.set_model_path(model_file)
+    model.set_annotations(annotation)
 
     model_id = pm.publish_model(model)
     assert (model_id == model.get_id())
@@ -441,4 +442,6 @@ def test_publish_model_api():
     pm.done()
 
     # accessing 0th row, 'data' column of returned model dataframe
+    print(model_df.iloc[0])
     assert (model_data == model_df.iloc[0]['data'])
+    assert (annotation == model_df.iloc[0]['annotations'])

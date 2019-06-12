@@ -17,6 +17,7 @@ from parallelm.mlops.mlops_exception import MLOpsException, MLOpsConnectionExcep
 from parallelm.mlops.constants import Constants, MLOpsRestHandles
 from parallelm.mlops.constants import HTTPStatus
 from parallelm.mlops.models.model import ModelMetadata
+from parallelm.mlops import models
 
 
 def build_url(host, port=None, *res, **params):
@@ -148,13 +149,17 @@ class MlOpsRestConnected(MlOpsRestHelper):
         if metadata and not isinstance(metadata, ModelMetadata):
             raise MLOpsException("metadata argument must be a ModelMetadata object, got {}".format(type(metadata)))
 
-        required_params = ["name", "id", "format", "pipelineInstanceId", "description"]
+        required_params = [models.json_fields.MODEL_NAME_FIELD,
+                           models.json_fields.MODEL_ID_FIELD,
+                           models.json_fields.MODEL_FORMAT_FIELD,
+                           models.json_fields.MODEL_DESCRIPTION_FIELD,
+                           Constants.PIPELINE_INSTANCE_ID]
 
         for param_name in required_params:
             if param_name not in params:
                 raise MLOpsException('parameter {} is required for publishing model'.format(param_name))
 
-        url = build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.MODELS, params["pipelineInstanceId"])
+        url = build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.MODELS, params[Constants.PIPELINE_INSTANCE_ID])
 
         files = {'file': ("file", open(model_file_path, 'rb'), "application/octet-stream")}
 

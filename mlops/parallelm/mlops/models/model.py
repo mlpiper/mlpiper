@@ -7,6 +7,9 @@ from parallelm.mlops.models.mlobject import MLObject
 from parallelm.mlops.models.mlobject import MLObjectType
 from parallelm.mlops.stats.stats_helper import StatsHelper
 from parallelm.mlops.stats_category import StatCategory
+from parallelm.mlops import models
+
+import json
 
 
 class ModelFormat(str, Enum):
@@ -33,7 +36,7 @@ class ModelMetadata(object):
     Model related metadata
     """
 
-    def __init__(self, modelId, name="", model_format=ModelFormat.UNKNOWN, description="", user_defined="", size=0):
+    def __init__(self, modelId, name, model_format, description=""):
         if model_format and not isinstance(model_format, ModelFormat):
             raise MLOpsException("model_format object must be an instance of ModelFormat class! provided: "
                                  "{}, type: {}".format(model_format, type(model_format)))
@@ -44,21 +47,19 @@ class ModelMetadata(object):
         self.name = name
         self.modelFormat = model_format
         self.description = description
-        self.user_defined = user_defined
-        self.size = size
+        self.annotations = {}
 
         # these fields are set by MCenter server
-        self.source = ""
-        self.user = ""
-        self.state = ""
-        self.createdTimestamp = ""
-        self.workflowRunId = ""
+        self.size = None
+        self.owner = ""
+        self.train_version = ""
+        self.model_version = ""
+        self.active = False
+        self.created_on = None
+        self.flag_values = []
 
     def __str__(self):
-        return "MODEL METADATA - name: {}; modelId: {}; source: {}; user: {}; status: {}; modelFormat: {}; createdTimestamp: {}; size: {}; " \
-               "description: {}; user_defined {}; workflowRunId {};" \
-            .format(self.name, self.modelId, self.source, self.user, self.state, self.modelFormat,
-                    self.createdTimestamp, self.size, self.description, self.user_defined, self.workflowRunId)
+        return json.dumps(self.to_dict())
 
     def __eq__(self, other):
         """
@@ -80,10 +81,20 @@ class ModelMetadata(object):
         return not result
 
     def to_dict(self):
-        return {"description": self.description, "workflowRunId": self.workflowRunId,
-                "modelFormat": self.modelFormat.value, "modelId": self.modelId,
-                "name": self.name, "createdTimestamp": self.createdTimestamp, "source": self.source,
-                "state": self.state, "user": self.user, "user_defined": self.user_defined, "size": self.size}
+        return {
+                models.json_fields.MODEL_ID_FIELD: self.modelId,
+                models.json_fields.MODEL_NAME_FIELD: self.name,
+                models.json_fields.MODEL_FORMAT_FIELD: self.modelFormat.value,
+                models.json_fields.MODEL_VERSION_FIELD: self.model_version,
+                models.json_fields.MODEL_TRAIN_VERSION_FIELD: self.train_version,
+                models.json_fields.MODEL_SIZE_FIELD: self.size,
+                models.json_fields.MODEL_OWNER_FIELD: self.owner,
+                models.json_fields.MODEL_CREATED_ON_FIELD: self.created_on,
+                models.json_fields.MODEL_FLAG_VALUES_FIELD: self.flag_values,
+                models.json_fields.MODEL_ANNOTATIONS_FIELD: self.annotations,
+                models.json_fields.MODEL_ACTIVE_FIELD: self.active,
+                models.json_fields.MODEL_DESCRIPTION_FIELD: self.description
+            }
 
 
 class Model(MLObject):
@@ -91,10 +102,10 @@ class Model(MLObject):
     This class provides APIs to access Model related data, publish model, attach statistics to model.
     """
 
-    def __init__(self, stats_helper, rest_helper, name, model_format, description, user_defined, id=None):
+    def __init__(self, stats_helper, rest_helper, name, model_format, description, id=None):
         super(Model, self).__init__(rest_helper, id)
         self.model_path = None
-        self.metadata = ModelMetadata(self.get_id(), name, model_format, description, user_defined, 0)
+        self.metadata = ModelMetadata(self.get_id(), name, model_format, description)
         if stats_helper and not isinstance(stats_helper, StatsHelper):
             raise MLOpsException("stats_helper object must be an instance of StatsHelper class")
         self._stats_helper = stats_helper
@@ -133,6 +144,14 @@ class Model(MLObject):
 
     def get_model_path(self):
         return self.model_path
+
+    def set_annotations(self, annotations):
+        if annotations is None or not isinstance(annotations, dict):
+            raise MLOpsException("Model annotations must be not None dict")
+        self.metadata.annotations = annotations
+
+    def get_annotations(self):
+        return self.metadata.annotations
 
     def set_stat(self, name, data=None, category=StatCategory.TIME_SERIES, timestamp=None, **kwargs):
         """

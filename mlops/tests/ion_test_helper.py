@@ -1,4 +1,3 @@
-
 import os
 import requests_mock
 
@@ -9,8 +8,8 @@ from parallelm.mlops.mlops_env_constants import MLOpsEnvConstants
 from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
 from parallelm.mlops import models
 
-class ION1:
 
+class ION1:
     ION_ID = "ion-id-0"
     ION_NAME = "ion-name"
     ION_INSTANCE_ID = 'ion-instance-id-0'
@@ -404,42 +403,43 @@ test_agents_info = [{
 
 test_models_info = [
     {
-     models.json_fields.MODEL_ID_FIELD: ION1.MODEL_ID,
-     models.json_fields.MODEL_NAME_FIELD: 'model-4',
-     models.json_fields.MODEL_FORMAT_FIELD: 'TEXT',
-     models.json_fields.MODEL_VERSION_FIELD: '1',
-     models.json_fields.MODEL_TRAIN_VERSION_FIELD: '3',
-     models.json_fields.MODEL_SIZE_FIELD: 0,
-     models.json_fields.MODEL_OWNER_FIELD: 'admin',
-     models.json_fields.MODEL_CREATED_ON_FIELD: 1518460283900,
-     models.json_fields.MODEL_FLAG_VALUES_FIELD: [],
-     models.json_fields.MODEL_ANNOTATIONS_FIELD: {},
-     models.json_fields.MODEL_ACTIVE_FIELD: False,
-     models.json_fields.MODEL_USAGE_FIELD: {}
-     },
-    {
-     models.json_fields.MODEL_ID_FIELD: u'9d1d4a81-29a0-492f-a6c7-d35489250368',
-     models.json_fields.MODEL_NAME_FIELD: u'model-8',
-     models.json_fields.MODEL_FORMAT_FIELD: u'PMML',
-     models.json_fields.MODEL_VERSION_FIELD: '1',
-     models.json_fields.MODEL_TRAIN_VERSION_FIELD: '3',
-     models.json_fields.MODEL_SIZE_FIELD: 0,
-     models.json_fields.MODEL_OWNER_FIELD: 'operator',
-     models.json_fields.MODEL_CREATED_ON_FIELD: 1518460573573,
-     models.json_fields.MODEL_FLAG_VALUES_FIELD: [],
-     models.json_fields.MODEL_ANNOTATIONS_FIELD: {},
-     models.json_fields.MODEL_ACTIVE_FIELD: True,
-     models.json_fields.MODEL_USAGE_FIELD: {}
+        models.json_fields.MODEL_ID_FIELD: ION1.MODEL_ID,
+        models.json_fields.MODEL_NAME_FIELD: 'model-4',
+        models.json_fields.MODEL_FORMAT_FIELD: 'TEXT',
+        models.json_fields.MODEL_VERSION_FIELD: '1',
+        models.json_fields.MODEL_DESCRIPTION_FIELD: {},
+        models.json_fields.MODEL_TRAIN_VERSION_FIELD: '3',
+        models.json_fields.MODEL_SIZE_FIELD: 0,
+        models.json_fields.MODEL_OWNER_FIELD: 'admin',
+        models.json_fields.MODEL_CREATED_ON_FIELD: 1518460283900,
+        models.json_fields.MODEL_FLAG_VALUES_FIELD: [],
+        models.json_fields.MODEL_ANNOTATIONS_FIELD: {"random_key": "random string"},
+        models.json_fields.MODEL_ACTIVE_FIELD: False
     },
+    {
+        models.json_fields.MODEL_ID_FIELD: u'9d1d4a81-29a0-492f-a6c7-d35489250368',
+        models.json_fields.MODEL_NAME_FIELD: u'model-8',
+        models.json_fields.MODEL_FORMAT_FIELD: u'PMML',
+        models.json_fields.MODEL_VERSION_FIELD: '1',
+        models.json_fields.MODEL_DESCRIPTION_FIELD: '',
+        models.json_fields.MODEL_TRAIN_VERSION_FIELD: '3',
+        models.json_fields.MODEL_SIZE_FIELD: 0,
+        models.json_fields.MODEL_OWNER_FIELD: 'operator',
+        models.json_fields.MODEL_CREATED_ON_FIELD: 1518460573573,
+        models.json_fields.MODEL_FLAG_VALUES_FIELD: [],
+        models.json_fields.MODEL_ANNOTATIONS_FIELD: {"some_key": "some string"},
+        models.json_fields.MODEL_ACTIVE_FIELD: True
+    }
 ]
 
 test_health_info = {
-  "globalThreshold": 0.2,
-  "attributes": [
-  ],
-  "canaryThreshold": 0.5,
-  "thresholdType": "ALL"
+    "globalThreshold": 0.2,
+    "attributes": [
+    ],
+    "canaryThreshold": 0.5,
+    "thresholdType": "ALL"
 }
+
 
 def set_mlops_env(ion_id, ion_node_id, eco_host="localhost", eco_port="3456", token="token_token_token", model_id=None):
     """
@@ -467,7 +467,8 @@ def build_ion_ctx():
     token = "token_token_token"
 
     set_mlops_env(ion_id=ion_instance_id, ion_node_id=ion_node_id, token=token)
-    rest_helper = MlOpsRestFactory().get_rest_helper(MLOpsMode.AGENT, mlops_server="localhost", mlops_port="3456", token=token)
+    rest_helper = MlOpsRestFactory().get_rest_helper(MLOpsMode.AGENT, mlops_server="localhost", mlops_port="3456",
+                                                     token=token)
 
     with requests_mock.mock() as m:
         m.get(rest_helper.url_get_workflow_instance(ion_instance_id), json=test_workflow_instances)

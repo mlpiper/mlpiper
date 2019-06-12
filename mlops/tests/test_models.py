@@ -11,13 +11,13 @@ from parallelm.mlops.mlops_mode import MLOpsMode
 from parallelm.mlops.models.model import ModelFormat
 from parallelm.mlops.models.model_helper import ModelHelper
 from parallelm.mlops.models.model_filter import ModelFilter
+from parallelm.mlops import models
 from parallelm.mlops.ion.ion import ION
 from parallelm.mlops.mlops_rest_factory import MlOpsRestFactory
 from parallelm.mlops import mlops
 from parallelm.mlops.constants import Constants
 from ion_test_helper import set_mlops_env, ION1, test_models_info, test_health_info
 from ion_test_helper import test_workflow_instances, test_ee_info, test_agents_info
-
 
 test_model_stats = [{
     "data": "{\" bitrate\":["
@@ -42,53 +42,21 @@ test_model_stats = [{
     "id": "f26aeec0-18c2-455d-aaf5-136e17cc829d"
 }]
 
-
 models_list_json_dict = [
-    {'ionName': 'mlops-tests',
-     'raiseAlert': False,
-     'sequence': 4,
-     'eventType': 'Model',
-     'clearedTimestamp': 0,
-     'id': u'8c95deaf-87e4-4c21-bc92-e5b1a0454f9a',
-     'state': 'APPROVED',
-     'msgType': 'UNKNOWN',
-     'type': 'Model',
-     'modelId': '8c95deaf-87e4-4c21-bc92-e5b1a0454f9a',
-     'pipelineInstanceId': '9a11e9a9-bd81-41a8-9913-7dada44cf629',
-     'format': 'TEXT',
-     'deletedTimestamp': 0,
-     'createdTimestamp': 1518460283900,
-     'host': 'localhost',
-     'modelSize': 0,
-     'name': 'model-4',
-     'stateDescription': '',
-     'modelFormat': 'TEXT',
-     'created': 1518460765161,
-     'workflowRunId': '13445bb4-535a-4d45-b2f2-77293026e3da',
-     'reviewedBy': ''
-     },
-    {'ionName': 'mlops-tests',
-     'raiseAlert': False,
-     'sequence': 8,
-     u'eventType': 'Model',
-     u'clearedTimestamp': 0,
-     'id': u'9d1d4a81-29a0-492f-a6c7-d35489250368',
-     'state': u'APPROVED',
-     'msgType': u'UNKNOWN',
-     'type': u'Model',
-     'modelId': u'9d1d4a81-29a0-492f-a6c7-d35489250368',
-     'pipelineInstanceId': u'94bf382b-47d5-4b80-b76c-3bca862e6e23',
-     'format': u'PMML',
-     'deletedTimestamp': 0,
-     'createdTimestamp': 1518460573573,
-     'host': u'localhost',
-     'modelSize': 0,
-     'name': u'model-8',
-     'stateDescription': '',
-     'modelFormat': u'PMML',
-     'created': 1518460765161,
-     'workflowRunId': u'bdc2ee10-767c-4524-ba72-8268a3894bff',
-     'reviewedBy': u''},
+    {
+        models.json_fields.MODEL_ID_FIELD: u'8c95deaf-87e4-4c21-bc92-e5b1a0454f9a',
+        models.json_fields.MODEL_FORMAT_FIELD: 'TEXT',
+        models.json_fields.MODEL_SIZE_FIELD: 0,
+        models.json_fields.MODEL_NAME_FIELD: 'model-4',
+        models.json_fields.MODEL_CREATED_ON_FIELD: 1518460283900
+    },
+    {
+        models.json_fields.MODEL_ID_FIELD: u'9d1d4a81-29a0-492f-a6c7-d35489250368',
+        models.json_fields.MODEL_FORMAT_FIELD: u'PMML',
+        models.json_fields.MODEL_SIZE_FIELD: 0,
+        models.json_fields.MODEL_NAME_FIELD: u'model-8',
+        models.json_fields.MODEL_CREATED_ON_FIELD: 1518460573573
+    },
 ]
 
 
@@ -97,15 +65,14 @@ def test_create_model():
         rh = MlOpsRestFactory().get_rest_helper(MLOpsMode.AGENT)
 
         model_id = "model_5906255e-0a3d-4fef-8653-8d41911264fb"
-        m.get(rh.url_get_uuid("model"), json={"id" : model_id})
+        m.get(rh.url_get_uuid("model"), json={"id": model_id})
 
         ion = ION()
         ion.id = "bdc2ee10-767c-4524-ba72-8268a3894bff"
         mh = ModelHelper(rest_helper=rh, ion=ion, stats_helper=None)
 
         model_data = "MODEL_DATA"
-        model = mh.create_model(name="my model", model_format=ModelFormat.TEXT, description="test model",
-                            user_defined="whatever I want goes here")
+        model = mh.create_model(name="my model", model_format=ModelFormat.TEXT, description="test model")
 
         model_file = os.path.join(os.path.sep, "tmp", str(uuid.uuid4()))
         f = open(model_file, 'w')
@@ -119,9 +86,10 @@ def test_create_model():
 
         rh.done()
 
+
 def test_model_list_dict_from_json():
     with requests_mock.mock() as m:
-        m.get('http://localhost:3456/models', json=models_list_json_dict)
+        m.get('http://localhost:3456/v1/models', json=models_list_json_dict)
 
         rh = MlOpsRestFactory().get_rest_helper(MLOpsMode.AGENT)
         ion = ION()
@@ -150,7 +118,7 @@ def test_convert_models_json_dict_to_dataframe():
 
 def test_get_models_with_filter():
     with requests_mock.mock() as m:
-        m.get('http://localhost:3456/models', json=models_list_json_dict)
+        m.get('http://localhost:3456/v1/models', json=models_list_json_dict)
 
         rh = MlOpsRestFactory().get_rest_helper(MLOpsMode.AGENT)
         ion = ION()
@@ -163,13 +131,13 @@ def test_get_models_with_filter():
 
         filtered_models = mh.get_models_dataframe(model_filter=mf, download=False)
         assert len(filtered_models) == 1
-        print(filtered_models[["name", "createdTimestamp"]])
+        print(filtered_models[[models.json_fields.MODEL_NAME_FIELD, models.json_fields.MODEL_CREATED_ON_FIELD]])
         rh.done()
 
 
 def test_get_models_with_filter_2():
     with requests_mock.mock() as m:
-        m.get('http://localhost:3456/models', json=models_list_json_dict)
+        m.get('http://localhost:3456/v1/models', json=models_list_json_dict)
 
         rh = MlOpsRestFactory().get_rest_helper(MLOpsMode.AGENT)
         ion = ION()
@@ -181,16 +149,16 @@ def test_get_models_with_filter_2():
         mf.id = model_id_to_filter
 
         filtered_models = mh.get_models_dataframe(model_filter=mf, download=False)
-        print(filtered_models[["modelId", "modelFormat"]])
+        print(filtered_models[[models.json_fields.MODEL_ID_FIELD, models.json_fields.MODEL_FORMAT_FIELD]])
         assert len(filtered_models) == 1
-        assert filtered_models.iloc[0]['modelFormat'] == 'TEXT'
-        assert filtered_models.iloc[0]['modelId'] == model_id_to_filter
+        assert filtered_models.iloc[0][models.json_fields.MODEL_FORMAT_FIELD] == 'TEXT'
+        assert filtered_models.iloc[0][models.json_fields.MODEL_ID_FIELD] == model_id_to_filter
         rh.done()
 
 
 def test_get_models_with_filter_3():
     with requests_mock.mock() as m:
-        m.get('http://localhost:3456/models', json=models_list_json_dict)
+        m.get('http://localhost:3456/v1/models', json=models_list_json_dict)
 
         rh = MlOpsRestFactory().get_rest_helper(MLOpsMode.AGENT)
         ion = ION()
@@ -200,11 +168,10 @@ def test_get_models_with_filter_3():
         mf = ModelFilter()
         mf.time_window_start = datetime.utcfromtimestamp(1518460571573 / 1000)
         mf.time_window_end = datetime.utcfromtimestamp(1518460577573 / 1000)
-        mf.pipeline_instance_id = ['94bf382b-47d5-4b80-b76c-3bca862e6e23', 'asdf']
 
         filtered_models = mh.get_models_dataframe(model_filter=mf, download=False)
         assert len(filtered_models) == 1
-        print(filtered_models[["name", "createdTimestamp", "pipelineInstanceId"]])
+        print(filtered_models[[models.json_fields.MODEL_NAME_FIELD, models.json_fields.MODEL_CREATED_ON_FIELD]])
         # No model found
         mf.id = "111111111111111"
         filtered_models = mh.get_models_dataframe(model_filter=mf, download=False)
@@ -212,32 +179,31 @@ def test_get_models_with_filter_3():
         rh.done()
 
 
-local_models_list_json_dict = [
-    {u'createdTimestamp': '',
-     u'description': u'test model',
-     u'modelFormat': u'Text',
-     u'modelId': '',
-     u'name': u'my model',
-     u'size': 10,
-     u'source': '',
-     u'state': '',
-     u'user': '',
-     u'user_defined': u'whatever I want goes here',
-     u'workflowRunId': ''
-     }
-]
-
-
 def test_publish_model():
+    expected_models_list_json_dict = [
+        {
+            models.json_fields.MODEL_ID_FIELD: '',
+            models.json_fields.MODEL_NAME_FIELD: 'my model name',
+            models.json_fields.MODEL_FORMAT_FIELD: 'Text',
+            models.json_fields.MODEL_VERSION_FIELD: '',
+            models.json_fields.MODEL_DESCRIPTION_FIELD: 'test model',
+            models.json_fields.MODEL_TRAIN_VERSION_FIELD: '',
+            models.json_fields.MODEL_SIZE_FIELD: 10,
+            models.json_fields.MODEL_OWNER_FIELD: '',
+            models.json_fields.MODEL_CREATED_ON_FIELD: None,
+            models.json_fields.MODEL_FLAG_VALUES_FIELD: [],
+            models.json_fields.MODEL_ANNOTATIONS_FIELD: {"custom_data": "my content"},
+            models.json_fields.MODEL_ACTIVE_FIELD: False
+        }
+    ]
+
     rh = MlOpsRestFactory().get_rest_helper(MLOpsMode.STAND_ALONE)
     ion = ION()
-    ion.id = "bdc2ee10-767c-4524-ba72-8268a3894bff"
-    local_models_list_json_dict[0]["workflowRunId"] = ion.id
     mh = ModelHelper(rest_helper=rh, ion=ion, stats_helper=None)
 
     model_data = "MODEL_DATA"
-    model = mh.create_model(name="my model", model_format=ModelFormat.TEXT, description="test model",
-                  user_defined="whatever I want goes here")
+    model = mh.create_model(name="my model name", model_format=ModelFormat.TEXT, description="test model")
+    model.set_annotations({"custom_data": "my content"})
 
     model_file = os.path.join(os.path.sep, "tmp", str(uuid.uuid4()))
     f = open(model_file, 'w')
@@ -248,7 +214,7 @@ def test_publish_model():
     my_id = mh.publish_model(model, None)
     os.remove(model_file)
     assert my_id == model.get_id()
-    local_models_list_json_dict[0]["modelId"] = my_id
+    expected_models_list_json_dict[0][models.json_fields.MODEL_ID_FIELD] = my_id
 
     ret_data = mh.download_model(my_id)
     assert ret_data == model_data
@@ -256,15 +222,16 @@ def test_publish_model():
     result_model_list = mh.fetch_all_models_json_dict()
 
     actual_json_dumps = json.dumps(result_model_list, sort_keys=True, indent=2)
-    local_json_dump = json.dumps(local_models_list_json_dict, sort_keys=True, indent=2)
+    local_json_dump = json.dumps(expected_models_list_json_dict, sort_keys=True, indent=2)
     print("Expected_Dumps: {}".format(local_json_dump))
     print("Actual_Dumps: {}".format(actual_json_dumps))
 
-    assert local_models_list_json_dict == result_model_list
+    assert expected_models_list_json_dict == result_model_list
 
     with pytest.raises(MLOpsException):
         mh.publish_model("Not a model", None)
     rh.done()
+
 
 def test_feature_importance():
     num_significant_features = 6
@@ -289,8 +256,7 @@ def test_feature_importance():
         mlops.init(ctx=None, mlops_mode=MLOpsMode.AGENT)
         published_model = mlops.Model(name="dtr_mlops_model",
                                       model_format=ModelFormat.SPARKML,
-                                      description="model of decision tree regression with explainability",
-                                      user_defined="")
+                                      description="model of decision tree regression with explainability")
         published_model.feature_importance(model=FinalModel, feature_names=FinalModel.feature_names,
                                            num_significant_features=num_significant_features)
         mlops.done()
@@ -303,6 +269,7 @@ class FinalModel:
                      'pipelinestat.averageDistanceToClusters', 'dataheatmap',
                      'pipelinestat.count', 'pipelinestat.WSSER',
                      'modelstats.distanceMatrixStat']
+
 
 def test_publish_model_rest():
     with requests_mock.mock() as m:
@@ -319,8 +286,7 @@ def test_publish_model_rest():
         mh = ModelHelper(rest_helper=rh, ion=ion, stats_helper=None)
 
         model_data = "MODEL_DATA"
-        model = mh.create_model(name="my model", model_format=ModelFormat.TEXT, description="test model",
-                      user_defined="whatever I want goes here")
+        model = mh.create_model(name="my model", model_format=ModelFormat.TEXT, description="test model")
 
         model_file = os.path.join(os.path.sep, "tmp", str(uuid.uuid4()))
         f = open(model_file, 'w')

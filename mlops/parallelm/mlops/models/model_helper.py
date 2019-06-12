@@ -33,11 +33,10 @@ class ModelHelper(BaseObj):
     def dataframe_to_object_list(self, models_dataframe):
         object_list = []
         for index, row in models_dataframe.iterrows():
-            m = self.create_model()
-            m.matadata.format = row["format"]
-            m.name = row["name"]
-            m.creation_time = row["createdTimestamp"]
-            m.id = row["id"]
+            m = self.create_model(name=row[json_fields.MODEL_NAME_FIELD], model_format=ModelFormat.UNKNOWN)
+            m.matadata.format = row[json_fields.MODEL_FORMAT_FIELD]
+            m.creation_time = row[json_fields.MODEL_CREATED_ON_FIELD]
+            m.id = row[json_fields.MODEL_ID_FIELD]
             if 'data' in models_dataframe.columns:
                 m.data = row["data"]
             else:
@@ -78,34 +77,25 @@ class ModelHelper(BaseObj):
 
             query = ""
             num_cols = 0
-            if "workflowRunId" in df.columns:
-                query = "workflowRunId == @self._ion.id "
-                num_cols += 1
 
             if model_filter.time_window_start is not None:
                 start_ts = datetime_to_timestamp_milli(model_filter.time_window_start)
                 if num_cols > 0:
                     query += " &"
-                query += " createdTimestamp >= @start_ts"
+                query += " {} >= @start_ts".format(json_fields.MODEL_CREATED_ON_FIELD)
                 num_cols += 1
 
             if model_filter.time_window_end is not None:
                 end_ts = datetime_to_timestamp_milli(model_filter.time_window_end)
                 if num_cols > 0:
                     query += " &"
-                query += " createdTimestamp <= @end_ts"
+                query += " {} <= @end_ts".format(json_fields.MODEL_CREATED_ON_FIELD)
                 num_cols += 1
 
             if model_filter.id is not None:
                 if num_cols > 0:
                     query += " &"
-                query += " modelId == @model_filter.id"
-                num_cols += 1
-
-            if model_filter.pipeline_instance_id and "pipelineInstanceId" in df.columns:
-                if num_cols > 0:
-                    query += " &"
-                query += " pipelineInstanceId == @model_filter.pipeline_instance_id"
+                query += " {} == @model_filter.id".format(json_fields.MODEL_ID_FIELD)
                 num_cols += 1
 
             self._info("\nQUERY: {}".format(query))
@@ -118,7 +108,7 @@ class ModelHelper(BaseObj):
         if download is True:
             self._info("Downloading models - this might take some time")
             models_content = []
-            model_id_list = df_filtered['modelId'].values
+            model_id_list = df_filtered[json_fields.MODEL_ID_FIELD].values
             for model_id in model_id_list:
                 self._info("Downloading model: {}".format(model_id))
                 models_content.append(self._rest_helper.download_model(model_id))
@@ -179,22 +169,30 @@ class ModelHelper(BaseObj):
             json_list.append(acc_data)
         return json_list
 
-    def create_model(self, name="", model_format=ModelFormat.UNKNOWN, description="", user_defined="", id=None):
-        return Model(self._stats_helper, self._rest_helper, name, model_format, description, user_defined, id=id)
+    def create_model(self, name, model_format, description="", id=None):
+        return Model(self._stats_helper, self._rest_helper, name, model_format, description, id=id)
 
     def create_model_from_json(self, model_dict):
         model_format = ModelFormat.from_str(model_dict[json_fields.MODEL_FORMAT_FIELD])
         model = self.create_model(name=model_dict[json_fields.MODEL_NAME_FIELD],
                                   model_format=model_format,
+                                  description=model_dict.get(json_fields.MODEL_DESCRIPTION_FIELD),
                                   id=model_dict[json_fields.MODEL_ID_FIELD])
-        model.metadata.creation_time = model_dict[json_fields.MODEL_CREATED_ON_FIELD]
+        model.metadata.created_on = model_dict[json_fields.MODEL_CREATED_ON_FIELD]
         model.metadata.size = model_dict[json_fields.MODEL_SIZE_FIELD]
+
+        model.metadata.owner = model_dict[json_fields.MODEL_OWNER_FIELD]
+        model.metadata.train_version = model_dict[json_fields.MODEL_TRAIN_VERSION_FIELD]
+        model.metadata.model_version = model_dict[json_fields.MODEL_VERSION_FIELD]
+        model.metadata.active = model_dict[json_fields.MODEL_ACTIVE_FIELD]
+        model.metadata.flag_values = model_dict[json_fields.MODEL_FLAG_VALUES_FIELD]
+
+        model.set_annotations(model_dict[json_fields.MODEL_ANNOTATIONS_FIELD])
         return model
 
     def publish_model(self, model, pipelineInstanceId):
         if not isinstance(model, Model):
             raise MLOpsException("model argument must be a Model object got {}".format(type(model)))
-        model.metadata.workflowRunId = self._ion.id
 
         model_file_path = model.get_model_path()
         model_file_to_publish = None
@@ -211,11 +209,12 @@ class ModelHelper(BaseObj):
             else:
                 raise MLOpsException("Path to model with format {} expected to be a file".format(model.metadata.modelFormat.value))
 
-        params = {"name": model.metadata.name,
-                  "format": model.metadata.modelFormat.value,
-                  "pipelineInstanceId": pipelineInstanceId,
-                  "id": model.metadata.modelId,
-                  "description": model.metadata.description}
+        params = {json_fields.MODEL_NAME_FIELD: model.metadata.name,
+                  json_fields.MODEL_FORMAT_FIELD: model.metadata.modelFormat.value,
+                  json_fields.MODEL_ID_FIELD: model.metadata.modelId,
+                  json_fields.MODEL_DESCRIPTION_FIELD: model.metadata.description,
+                  json_fields.MODEL_ANNOTATIONS_FIELD: json.dumps(model.get_annotations()),
+                  Constants.PIPELINE_INSTANCE_ID: pipelineInstanceId}
 
         ret = self._rest_helper.post_model_as_file(model_file_to_publish, params, model.metadata)
         if os.path.isdir(model_file_path):

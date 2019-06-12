@@ -16,6 +16,7 @@ from parallelm.mlops import Constants
 from parallelm.mlops.mlops_exception import MLOpsException
 from parallelm.mlops.mlops_rest_interfaces import MlOpsRestHelper
 from parallelm.mlops.models.model import ModelMetadata
+from parallelm.mlops import models
 
 
 class MlOpsRestStandAlone(MlOpsRestHelper):
@@ -65,13 +66,13 @@ class MlOpsRestStandAlone(MlOpsRestHelper):
         if metadata and not isinstance(metadata, ModelMetadata):
             raise MLOpsException("metadata argument must be a ModelMetadata object, got {}".format(type(metadata)))
 
-        required_params = ["id"]
+        required_params = [models.json_fields.MODEL_ID_FIELD]
 
         for param_name in required_params:
             if param_name not in params:
                 raise MLOpsException('parameter {} is required for publishing model'.format(param_name))
 
-        model_id = params["id"]
+        model_id = params[models.json_fields.MODEL_ID_FIELD]
 
         if metadata:
             model_meta_file = os.path.join(self._meta_dir, model_id)
