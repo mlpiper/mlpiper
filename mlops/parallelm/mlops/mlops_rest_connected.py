@@ -121,7 +121,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
         Create the REST request for the model list
         :return: the URL for the REST request for the model list
         """
-        return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.MODELS)
+        return build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS)
 
     def get_model_list(self):
         """
