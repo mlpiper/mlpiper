@@ -997,11 +997,10 @@ class MLOps(object):
 
         return model_id
 
-    def Model(self, name="", model_format=ModelFormat.UNKNOWN, description="", user_defined=""):
+    def Model(self, name="", model_format=ModelFormat.UNKNOWN, description=""):
         return self._model_helper.create_model(name=name,
                                                model_format=model_format,
-                                               description=description,
-                                               user_defined=user_defined)
+                                               description=description)
 
     def load_time_capture(self, input_file):
         from parallelm.mlops.time_capture.time_capture import TimeCapture

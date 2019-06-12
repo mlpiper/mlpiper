@@ -44,6 +44,8 @@ class Constants:
     # ION User visible literal
     ION_LITERAL = "ML App"
 
+    PIPELINE_INSTANCE_ID = "pipelineInstanceId"
+
 
 class HTTPStatus:
     OK = 200
