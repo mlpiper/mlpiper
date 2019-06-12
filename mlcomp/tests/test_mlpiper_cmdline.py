@@ -147,14 +147,17 @@ class TestMLPiper:
         # os.chdir(mlcomp_root_path)
         # subprocess.check_call("make egg", shell=True)
 
-        mlcomp_eggs = glob.glob(os.path.join(mlcomp_root_path, "dist", "*.egg"))
+
+        eggs_pattern = "*py2.*.egg" if sys.version_info[0] < 3 else "*py3.*.egg"
+
+        mlcomp_eggs = glob.glob(os.path.join(mlcomp_root_path, "dist", eggs_pattern))
         TestMLPiper.egg_paths.extend(mlcomp_eggs)
 
         mlops_root_path = os.path.join(os.path.dirname(__file__), "../../mlops")
         # os.chdir(mlops_root_path)
         # subprocess.check_call("make egg", shell=True)
 
-        mlops_eggs = glob.glob(os.path.join(mlops_root_path, "dist", "*2.*.egg" if sys.version_info[0] < 3 else "*3.*.egg"))
+        mlops_eggs = glob.glob(os.path.join(mlops_root_path, "dist", eggs_pattern))
         TestMLPiper.egg_paths.extend(mlops_eggs)
 
         TestMLPiper.mlpiper_script = os.path.join(mlcomp_root_path, "bin", "mlpiper")
