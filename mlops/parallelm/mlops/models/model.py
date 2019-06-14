@@ -1,5 +1,7 @@
 import os
 import io
+import six
+import json
 from enum import Enum
 
 from parallelm.mlops.mlops_exception import MLOpsException
@@ -8,8 +10,6 @@ from parallelm.mlops.models.mlobject import MLObjectType
 from parallelm.mlops.stats.stats_helper import StatsHelper
 from parallelm.mlops.stats_category import StatCategory
 from parallelm.mlops import models
-
-import json
 
 
 class ModelFormat(str, Enum):
@@ -104,11 +104,19 @@ class Model(MLObject):
 
     def __init__(self, stats_helper, rest_helper, name, model_format, description, id=None):
         super(Model, self).__init__(rest_helper, id)
+
+        model_id = self.get_id()
+        if model_id is None or not isinstance(model_id, six.string_types) or model_id == "":
+            raise MLOpsException('model id must be non zero valid string type, received: {}'.format(model_id))
+
         self.model_path = None
         self.metadata = ModelMetadata(self.get_id(), name, model_format, description)
         if stats_helper and not isinstance(stats_helper, StatsHelper):
             raise MLOpsException("stats_helper object must be an instance of StatsHelper class")
         self._stats_helper = stats_helper
+
+        self._pipeline_instance_id = None
+        self._path_to_publish = None
 
     def __eq__(self, other):
         """

@@ -91,8 +91,9 @@ class MlOpsRestConnected(MlOpsRestHelper):
             if r.status_code == HTTPStatus.OK:
                 return r
             elif r.status_code == HTTPStatus.SERVICE_UNAVAIL:
-                self._warn("{} Got {} from server - possibly server is down - will try again in 5 seconds, url: {}".format(
-                    counter, r.status_code, url))
+                self._warn(
+                    "{} Got {} from server - possibly server is down - will try again in 5 seconds, url: {}".format(
+                        counter, r.status_code, url))
                 counter += 1
                 time.sleep(self._service_unavail_sleep_time)
             else:
@@ -113,7 +114,8 @@ class MlOpsRestConnected(MlOpsRestHelper):
                 raise MLOpsException('Call {} with payload {} failed text:[{}]'.format(url, payload, r.text))
         except requests.exceptions.ConnectionError as e:
             self._error(e)
-            raise MLOpsException("Connection to MLOps server [{}:{}] refused".format(self._mlops_server, self._mlops_port))
+            raise MLOpsException(
+                "Connection to MLOps server [{}:{}] refused".format(self._mlops_server, self._mlops_port))
         except Exception as e:
             raise MLOpsException('Call ' + str(url) + ' failed with error ' + str(e))
 
@@ -137,41 +139,34 @@ class MlOpsRestConnected(MlOpsRestHelper):
                         ionId=workflow_run_id, pipelineInstanceId=pipeline_inst_id, modelType="lastApproved")
         return self._get_url_request_response_as_json(url)
 
-    def post_model_as_file(self, model_file_path, params, metadata):
+    def post_model_as_file(self, model):
         """
         Posts a file to the server
-        :param model_file_path: model file to upload
-        :param params: parameters dictionary
-        :param metadata: extended metadata(currently not used with rest connected)
+        :param model: :class:`Model` object to publish
         :return: model_id
         """
 
-        if metadata and not isinstance(metadata, ModelMetadata):
-            raise MLOpsException("metadata argument must be a ModelMetadata object, got {}".format(type(metadata)))
+        request_params = {models.json_fields.MODEL_NAME_FIELD: model.metadata.name,
+                          models.json_fields.MODEL_ID_FIELD: model.metadata.modelId,
+                          models.json_fields.MODEL_FORMAT_FIELD: model.metadata.modelFormat.value,
+                          models.json_fields.MODEL_DESCRIPTION_FIELD: model.metadata.description,
+                          models.json_fields.MODEL_ANNOTATIONS_FIELD: json.dumps(model.get_annotations()),
+                          Constants.PIPELINE_INSTANCE_ID: model._pipeline_instance_id}
 
-        required_params = [models.json_fields.MODEL_NAME_FIELD,
-                           models.json_fields.MODEL_ID_FIELD,
-                           models.json_fields.MODEL_FORMAT_FIELD,
-                           models.json_fields.MODEL_DESCRIPTION_FIELD,
-                           Constants.PIPELINE_INSTANCE_ID]
+        url = build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.MODELS, model._pipeline_instance_id)
 
-        for param_name in required_params:
-            if param_name not in params:
-                raise MLOpsException('parameter {} is required for publishing model'.format(param_name))
-
-        url = build_url(self._mlops_server, self._mlops_port, MLOpsRestHandles.MODELS, params[Constants.PIPELINE_INSTANCE_ID])
-
-        files = {'file': ("file", open(model_file_path, 'rb'), "application/octet-stream")}
+        files = {'file': ("file", open(model._path_to_publish, 'rb'), "application/octet-stream")}
 
         try:
-            r = requests.post(url, files=files, params=params, cookies=self._return_cookie())
+            r = requests.post(url, files=files, params=request_params, cookies=self._return_cookie())
             if r.ok:
                 return r.json()
             else:
                 raise MLOpsException('Call {} with filename {} failed text:[{}]'.format(url, model_file_path, r.text))
         except requests.exceptions.ConnectionError as e:
             self._error(e)
-            raise MLOpsException("Connection to MLOps server [{}:{}] refused".format(self._mlops_server, self._mlops_port))
+            raise MLOpsException(
+                "Connection to MLOps server [{}:{}] refused".format(self._mlops_server, self._mlops_port))
         except Exception as e:
             raise MLOpsException('Call ' + str(url) + ' failed with error ' + str(e))
 
@@ -233,7 +228,8 @@ class MlOpsRestConnected(MlOpsRestHelper):
         :param ion_instance_id: ION to get the workflow instance of
         :return: the URL for the REST request
         """
-        return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.WORKFLOW_INSTANCES_V2, ion_instance_id)
+        return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.WORKFLOW_INSTANCES_V2,
+                         ion_instance_id)
 
     def get_workflow_instance(self, ion_instance_id):
         """
@@ -245,7 +241,8 @@ class MlOpsRestConnected(MlOpsRestHelper):
         return self._get_url_request_response_as_json(url)
 
     def url_get_health_thresholds(self, ion_instance_id):
-        return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.HEALTH_THRESHOLDS, ionInstanceId=ion_instance_id, thresholdType='all')
+        return build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.HEALTH_THRESHOLDS,
+                         ionInstanceId=ion_instance_id, thresholdType='all')
 
     def get_health_thresholds(self, ion_instance_id):
         url = self.url_get_health_thresholds(ion_instance_id)
@@ -258,7 +255,8 @@ class MlOpsRestConnected(MlOpsRestHelper):
         :return: the model
         :raises MLOpsException
         """
-        url = build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS, model_id, MLOpsRestHandles.DOWNLOAD)
+        url = build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS,
+                        model_id, MLOpsRestHandles.DOWNLOAD)
         self._info("Downloading model [{}]".format(url))
         r = self._get_url_request_response(url)
         return r.content
@@ -307,7 +305,8 @@ class MlOpsRestConnected(MlOpsRestHelper):
             else:
                 self._error('Call {} with payload {} failed: text:[{}]'.format(url, event, r.text))
         except requests.exceptions.ConnectionError as e:
-            raise MLOpsConnectionException("Connection to MLOps agent [{}:{}] refused; {}".format(self._mlops_server, self._mlops_port, e))
+            raise MLOpsConnectionException(
+                "Connection to MLOps agent [{}:{}] refused; {}".format(self._mlops_server, self._mlops_port, e))
         except Exception as e:
             raise MLOpsException('Call ' + str(url) + ' failed with error: ' + str(e))
 
@@ -342,12 +341,14 @@ class MlOpsRestConnected(MlOpsRestHelper):
                 self._error('Call {} with payload {} failed: text:[{}]'.format(url, stat, r.text))
         except requests.exceptions.ConnectionError as e:
             self._error(e)
-            raise MLOpsConnectionException("Connection to MLOps agent [{}:{}] refused; {}".format(self._mlops_server, self._mlops_port, e))
+            raise MLOpsConnectionException(
+                "Connection to MLOps agent [{}:{}] refused; {}".format(self._mlops_server, self._mlops_port, e))
         except Exception as e:
             raise MLOpsException('Call ' + str(url) + ' failed with error ' + str(e))
 
     def url_get_model_stats(self, model_id):
-        return build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS, model_id, MLOpsRestHandles.METRICS)
+        return build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS,
+                         model_id, MLOpsRestHandles.METRICS)
 
     def get_model_stats(self, model_id):
         url = self.url_get_model_stats(model_id)

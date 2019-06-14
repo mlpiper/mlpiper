@@ -54,33 +54,22 @@ class MlOpsRestStandAlone(MlOpsRestHelper):
         latest_metadata = sorted(filter(os.path.isfile, os.listdir('.')), key=os.path.getmtime)
         return latest_metadata[-1:]
 
-    def post_model_as_file(self, model_file_path, params, metadata):
+    def post_model_as_file(self, model):
         """
         Posts a file to the server
-        :param model_file_path: model file to upload
-        :param params: parameters dictionary
-        :param metadata: extended metadata(currently not used with rest connected)
+        :param model: :class:`Model` object to publish
         :return: model_id
         """
 
-        if metadata and not isinstance(metadata, ModelMetadata):
-            raise MLOpsException("metadata argument must be a ModelMetadata object, got {}".format(type(metadata)))
+        metadata = model.metadata
+        model_id = metadata.modelId
 
-        required_params = [models.json_fields.MODEL_ID_FIELD]
-
-        for param_name in required_params:
-            if param_name not in params:
-                raise MLOpsException('parameter {} is required for publishing model'.format(param_name))
-
-        model_id = params[models.json_fields.MODEL_ID_FIELD]
-
-        if metadata:
-            model_meta_file = os.path.join(self._meta_dir, model_id)
-            with open(model_meta_file, 'w') as outfile:
-                json.dump(metadata.to_dict(), outfile)
+        model_meta_file = os.path.join(self._meta_dir, model_id)
+        with open(model_meta_file, 'w') as outfile:
+            json.dump(metadata.to_dict(), outfile)
 
         model_data_file = os.path.join(self._data_dir, model_id)
-        shutil.copyfile(model_file_path, model_data_file)
+        shutil.copyfile(model._path_to_publish, model_data_file)
 
         return model_id
 

@@ -53,12 +53,10 @@ class MlOpsRestHelper(with_metaclass(abc.ABCMeta, BaseObj)):
         pass
 
     @abc.abstractmethod
-    def post_model_as_file(self, model_file_path, params, metadata):
+    def post_model_as_file(self, model):
         """
         Posts a file to the server
-        :param model_file_path: model file to upload
-        :param params: parameters dictionary
-        :param metadata: extended metadata(currently not used with rest connected)
+        :param model: :class:`Model` object to publish
         :return: model_id
         """
         pass
