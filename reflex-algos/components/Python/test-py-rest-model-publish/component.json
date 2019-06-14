@@ -1,0 +1,41 @@
+{
+  "engineType": "Generic",
+  "language": "Python",
+  "name": "test-py-rest-model-publish",
+  "description": "Model REST publish component. NOTE: ECO, pipelineRunner completeProducer() must not fetch for a model file",
+  "label": "test-py-rest-model-publish",
+  "program": "py_model_post.py",
+  "inputInfo": [],
+  "outputInfo": [],
+  "group": "Algorithms",
+  "modelBehavior": "ModelProducer",
+  "useMLOps": true,
+  "arguments": [
+    {
+      "key": "output-model",
+      "label": "Model output file",
+      "type": "str",
+      "description": "File to use for saving the trained model",
+      "tag": "model_dir",
+      "optional": true
+    },
+    {
+      "key": "model-name",
+      "label": "Model Name",
+      "type": "str",
+      "description": "Model Name",
+      "optional": true,
+      "defaultValue": "Default Model Name"
+    },
+    {
+      "key": "model-description",
+      "label": "Model Description",
+      "type": "str",
+      "description": "Model Description",
+      "optional": true,
+      "defaultValue": "Default Model Description"
+    }
+  ],
+  "version": "1"
+}
+
