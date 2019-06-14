@@ -125,6 +125,8 @@ class ModelHelper(BaseObj):
             return None
 
         model_dict = model_data[0]
+        if not model_dict:
+            return None
         model = self.create_model_from_json(model_dict)
         self._logger.debug("Model: {}".format(model))
         return model
