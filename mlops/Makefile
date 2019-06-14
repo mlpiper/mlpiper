@@ -13,31 +13,37 @@ DISTDIR = ""
 MLOPS_EGG_PY2_SYMLINK = "mlops-py2.egg"
 MLOPS_EGG_PY3_SYMLINK = "mlops-py3.egg"
 
-# Put it first so that "make" without argument is like "make help".
+MLOPS_EGG_PY2 = $(shell realpath $(shell ls ./dist/*-py2.*.egg))
+MLOPS_EGG_PY3 = $(shell realpath $(shell ls ./dist/*-py3.*.egg))
+MLOPS_EGG_PY2_BASENAME = $(shell basename $(MLOPS_EGG_PY2))
+MLOPS_EGG_PY3_BASENAME = $(shell basename $(MLOPS_EGG_PY3))
+SPARK_JARS = "../reflex-algos/target/ReflexAlgos-jar-with-dependencies.jar"
+
+# Put these as the first targets, so that "make" without argument is like "make egg".
+# TODO: `local` target is for compatibility only and should be removed once other code is cleaned up.
+egg local:
+	rm -rf ./dist
+	python2 setup.py -q bdist_egg
+	python3 setup.py -q bdist_egg
+	cd dist; ln -sf $(MLOPS_EGG_PY2_BASENAME) $(MLOPS_EGG_PY2_SYMLINK); cd -
+	cd dist; ln -sf $(MLOPS_EGG_PY3_BASENAME) $(MLOPS_EGG_PY3_SYMLINK); cd -
+
+bdist:
+	python setup.py bdist
+
+
+# show help for sphinx
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: help Makefile bdist
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
+.PHONY: help Makefile bdist
 
-bdist:
-	python setup.py bdist
-
-egg:
-	rm -rf ./dist
-	python2 setup.py -q bdist_egg
-	python3 setup.py -q bdist_egg
-
-MLOPS_EGG_PY2 = $(shell realpath $(shell ls ./dist/*-py2.*.egg))
-MLOPS_EGG_PY3 = $(shell realpath $(shell ls ./dist/*-py3.*.egg))
-MLOPS_EGG_PY2_BASENAME = $(shell basename $(MLOPS_EGG_PY2))
-MLOPS_EGG_PY3_BASENAME = $(shell basename $(MLOPS_EGG_PY3))
-SPARK_JARS = "../reflex-algos/target/ReflexAlgos-jar-with-dependencies.jar"
 
 install_to: egg
 ifneq ($(DISTDIR),"")
@@ -46,11 +52,6 @@ ifneq ($(DISTDIR),"")
 	cd $(DISTDIR); ln -sf $(MLOPS_EGG_PY2_BASENAME) $(MLOPS_EGG_PY2_SYMLINK); cd -
 	cd $(DISTDIR); ln -sf $(MLOPS_EGG_PY3_BASENAME) $(MLOPS_EGG_PY3_SYMLINK); cd -
 endif
-
-local: egg
-	cd dist; ln -sf $(MLOPS_EGG_PY2_BASENAME) $(MLOPS_EGG_PY2_SYMLINK); cd -
-	cd dist; ln -sf $(MLOPS_EGG_PY3_BASENAME) $(MLOPS_EGG_PY3_SYMLINK); cd -
-
 
 wheel:
 	python2 setup.py sdist bdist_wheel
