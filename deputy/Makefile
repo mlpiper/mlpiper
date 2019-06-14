@@ -9,10 +9,12 @@ DEPUTY_EGG_PY3 = $(shell realpath $(shell ls ./dist/*-py3.*.egg))
 DEPUTY_EGG_PY2_BASENAME = $(shell basename $(DEPUTY_EGG_PY2))
 DEPUTY_EGG_PY3_BASENAME = $(shell basename $(DEPUTY_EGG_PY3))
 
-egg:
+egg local:
 	rm -rf ./dist
 	python2 setup.py bdist_egg
 	python3 setup.py bdist_egg
+	cd dist; ln -sf $(DEPUTY_EGG_PY2_BASENAME) $(DEPUTY_EGG_PY2_SYMLINK); cd -
+	cd dist; ln -sf $(DEPUTY_EGG_PY3_BASENAME) $(DEPUTY_EGG_PY3_SYMLINK); cd -
 
 install_to: egg
 ifneq ($(DISTDIR),"")
@@ -30,11 +32,6 @@ bdist:
 test: egg
 	env PYTHONPATH=./:tests/ python2 -m py.test -v tests/
 	env PYTHONPATH=./:tests/ python3 -m pytest -v tests/
-
-# Creating the softlinks inside the deputy dist dir
-local: egg
-	cd dist; ln -sf $(DEPUTY_EGG_PY2_BASENAME) $(DEPUTY_EGG_PY2_SYMLINK); cd -
-	cd dist; ln -sf $(DEPUTY_EGG_PY3_BASENAME) $(DEPUTY_EGG_PY3_SYMLINK); cd -
 
 run: egg
 	./bin/run-deputy.sh

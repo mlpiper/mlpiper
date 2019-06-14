@@ -2,21 +2,31 @@
 
 DISTDIR = ""
 
+MLCOMP_EGG_PY2 = $(shell realpath $(shell ls ./dist/*-py2.*.egg))
+MLCOMP_EGG_PY3 = $(shell realpath $(shell ls ./dist/*-py3.*.egg))
+
+MLCOMP_EGG_PY2_BASENAME = $(shell basename $(MLCOMP_EGG_PY2))
+MLCOMP_EGG_PY3_BASENAME = $(shell basename $(MLCOMP_EGG_PY3))
+
 MLCOMP_EGG_PY2_SYMLINK = "mlcomp-py2.egg"
 MLCOMP_EGG_PY3_SYMLINK = "mlcomp-py3.egg"
+
+MLOPS_EGG_PY2 = $(shell realpath $(shell ls ../mlops/dist/*-py2.*.egg))
+MLOPS_EGG_PY3 = $(shell realpath $(shell ls ../mlops/dist/*-py3.*.egg))
+COMP_EGG_PY2 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py2.*.egg))
+COMP_EGG_PY3 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py3.*.egg))
+SPARK_JARS = "../reflex-algos/target/ReflexAlgos-jar-with-dependencies.jar"
+
+egg local:
+	rm -rf ./dist
+	python2 setup.py -q bdist_egg
+	python3 setup.py -q bdist_egg
+	cd dist; ln -sf $(MLCOMP_EGG_PY2_BASENAME) $(MLCOMP_EGG_PY2_SYMLINK); cd -
+	cd dist; ln -sf $(MLCOMP_EGG_PY3_BASENAME) $(MLCOMP_EGG_PY3_SYMLINK); cd -
 
 bdist:
 	python setup.py bdist
 
-egg:
-	rm -rf ./dist
-	python2 setup.py -q bdist_egg
-	python3 setup.py -q bdist_egg
-
-MLCOMP_EGG_PY2 = $(shell realpath $(shell ls ./dist/*-py2.*.egg))
-MLCOMP_EGG_PY3 = $(shell realpath $(shell ls ./dist/*-py3.*.egg))
-MLCOMP_EGG_PY2_BASENAME = $(shell basename $(MLCOMP_EGG_PY2))
-MLCOMP_EGG_PY3_BASENAME = $(shell basename $(MLCOMP_EGG_PY3))
 
 install_to: egg
 ifneq ($(DISTDIR),"")
@@ -47,25 +57,12 @@ comp_eggs: python_comps_egg pyspark_comps_egg
 mlops_egg:
 	cd ../mlops ; make egg; cd -
 
-MLCOMP_EGG_PY2 = $(shell realpath $(shell ls dist/*-py2.*.egg))
-MLCOMP_EGG_PY3 = $(shell realpath $(shell ls dist/*-py3.*.egg))
-MLOPS_EGG_PY2 = $(shell realpath $(shell ls ../mlops/dist/*-py2.*.egg))
-MLOPS_EGG_PY3 = $(shell realpath $(shell ls ../mlops/dist/*-py3.*.egg))
-COMP_EGG_PY2 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py2.*.egg))
-COMP_EGG_PY3 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py3.*.egg))
-SPARK_JARS = "../reflex-algos/target/ReflexAlgos-jar-with-dependencies.jar"
-
 test: egg mlops_egg comp_eggs
 	# Running the tests with the python egg
 	env PYTHONPATH=$(MLCOMP_EGG_PY2):$(MLOPS_EGG_PY2):$(COMP_EGG_PY2):tests SPARK_JARS=$(SPARK_JARS) python2 -m py.test tests/
 	env PYTHONPATH=$(MLCOMP_EGG_PY3):$(MLOPS_EGG_PY3):$(COMP_EGG_PY3):tests SPARK_JARS=$(SPARK_JARS) python3 -m pytest tests/
 
 	# TODO: add running tests for pyspark components
-
-local: egg
-	cd dist; ln -sf $(MLCOMP_EGG_PY2_BASENAME) $(MLCOMP_EGG_PY2_SYMLINK); cd -
-	cd dist; ln -sf $(MLCOMP_EGG_PY3_BASENAME) $(MLCOMP_EGG_PY3_SYMLINK); cd -
-
 
 install: wheel
 	env PYTHONPATH=./ bin/install_locally.py
