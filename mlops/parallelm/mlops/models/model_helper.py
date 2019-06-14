@@ -195,6 +195,9 @@ class ModelHelper(BaseObj):
             raise MLOpsException("model argument must be a Model object got {}".format(type(model)))
 
         model_file_path = model.get_model_path()
+        if not os.path.exists(model_file_path):
+            raise MLOpsException("publish_model() api works only for models saved to file. Use model.set_model_path() API")
+
         model_file_to_publish = None
 
         if model.metadata.modelFormat in [ModelFormat.SAVEDMODEL, ModelFormat.SPARKML]:
@@ -209,14 +212,10 @@ class ModelHelper(BaseObj):
             else:
                 raise MLOpsException("Path to model with format {} expected to be a file".format(model.metadata.modelFormat.value))
 
-        params = {json_fields.MODEL_NAME_FIELD: model.metadata.name,
-                  json_fields.MODEL_FORMAT_FIELD: model.metadata.modelFormat.value,
-                  json_fields.MODEL_ID_FIELD: model.metadata.modelId,
-                  json_fields.MODEL_DESCRIPTION_FIELD: model.metadata.description,
-                  json_fields.MODEL_ANNOTATIONS_FIELD: json.dumps(model.get_annotations()),
-                  Constants.PIPELINE_INSTANCE_ID: pipelineInstanceId}
+        model._pipeline_instance_id = pipelineInstanceId
+        model._path_to_publish = model_file_to_publish
 
-        ret = self._rest_helper.post_model_as_file(model_file_to_publish, params, model.metadata)
+        ret = self._rest_helper.post_model_as_file(model)
         if os.path.isdir(model_file_path):
             os.remove(model_file_to_publish)
         return ret
