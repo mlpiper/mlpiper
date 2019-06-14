@@ -1,0 +1,25 @@
+{
+  "engineType": "Generic",
+  "language": "Python",
+  "name": "test-py-rest-model-pull",
+  "description": "Model REST pull component.",
+  "label": "test-py-rest-model-pull",
+  "program": "py_model_pull.py",
+  "inputInfo": [],
+  "outputInfo": [],
+  "group": "Algorithms",
+  "modelBehavior": "ModelConsumer",
+  "useMLOps": true,
+  "arguments": [
+    {
+      "key": "input-model",
+      "label": "Model input file",
+      "type": "str",
+      "description": "File to use for loading model",
+      "optional": true,
+      "tag": "input_model_path"
+    }
+  ],
+  "version": "1"
+}
+
