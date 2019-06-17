@@ -67,4 +67,4 @@ class MLOpsChannel(with_metaclass(abc.ABCMeta, object)):
         return stat_mode, graph_type
 
     def get_stats_map(self):
-        return None
+        return {}
