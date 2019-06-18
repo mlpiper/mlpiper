@@ -110,6 +110,10 @@ class NginxBroker(Base):
         elif self._redhat_platform(platform_name):
             d = NginxConstants.SERVER_CONF_DIR_REDHAT
         elif self._macos_platform(platform_name):
+            if not os.path.isdir(NginxConstants.SERVER_CONF_DIR_MACOS):
+                if not os.path.isdir(NginxConstants.NGINX_ROOT_MACOS):
+                    raise MLCompException("'{}' does not exist or not a directory. Is nginx installed?".format(NginxConstants.NGINX_ROOT_MACOS))
+                os.mkdir(NginxConstants.SERVER_CONF_DIR_MACOS)
             d = NginxConstants.SERVER_CONF_DIR_MACOS
         else:
             raise MLCompException("Nginx cannot be configured! Platform is not supported: {}".format(platform_name))
