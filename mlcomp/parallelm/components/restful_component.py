@@ -190,27 +190,7 @@ class RESTfulComponent(ConnectableComponent):
 
     @classmethod
     def run(cls, port, model_path):
-        """
-        Enables the user to test his restful component in a standalone mode. It runs a local rest server that
-        listens the given port of the 'localhost' (127.0.0.1) interface.
-
-        Usually, it should be called under the __main__ scope:
-
-            if __name__ == '__main__':
-                MyRestfulComp.run(port=9999, model_path='/tmp/dummy-model.txt')
-
-        :param port:  specifies the port to listen on.
-        :param model_path:  a path in the local file system to a model file.
-        """
-        if not isinstance(port, int):
-            print("Port argument should be integer! provided: {}, port: {}".format(type(port), port))
-            return
-
-        pipeline_name = "standalone-restful-app"
-        UwsgiBroker.uwsgi_entry_point(cls(RestModelServingEngine(pipeline_name)), pipeline_name, model_path,
-                                      within_uwsgi_context=False)
-
-        UwsgiBroker._application.run(host='localhost', port=port)
+        raise MLCompException("Running restful components from CLI is not allowed without mlpiper")
 
     # NOTE: do not rename this route or over-ride it
     @FlaskRoute('/{}'.format(RestfulConstants.STATS_ROUTE))
