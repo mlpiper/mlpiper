@@ -152,7 +152,7 @@ object RestApis {
     */
   private def getLastApprovedModelMetadata(mlAppId: String, pipelineInstanceId: String): Option[Map[String, Any]] = {
     var ret: Option[Map[String, Any]] = None
-    val params = Map[String, String]("ionId" -> mlAppId,
+    val params = Map[String, String]("mlAppId" -> mlAppId,
       "pipelineInstanceId" -> pipelineInstanceId,
       "modelType" -> "lastApproved")
     val cl = new RestClient(scheme, MLOpsEnvVariables.agentRestHost.get, Some(MLOpsEnvVariables.agentRestPort.get.toInt))

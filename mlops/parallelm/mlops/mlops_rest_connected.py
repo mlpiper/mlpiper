@@ -136,7 +136,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
 
     def get_last_approved_model(self, workflow_run_id, pipeline_inst_id):
         url = build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS,
-                        ionId=workflow_run_id, pipelineInstanceId=pipeline_inst_id, modelType="lastApproved")
+                        mlAppId=workflow_run_id, pipelineInstanceId=pipeline_inst_id, modelType="lastApproved")
         return self._get_url_request_response_as_json(url)
 
     def post_model_as_file(self, model):
@@ -261,11 +261,11 @@ class MlOpsRestConnected(MlOpsRestHelper):
         r = self._get_url_request_response(url)
         return r.content
 
-    def get_stat(self, stat_name, ion_id, workflow_node_id, agent_id, pipeline_id, start_time, end_time):
+    def get_stat(self, stat_name, mlAppId, workflow_node_id, agent_id, pipeline_id, start_time, end_time):
         """
         Get the given statistic from MLOps server
         :param stat_name: name of the desired statistic
-        :param ion_id: ION
+        :param mlAppId: id of the ML App
         :param workflow_node_id: which node of the ION generated the statistic
         :param agent_id: which agent of the ION generated the statistic
         :param pipeline_id: which pipeline of the iON generated the statistic
@@ -276,7 +276,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
         """
         # TODO Add try-except
         url = build_url(self._mlops_server, self._mlops_port, self._prefix, MLOpsRestHandles.STATS, statName=stat_name,
-                        workflowNodeId=workflow_node_id, agentId=agent_id, pipelineId=pipeline_id, ionId=ion_id,
+                        workflowNodeId=workflow_node_id, agentId=agent_id, pipelineId=pipeline_id, mlAppId=mlAppId,
                         start=start_time, end=end_time)
         return self._get_url_request_response_as_json(url)
 
