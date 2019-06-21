@@ -39,6 +39,7 @@ setup(
     package_data={'': ['*.json', '*.jar', '*.egg']},
     packages=find_packages(exclude=["build", "*.tests", "*.tests.*", "tests.*", "tests"]),
     install_requires=[
+        "wheel",
         "pandas",
         "termcolor",
         "kazoo",
