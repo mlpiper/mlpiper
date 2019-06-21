@@ -17,12 +17,14 @@ COMP_EGG_PY2 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py2.*
 COMP_EGG_PY3 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py3.*.egg))
 SPARK_JARS = "../reflex-algos/target/ReflexAlgos-jar-with-dependencies.jar"
 
-egg local:
+egg local: _dist
+	cd dist; ln -sf $(MLCOMP_EGG_PY2_BASENAME) $(MLCOMP_EGG_PY2_SYMLINK); cd -
+	cd dist; ln -sf $(MLCOMP_EGG_PY3_BASENAME) $(MLCOMP_EGG_PY3_SYMLINK); cd -
+
+_dist:
 	rm -rf ./dist
 	python2 setup.py -q bdist_egg
 	python3 setup.py -q bdist_egg
-	cd dist; ln -sf $(MLCOMP_EGG_PY2_BASENAME) $(MLCOMP_EGG_PY2_SYMLINK); cd -
-	cd dist; ln -sf $(MLCOMP_EGG_PY3_BASENAME) $(MLCOMP_EGG_PY3_SYMLINK); cd -
 
 bdist:
 	python setup.py bdist

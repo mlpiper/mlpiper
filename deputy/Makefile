@@ -9,12 +9,15 @@ DEPUTY_EGG_PY3 = $(shell realpath $(shell ls ./dist/*-py3.*.egg))
 DEPUTY_EGG_PY2_BASENAME = $(shell basename $(DEPUTY_EGG_PY2))
 DEPUTY_EGG_PY3_BASENAME = $(shell basename $(DEPUTY_EGG_PY3))
 
-egg local:
-	rm -rf ./dist
-	python2 setup.py bdist_egg
-	python3 setup.py bdist_egg
+egg local: _dist
 	cd dist; ln -sf $(DEPUTY_EGG_PY2_BASENAME) $(DEPUTY_EGG_PY2_SYMLINK); cd -
 	cd dist; ln -sf $(DEPUTY_EGG_PY3_BASENAME) $(DEPUTY_EGG_PY3_SYMLINK); cd -
+
+_dist:
+	rm -rf ./dist
+	python2 setup.py -q bdist_egg
+	python3 setup.py -q bdist_egg
+
 
 install_to: egg
 ifneq ($(DISTDIR),"")
