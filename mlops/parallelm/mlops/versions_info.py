@@ -85,6 +85,11 @@ mlops_version_info.register_version(Versions.VERSION_1_1_1,
                                     [Versions.VERSION_1_1_0, Versions.VERSION_1_0_1, Versions.VERSION_1_0_0],
                                     change_log="Minor changes in API relative to 1.1.0")
 
+mlops_version_info.register_version(Versions.VERSION_1_2_1,
+                                    [Versions.VERSION_1_1_1,
+                                     Versions.VERSION_1_1_0, Versions.VERSION_1_0_1, Versions.VERSION_1_0_0],
+                                    change_log="Minor changes in API relative to 1.1.1")
+
 
 def main():
 

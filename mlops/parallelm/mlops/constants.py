@@ -8,7 +8,7 @@ class Constants:
 
     OFFICIAL_NAME = "ml-ops"
 
-    MLOPS_CURRENT_VERSION = Versions.VERSION_1_1_1
+    MLOPS_CURRENT_VERSION = Versions.VERSION_1_2_1
 
     # Port for receiving stats from MLOps
     REST_SERVER_DEFAULT_PORT = 8889
