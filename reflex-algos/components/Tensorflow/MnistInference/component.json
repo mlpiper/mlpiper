@@ -1,5 +1,6 @@
 {
   "engineType": "Generic",
+  "language": "Python",
   "name": "MnistInference",
   "label": "MNist Inference",
   "program": "mnist_inference.py",
