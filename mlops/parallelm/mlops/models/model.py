@@ -25,9 +25,9 @@ class ModelFormat(str, Enum):
     UNKNOWN = "Unknown"
 
     @classmethod
-    def from_str(cls, name):
+    def from_str(cls, value):
         for e in cls:
-            if e.name.lower() == name.lower():
+            if e.value.lower() == value.lower():
                 return e
 
 
