@@ -18,13 +18,13 @@ class BgActor(with_metaclass(abc.ABCMeta, Base, threading.Thread)):
         self._polling_interval_sec = polling_interval_sec
 
         self._condition = threading.Condition()
-        self._stop = False
+        self._stop_gracefully = False
 
     def run(self):
         while True:
             with self._condition:
                 self._condition.wait(self._polling_interval_sec)
-                if self._mlops.done_called or self._stop:
+                if self._mlops.done_called or self._stop_gracefully:
                     break
 
             self._do_repetitive_work()
@@ -34,7 +34,7 @@ class BgActor(with_metaclass(abc.ABCMeta, Base, threading.Thread)):
     def stop_gracefully(self):
         with self._condition:
             self._finalize()
-            self._stop = True
+            self._stop_gracefully = True
             self._condition.notify_all()
 
     @abc.abstractmethod
