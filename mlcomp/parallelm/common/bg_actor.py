@@ -21,9 +21,12 @@ class BgActor(with_metaclass(abc.ABCMeta, Base, threading.Thread)):
         self._stop_gracefully = False
 
     def run(self):
+        self._logger.warning("YAKOFF: startig BgActor")
         while True:
+            self._logger.warning("YAKOFF: in Loop")
             with self._condition:
                 self._condition.wait(self._polling_interval_sec)
+                self._logger.warning("YAKOFF: stop flag: {}".format(self._stop_gracefully))
                 if self._mlops.done_called or self._stop_gracefully:
                     break
 

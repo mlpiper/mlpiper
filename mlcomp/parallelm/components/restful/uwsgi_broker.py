@@ -235,17 +235,17 @@ class UwsgiBroker(Base):
 
     @classmethod
     def register_model_load_handler(cls, model_path, logger, within_uwsgi_context):
-        logger.info("Model file path: {}".format(model_path))
+        #logger.info("Model file path: {}".format(model_path))
 
         if within_uwsgi_context:
             cls._model_selector = ModelSelector(model_path, cls._restful_comp._ml_engine.standalone)
 
-            logger.info("Register signal (model reloading): {} (worker, wid: {}, {})"
-                        .format(UwsgiConstants.MODEL_RELOAD_SIGNAL_NUM, cls._wid, UwsgiBroker._model_selector))
+            #logger.info("Register signal (model reloading): {} (worker, wid: {}, {})"
+            #            .format(UwsgiConstants.MODEL_RELOAD_SIGNAL_NUM, cls._wid, UwsgiBroker._model_selector))
             uwsgi.register_signal(UwsgiConstants.MODEL_RELOAD_SIGNAL_NUM, "workers", cls._model_reload_signal)
 
-            logger.info("Model path to monitor (signal {}, wid: {}): {}"
-                        .format(UwsgiConstants.MODEL_RELOAD_SIGNAL_NUM, cls._wid, cls._model_selector.model_env.sync_filepath))
+            #logger.info("Model path to monitor (signal {}, wid: {}): {}"
+            #            .format(UwsgiConstants.MODEL_RELOAD_SIGNAL_NUM, cls._wid, cls._model_selector.model_env.sync_filepath))
             uwsgi.add_file_monitor(UwsgiConstants.MODEL_RELOAD_SIGNAL_NUM, cls._model_selector.model_env.sync_filepath)
         else:
             if os.path.isfile(model_path):
@@ -270,6 +270,7 @@ class UwsgiBroker(Base):
         # The following condition is here to handle an initial state, where a model was not set
         # for the given pipeline
         if model_filepath is not None and os.path.isfile(model_filepath):
+            UwsgiBroker.w_logger.info("YAKOFF: metadata: {}".format(UwsgiBroker._model_selector._model_env.metadata_filepath))
             model_id = UwsgiBroker._model_selector.pick_model_id()
             UwsgiBroker._restful_comp.load_model_callback(model_filepath, stream=None, version=None, model_id=model_id)
         else:

@@ -121,6 +121,7 @@ class ModelHelper(BaseObj):
         self._logger.debug("Getting latest model, workflow_run_id: {}, pipeline_inst_id: {}"
                            .format(workflow_run_id, pipeline_inst_id))
         model_data = self._rest_helper.get_last_approved_model(workflow_run_id, pipeline_inst_id)
+        self._info("YAKOFF: got model: {}".format(model_data))
         if not model_data:
             return None
 

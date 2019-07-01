@@ -31,7 +31,7 @@ class ModelFetcher(BgActor):
     def _do_repetitive_work(self):
         try:
             last_approved_model = self._mlops.get_last_approved_model()
-            self._logger.debug("Last approved model: {}, uuid: {}"
+            self._logger.info("Last approved model: {}, uuid: {}"
                                .format(last_approved_model.get_id() if last_approved_model else None, self._uuid))
             if last_approved_model and (not self._current_model or last_approved_model != self._current_model):
                 self._current_model = last_approved_model

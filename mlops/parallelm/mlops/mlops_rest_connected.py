@@ -137,6 +137,7 @@ class MlOpsRestConnected(MlOpsRestHelper):
     def get_last_approved_model(self, workflow_run_id, pipeline_inst_id):
         url = build_url(self._mlops_server, self._mlops_port, self._prefix, self._api_version, MLOpsRestHandles.MODELS,
                         mlAppId=workflow_run_id, pipelineInstanceId=pipeline_inst_id, modelType="lastApproved")
+        self._info("YAKOFF: {}".format(url))
         return self._get_url_request_response_as_json(url)
 
     def post_model_as_file(self, model):

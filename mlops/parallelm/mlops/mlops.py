@@ -235,6 +235,8 @@ class MLOps(object):
         When called from Spark, call this method before the Spark driver completes.
         """
 
+        import traceback
+        traceback.print_stack()
         self._check_init_called()
         self._logger.info("{} done() called".format(Constants.OFFICIAL_NAME))
         if self._output_channel:
