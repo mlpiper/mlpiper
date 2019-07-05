@@ -270,6 +270,7 @@ class UwsgiBroker(Base):
         # The following condition is here to handle an initial state, where a model was not set
         # for the given pipeline
         if model_filepath is not None and os.path.isfile(model_filepath):
-            UwsgiBroker._restful_comp.load_model_callback(model_filepath, stream=None, version=None)
+            model_id = UwsgiBroker._model_selector.pick_model_id()
+            UwsgiBroker._restful_comp.load_model_callback(model_filepath, stream=None, version=None, model_id=model_id)
         else:
             UwsgiBroker.w_logger.info("Model file does not exist: {}".format(model_filepath))

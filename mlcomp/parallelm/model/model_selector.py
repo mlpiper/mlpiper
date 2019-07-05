@@ -22,3 +22,13 @@ class ModelSelector(object):
 
         return model_filepath
 
+    # TODO: change to pick_model_metadata using ModelMetadata
+    def pick_model_id(self):
+        model_id = None
+        if self._model_env.standalone:
+            model_id = None
+        else:
+            if os.path.isfile(self._model_env.metadata_filepath):
+                model_id = Metadata().load(self._model_env.metadata_filepath).get_id()
+
+        return model_id

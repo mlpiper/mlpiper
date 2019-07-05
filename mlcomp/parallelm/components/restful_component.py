@@ -171,7 +171,7 @@ class RESTfulComponent(ConnectableComponent):
                 time.sleep(3600*24*365)
 
     @abc.abstractmethod
-    def load_model_callback(self, model_path, stream, version):
+    def load_model_callback(self, model_path, stream, version, model_id=None):
         """
         This abstract method is called whenever a new model is supposed to be loaded. The user is responsible
         to reload the model and start using it in any consequent predictions

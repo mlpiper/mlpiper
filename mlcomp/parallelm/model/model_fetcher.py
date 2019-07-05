@@ -43,7 +43,7 @@ class ModelFetcher(BgActor):
     def _download_and_signal(self):
         self._logger.info("New model is about to be downloaded: {}".format(self._current_model))
         self._current_model.download(self._model_env.model_filepath)
-        Metadata(self._model_env.model_filepath).save(self._model_env.metadata_filepath)
+        Metadata(self._model_env.model_filepath).set_id(self._current_model.get_id()).save(self._model_env.metadata_filepath)
         self._signal()
 
     def _signal(self):
