@@ -15,7 +15,6 @@ from parallelm.mlops.mlops_mode import MLOpsMode
 
 
 class EventBroker(object):
-
     PipelineInstanceIdColumnName = "pipelineInstanceId"
 
     class Query:
@@ -108,13 +107,15 @@ class EventBroker(object):
         evt.eventType = event_obj.type
         evt.eventLabel = event_obj.label
         evt.isAlert = event_obj.is_alert
+        evt.modelId = event_obj.model_id
         evt.data = self._event_data_as_json(int(time.time() * 1e3),
-                                            event_obj.type, event_obj.label, event_obj.description, event_obj.data)
+                                            event_obj.type, event_obj.label, event_obj.description, event_obj.data,
+                                            event_obj.model_id)
 
         self._logger.info("Sending alert: {}".format(evt))
         self._mlops_channel.event(evt)
 
-    def _event_data_as_json(self, timestamp_ms, alert_type, title, desc, data):
+    def _event_data_as_json(self, timestamp_ms, alert_type, title, desc, data, model_id):
 
         # TODO: we need to not use the MLOpsEnvConstants here, but to access the mlops_ctx (we need to define it
         # TODO: as singleton too
@@ -130,5 +131,6 @@ class EventBroker(object):
             "alert_type": alert_type,
             "title": title,
             "description": desc,
-            "data": data})
+            "data": data,
+            "model_id": model_id})
         return json_data.encode()

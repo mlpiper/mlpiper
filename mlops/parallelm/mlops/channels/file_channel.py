@@ -64,14 +64,15 @@ class FileChannel(MLOpsPythonChannel):
     def event(self, event):
         event_str = ""
         if self._output_fmt == FileChannelOutputFormat.CSV:
-            event_str = "{}, {}, {}, {}".format(event.eventType, event.eventLabel, event.isAlert, event.data)
+            event_str = "{}, {}, {}, {}, {}".format(event.eventType, event.eventLabel, event.isAlert, event.data, event.model_id)
 
         elif self._output_fmt == FileChannelOutputFormat.JSON:
             event_dict = {
                 'eventType': event.eventType,
                 'eventLabel': event.eventLabel,
                 'isAlert': event.isAlert,
-                'data': event.data
+                'data': event.data,
+                'modelId': event.model_id
             }
 
             event_str = json.dumps(event_dict)

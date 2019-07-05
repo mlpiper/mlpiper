@@ -13,7 +13,8 @@ class Event(object):
                  data=None,
                  event_type=ReflexEvent.GenericEvent,
                  is_alert = False,
-                 timestamp=None):
+                 timestamp=None,
+                 model_id=""):
 
         # TODO: make sure event_type is an event type and not something else
 
@@ -32,6 +33,7 @@ class Event(object):
         self.data = str(pickle.dumps(data))
         self.is_alert = is_alert
         self.timestamp = timestamp
+        self.model_id = model_id
 
     """
     This is an internal routine to override the data pickling performed by default

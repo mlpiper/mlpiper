@@ -867,7 +867,7 @@ class MLOps(object):
         return self
 
     @SuppressException([MLOpsConnectionException])
-    def set_event(self, name, type=None, data=None, is_alert=False, timestamp=None):
+    def set_event(self, name, type=None, data=None, is_alert=False, timestamp=None, model_id=""):
         """
         Generate an event which is sent to MLOps.
 
@@ -889,7 +889,7 @@ class MLOps(object):
             if type is None:
                 raise MLOpsException("Type of event can not be None")
             event_obj = Event(label=name, event_type=type, description=None, data=data,
-                              is_alert=is_alert, timestamp=timestamp)
+                              is_alert=is_alert, timestamp=timestamp, model_id=model_id)
 
         elif isinstance(name, Event):
             event_obj = name
