@@ -37,10 +37,10 @@ class WsgiMonitor(Base):
         self._stats_reporting_interval_sec = uwsgi_entry_point_conf[ComponentConstants.STATS_REPORTING_INTERVAL_SEC]
 
         self._stats = None
-        if not shared_conf.get(SharedConstants.STANDALONE):
-            self._stats = UwsgiStatistics(self._stats_reporting_interval_sec, shared_conf["target_path"],
-                                          shared_conf["stats_sock_filename"], self._logger,
-                                          shared_conf["stats_path_filename"])
+
+        self._stats = UwsgiStatistics(self._stats_reporting_interval_sec, shared_conf["target_path"],
+                                      shared_conf["stats_sock_filename"], self._logger,
+                                      shared_conf["stats_path_filename"])
 
         self._proc = None
         self._monitor_info = monitor_info
