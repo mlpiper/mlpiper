@@ -228,11 +228,16 @@ class Dag(Base):
             parent_id = connector[json_fields.PIPELINE_COMP_PARENTS_FIRST_FIELD]
             output_index = connector[json_fields.PIPELINE_COMP_PARENTS_SECOND_FIELD]
 
-            if parent_id in self._parent_data_objs_placeholder and \
-                    output_index not in self._parent_data_objs_placeholder[parent_id]:
-                self._logger.debug("An entry already exists in data objs placeholder, parend_id={}, output_id={}"
-                                   .format(parent_id, output_index))
-                self._parent_data_objs_placeholder[parent_id][output_index] = None
+            if parent_id in self._parent_data_objs_placeholder:
+                if output_index not in self._parent_data_objs_placeholder[parent_id]:
+                    self._logger.debug("An entry already exists in data objs placeholder, parend_id={}, output_id={}"
+                                       .format(parent_id, output_index))
+                    self._parent_data_objs_placeholder[parent_id][output_index] = None
+                else:
+                    self._logger.debug(
+                        "An entry already exists along with output index in data objs placeholder, "
+                        "parend_id={}, output_id={}".format(parent_id, output_index)
+                    )
             else:
                 self._logger.debug("Adding an entry in data objs placeholder ... parent_id={}, output_index={}"
                                    .format(parent_id, output_index))
