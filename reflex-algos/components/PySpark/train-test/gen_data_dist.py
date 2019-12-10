@@ -10,10 +10,14 @@ from pyspark.ml.feature import VectorAssembler, VectorIndexer, StringIndexer
 from pyspark.ml import Pipeline
 from pyspark.sql.functions import sum, sqrt, min, max
 
-
-from parallelm.mlops import mlops
-from parallelm.mlops.models.model import ModelFormat
-from parallelm.mlops.e2e_tests.e2e_constants import E2EConstants
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops
+    from parallelm.mlops.models.model import ModelFormat
+    from parallelm.mlops.e2e_tests.e2e_constants import E2EConstants
+    mlops_loaded = True
+except ImportError:
+    pass
 
 
 def generate_dataset(num_attr, num_rows, K, spark_ctx):
@@ -80,17 +84,19 @@ def gen_data_dist_stats(spark_ctx):
     full_pipe = [vector_assembler, kmeans_pipe]
     model_kmeans = Pipeline(stages=full_pipe).fit(input_train)
 
-    try:
-        mlops.set_data_distribution_stat(data=input_train, model=model_kmeans)
-        m = mlops.Model(model_format=ModelFormat.SPARKML)
-        m.set_data_distribution_stat(data=input_train)
-        print("PM: done generating histogram")
-    except Exception as e:
-        print("PM: failed to generate histogram using pm.stat")
-        print(e)
+    if mlops_loaded:
+        try:
+            mlops.set_data_distribution_stat(data=input_train, model=model_kmeans)
+            m = mlops.Model(model_format=ModelFormat.SPARKML)
+            m.set_data_distribution_stat(data=input_train)
+            print("PM: done generating histogram")
+        except Exception as e:
+            print("PM: failed to generate histogram using pm.stat")
+            print(e)
 
-    # Indicating that model statistics were reported
-    mlops.set_stat(E2EConstants.MODEL_STATS_REPORTED_STAT_NAME, 1)
+        # Indicating that model statistics were reported
+        mlops.set_stat(E2EConstants.MODEL_STATS_REPORTED_STAT_NAME, 1)
+
     return model_kmeans
 
 

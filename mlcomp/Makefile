@@ -11,8 +11,13 @@ MLCOMP_EGG_PY3_BASENAME = $(shell basename $(MLCOMP_EGG_PY3))
 MLCOMP_EGG_PY2_SYMLINK = "mlcomp-py2.egg"
 MLCOMP_EGG_PY3_SYMLINK = "mlcomp-py3.egg"
 
-MLOPS_EGG_PY2 = $(shell realpath $(shell ls ../mlops/dist/*-py2.*.egg))
-MLOPS_EGG_PY3 = $(shell realpath $(shell ls ../mlops/dist/*-py3.*.egg))
+MLOPS_EGG_PY2 = ""
+MLOPS_EGG_PY3 = ""
+ifneq ($(MLOPS_SUPPORT),)
+	MLOPS_EGG_PY2 = $(shell realpath $(shell ls ../mlops/dist/*-py2.*.egg))
+	MLOPS_EGG_PY3 = $(shell realpath $(shell ls ../mlops/dist/*-py3.*.egg))
+endif
+
 COMP_EGG_PY2 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py2.*.egg))
 COMP_EGG_PY3 = $(shell realpath $(shell ls /tmp/python_mcenter_components*-py3.*.egg))
 SPARK_JARS = "../reflex-algos/target/ReflexAlgos-jar-with-dependencies.jar"
@@ -57,7 +62,9 @@ pyspark_comps_egg:
 comp_eggs: python_comps_egg pyspark_comps_egg
 
 mlops_egg:
-	cd ../mlops ; make egg; cd -
+ifneq ($(MLOPS_SUPPORT),)
+    cd ../mlops ; make egg; cd -
+endif
 
 test: egg mlops_egg comp_eggs
 	# Running the tests with the python egg

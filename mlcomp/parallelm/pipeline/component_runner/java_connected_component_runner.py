@@ -3,7 +3,6 @@ import math
 import os
 import psutil
 import sys
-import pprint
 
 from py4j.java_gateway import JavaGateway
 from py4j.java_gateway import GatewayParameters, CallbackServerParameters, launch_gateway
@@ -32,11 +31,14 @@ class MLOpsPY4JWrapper(object):
             print("no-mlops: stat {} {}".format(stat_name, stat_value))
 
     def isTestMode(self):
-        if mlops_loaded:
+        if self.isMLOpsLoaded():
             return mlops.test_mode
         else:
             print("mlops is not loaded: test_mode is not available")
         return False
+
+    def isMLOpsLoaded(self):
+        return mlops_loaded
 
     class Java:
         implements = ["com.parallelm.mlcomp.MLOps"]

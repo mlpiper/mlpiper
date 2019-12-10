@@ -3,7 +3,14 @@ import psutil
 
 from parallelm.common.byte_conv import ByteConv
 from parallelm.common.bg_actor import BgActor
-from parallelm.mlops.stats.multi_line_graph import MultiLineGraph
+
+
+mlops_loaded = False
+try:
+    from parallelm.mlops.stats.multi_line_graph import MultiLineGraph
+    mlops_loaded = True
+except ImportError as e:
+    pass  # Designed for tests
 
 
 class ProcessMonitor(BgActor):

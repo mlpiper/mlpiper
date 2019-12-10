@@ -298,6 +298,7 @@ class TestMLPiper:
 
         os.remove(pipeline_file)
 
+    @pytest.mark.skip(reason="Need to revise this test, because it can break very easily with different printings")
     def test_run_show_deps(self):
         cmdline_action = "deps"
         comp_dir = os.path.join(os.path.dirname(__file__), PYTHON_COMPONENTS_PATH)

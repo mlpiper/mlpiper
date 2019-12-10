@@ -12,11 +12,15 @@ if (mlcomp_python != "") {
 }
 py_config()
 
-mlops <- import("parallelm.mlops", convert = TRUE)
-mlops <- mlops$mlops
-print("After import of mlops")
-mlops$init()
-print("After mlops.init")
+mtry = try({mlops <- import("parallelm.mlops", convert = TRUE)}, silent = TRUE)
+mlops_loaded = class(mtry) != "try-error"
+
+if (mlops_loaded) {
+    mlops <- mlops$mlops
+    print("After import of mlops")
+    mlops$init()
+    print("After mlops.init")
+}
 
 mlcomp <- import("parallelm.components.external_component")
 mlcomp <- mlcomp$mlcomp
@@ -43,13 +47,15 @@ if(params[["expected_input_str"]] != input_str) {
 # Setting the output of this component to be a single string object
 mlcomp$set_output_objs(input_str)
 
-## MLOps example 1
-mlops$set_stat("r-code-starting", 1)
+if (mlops_loaded) {
+    ## MLOps example 1
+    mlops$set_stat("r-code-starting", 1)
 
 
-# Code to generate a model
+    # Code to generate a model
 
-# Code to save the model
+    # Code to save the model
 
-## MLOps done to stop the library
-mlops$done()
+    ## MLOps done to stop the library
+    mlops$done()
+}

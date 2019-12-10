@@ -14,7 +14,7 @@ public class JavaConnectedComponent extends MCenterComponent
         System.out.println("Running JavaConnectedComponent");
         JavaConnectedAddition.printHello();
 
-        if (mlops != null) {
+        if (mlops != null && mlops.isMLOpsLoaded()) {
             if (!mlops.isTestMode()) {
                 throw new Exception("__test_mode__ must be set in systemConfig for this test");
             }

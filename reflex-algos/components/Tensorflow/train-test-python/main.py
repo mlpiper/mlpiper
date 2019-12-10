@@ -5,8 +5,13 @@ import argparse
 import logging
 import sys
 
-from parallelm.mlops import mlops
-from parallelm.mlops.e2e_tests import train_node
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops
+    from parallelm.mlops.e2e_tests import train_node
+    mlops_loaded = True
+except ImportError:
+    pass
 
 
 def parse_args():
@@ -23,6 +28,8 @@ def parse_args():
 
 
 def main():
+    if not mlops_loaded:
+        return
 
     root = logging.getLogger()
     root.setLevel(logging.INFO)

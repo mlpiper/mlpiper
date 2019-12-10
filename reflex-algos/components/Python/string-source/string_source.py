@@ -1,5 +1,10 @@
 from parallelm.components import ConnectableComponent
-from parallelm.mlops import mlops
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops
+    mlops_loaded = True
+except ImportError:
+    pass
 
 
 class StringSource(ConnectableComponent):
@@ -11,6 +16,6 @@ class StringSource(ConnectableComponent):
         str_value = self._params.get('value', "default-string-value")
         check_test_mode = self._params.get('check-test-mode', False)
         if check_test_mode:
-            if not mlops.test_mode:
+            if mlops_loaded and not mlops.test_mode:
                 raise Exception("systemConfig '__test_mode__' has to be set to True in this test")
         return [str_value]

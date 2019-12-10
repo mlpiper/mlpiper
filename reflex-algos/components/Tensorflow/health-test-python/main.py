@@ -4,10 +4,15 @@ import sys
 import argparse
 import logging
 
-from parallelm.mlops import mlops as mlops
-from parallelm.mlops.e2e_tests.health_node.runner import run_mlops_tests
-import parallelm.mlops.e2e_tests.health_node
-from parallelm.mlops.constants import Constants
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops as mlops
+    from parallelm.mlops.e2e_tests.health_node.runner import run_mlops_tests
+    import parallelm.mlops.e2e_tests.health_node
+    from parallelm.mlops.constants import Constants
+    mlops_loaded = True
+except ImportError:
+    pass
 
 
 def parse_args():
@@ -21,6 +26,9 @@ def parse_args():
 
 
 def main():
+    if not mlops_loaded:
+        return
+
     root = logging.getLogger()
     root.setLevel(logging.INFO)
 

@@ -1,8 +1,11 @@
+import errno
 import pytest
 import uuid
 import os
 import logging
 import json
+import subprocess
+import warnings
 
 from parallelm.ml_engine.sagemaker_engine import SageMakerEngine
 from parallelm.pipeline.components_desc import ComponentsDesc
@@ -397,8 +400,22 @@ class TestPythonEngine:
 
         os.remove(model_file)
 
+    @staticmethod
+    def _R_tool_installed():
+        try:
+            subprocess.call(["Rscript", "--version"])
+            return True
+        except OSError as e:
+            if e.errno == errno.ENOENT:
+                return False
+            raise e
+
     # @pytest.mark.skip(reason="skipping this test for now - debugging")
     def test_execute_r_stand_alone(self):
+        if not TestPythonEngine._R_tool_installed():
+            warnings.warn("WARNING: Rscript is not installed. Skipping unit-test.")
+            return
+
         pipeline = {
             "name": "stand_alone_test",
             "engineType": "Generic",
@@ -425,6 +442,9 @@ class TestPythonEngine:
 
     # @pytest.mark.skip(reason="skipping this test for now - debugging")
     def test_execute_r_connected(self):
+        if not TestPythonEngine._R_tool_installed():
+            warnings.warn("WARNING: Rscript is not installed. Skipping unit-test.")
+            return
 
         pipeline = {
             "name": "connected_java_test",

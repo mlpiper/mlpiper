@@ -10,8 +10,12 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 # The text of the README file
 README = open(ROOT + "/README.md").read()
 
-install_requires = ['ml-ops', 'wheel', 'termcolor', 'flask', 'flask_cors', 'psutil', 'py4j', 'nbformat', 'nbconvert',
-                    'uwsgidecorators', 'sagemaker', 'pypsi', 'pytz', 'future']
+extras_require = {
+    'mlops': ['ml-ops', 'wheel']
+}
+
+install_requires = ['termcolor', 'flask', 'flask_cors', 'psutil', 'py4j', 'nbformat', 'nbconvert',
+                    'uwsgidecorators', 'sagemaker', 'pypsi', 'pytz', 'future', 'pyspark']
 if sys.version_info[0] < 3:
     install_requires.append('enum')
 
@@ -42,6 +46,7 @@ setup(
              "bin/mcenter_components_setup.py",
              "bin/create-egg.sh",
              "bin/cleanup.sh"],
+    extras_require=extras_require,
     install_requires=install_requires,
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     entry_points={

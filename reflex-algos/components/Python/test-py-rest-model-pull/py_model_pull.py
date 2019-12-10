@@ -1,7 +1,13 @@
 import argparse
 import time
 
-from parallelm.mlops import mlops as mlops
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops as mlops
+    mlops_loaded = True
+except ImportError:
+    pass
+
 
 def parse_args():
     """
@@ -14,6 +20,9 @@ def parse_args():
 
 
 def main():
+    if not mlops_loaded:
+        return
+
     mlops.init()
 
     options = parse_args()

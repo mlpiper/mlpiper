@@ -1,9 +1,15 @@
 from inference_statistics import InferenceStatistics
 import numpy as ny
 
-from parallelm.mlops import mlops
-from parallelm.mlops.mlops_mode import MLOpsMode
-from parallelm.mlops.stats.table import Table
+
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops
+    from parallelm.mlops.mlops_mode import MLOpsMode
+    from parallelm.mlops.stats.table import Table
+    mlops_loaded = True
+except ImportError:
+    pass
 
 
 class CategoricalStatistics(InferenceStatistics):
@@ -21,10 +27,13 @@ class CategoricalStatistics(InferenceStatistics):
             self._label_hist.append(0)
             self._infer_hist.append(0)
 
-        if self._stats_type == "python":
-            mlops.init(ctx=None, connect_mlops=True, mlops_mode=MLOpsMode.AGENT)
-        elif self._stats_type == "file":
-            mlops.init(ctx=None, connect_mlops=False, mlops_mode=MLOpsMode.STAND_ALONE)
+        if mlops_loaded:
+            if self._stats_type == "python":
+                mlops.init(ctx=None, connect_mlops=True, mlops_mode=MLOpsMode.AGENT)
+            elif self._stats_type == "file":
+                mlops.init(ctx=None, connect_mlops=False, mlops_mode=MLOpsMode.STAND_ALONE)
+            else:
+                self._stats_type = "none"
         else:
             self._stats_type = "none"
 
@@ -57,6 +66,8 @@ class CategoricalStatistics(InferenceStatistics):
         return prediction
 
     def report_stats(self):
+        if not mlops_loaded:
+            return
 
         if self.get_low_conf() > 0:
             mlops.health_alert("Low confidence alert", "{}% of inferences had confidence below {}%"
@@ -85,5 +96,6 @@ class CategoricalStatistics(InferenceStatistics):
             mlops.set_stat(self._infer_tbl)
 
     def __del__(self):
-        mlops.done()
+        if mlops_loaded:
+            mlops.done()
         super(CategoricalStatistics, self).__del__()

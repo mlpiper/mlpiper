@@ -5,8 +5,12 @@ import os
 import sys
 import time
 
-
-from parallelm.mlops import mlops
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops as mlops
+    mlops_loaded = True
+except ImportError:
+    pass
 
 
 def parse_args():
@@ -17,7 +21,8 @@ def parse_args():
     parser.add_argument("--input-model", help="Path to read input model from")
     parser.add_argument("--exit-value", type=int, default=0, help="Exit value")
     parser.add_argument("--iter", type=int, default=20, help="How many 1sec iterations to perform")
-    parser.add_argument("--use-mlops", type=int, default=1, help="Use mlops while running")
+    if mlops_loaded:
+        parser.add_argument("--use-mlops", type=int, default=1, help="Use mlops while running")
     options = parser.parse_args()
     return options
 
@@ -33,19 +38,21 @@ def main():
     print("iter:         {}".format(options.iter))
     print("exit_value:   {}".format(options.exit_value))
 
-    print("Calling mlops.init()")
-    if options.use_mlops:
+    use_mlops = False if not mlops_loaded else options.use_mlops
+
+    if use_mlops:
+        print("Calling mlops.init()")
         mlops.init()
 
     # Some output - to test logs
     for idx in range(options.iter):
         print("stdout - Idx {}".format(idx))
         print("stderr - Idx {}".format(idx), file=sys.stderr)
-        if options.use_mlops:
+        if use_mlops:
             mlops.set_stat("aux_stat", 1)
         time.sleep(1)
 
-    if options.use_mlops:
+    if use_mlops:
         mlops.done()
 
     # Exit status

@@ -2,10 +2,16 @@ import argparse
 import tempfile
 import pickle
 
-from parallelm.mlops import mlops as mlops
-from parallelm.mlops.models.model import ModelFormat
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops as mlops
+    from parallelm.mlops.models.model import ModelFormat
+    mlops_loaded = True
+except ImportError:
+    pass
 
 from datetime import datetime as dt
+
 
 def parse_args():
     """
@@ -20,6 +26,9 @@ def parse_args():
 
 
 def main():
+    if not mlops_loaded:
+        return
+
     mlops.init()
 
     options = parse_args()

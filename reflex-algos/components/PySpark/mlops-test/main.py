@@ -3,10 +3,17 @@ from __future__ import print_function
 from pyspark import SparkContext
 
 import argparse
-from parallelm.mlops.mlops_rest_interfaces import MlOpsRestHelper as MLOpsRest
-from parallelm.mlops import mlops as pm
-from parallelm.mlops.data_frame import DataFrameHelper
-from parallelm.mlops.constants import Constants
+
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops as pm
+    from parallelm.mlops.mlops_rest_interfaces import MlOpsRestHelper as MLOpsRest
+    from parallelm.mlops.data_frame import DataFrameHelper
+    from parallelm.mlops.constants import Constants
+    mlops_loaded = True
+except ImportError:
+    pass
+
 
 def parse_args():
 
@@ -26,6 +33,9 @@ def parse_args():
 
 
 def main():
+    if not mlops_loaded:
+        return
+
     options = parse_args()
 
     sc = SparkContext(appName="mlops-test")

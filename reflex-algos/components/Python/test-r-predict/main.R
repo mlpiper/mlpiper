@@ -9,11 +9,15 @@ library("optparse")
 Sys.getenv(c("PYTHONPATH"))
 py_config()
 
-mlops <- import("parallelm.mlops", convert = TRUE)
-mlops <- mlops$mlops
-print("After import")
-mlops$init()
-print("After mlops.init")
+mtry = try({mlops <- import("parallelm.mlops", convert = TRUE)}, silent = TRUE)
+mlops_loaded = class(mtry) != "try-error"
+
+if (mlops_loaded) {
+    mlops <- mlops$mlops
+    print("After import")
+    mlops$init()
+    print("After mlops.init")
+}
 
 option_list = list(make_option(c("--data-file"), type="character", default=NULL,
                                  help="dataset file name", metavar="character"),
@@ -39,11 +43,15 @@ print(paste0("data_file:   ", opt$data_file))
 print(paste0("input_model: ", opt$input_model))
 
 
-mlops$set_stat("r-code-starting", 1)
+if (mlops_loaded) {
+    mlops$set_stat("r-code-starting", 1)
+}
 
 
 ## a month later, new observations are available:
 newdf <- data.frame(x = rnorm(20))
 
-## MLOps done to stop the library
-mlops$done()
+if (mlops_loaded) {
+    ## MLOps done to stop the library
+    mlops$done()
+}

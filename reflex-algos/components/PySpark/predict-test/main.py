@@ -4,8 +4,13 @@ from pyspark import SparkContext
 
 import argparse
 
-from parallelm.mlops import mlops as pm
-from parallelm.mlops.e2e_tests import predict_node
+mlops_loaded = False
+try:
+    from parallelm.mlops import mlops as pm
+    from parallelm.mlops.e2e_tests import predict_node
+    mlops_loaded = True
+except ImportError:
+    pass
 
 
 def parse_args():
@@ -23,6 +28,9 @@ def parse_args():
 
 
 def main():
+    if not mlops_loaded:
+        return
+
     options = parse_args()
 
     sc = SparkContext(appName="predict-test")
