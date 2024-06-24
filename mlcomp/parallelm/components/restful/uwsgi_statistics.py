@@ -21,7 +21,7 @@ except ImportError as e:
 
 
 class UwsgiStatistics(object):
-    STATS_JSON_MAX_SIZE_BYTES = 64 * 2048  # max 64 cores, 2k per core
+    STATS_JSON_MAX_SIZE_BYTES = 128 * 2048  # max 64 cores, 2k per core
 
     def __init__(self, reporting_interval_sec, target_path, sock_filename, logger, stats_path=None):
         self._logger = logger
@@ -82,7 +82,13 @@ class UwsgiStatistics(object):
         sock = self._setup_stats_connection()
         if sock:
             try:
-                data = sock.recv(UwsgiStatistics.STATS_JSON_MAX_SIZE_BYTES)
+                data = b""
+                while True:
+                    buff = sock.recv(UwsgiStatistics.STATS_JSON_MAX_SIZE_BYTES)
+                    data += buff
+                    if len(buff) < 8192:
+                        break
+
                 return json.loads(data.decode('utf-8'))
             except ValueError as e:
                 self._logger.error("Invalid statistics json format! {}, data:\n{}\n".format(e.message, data))

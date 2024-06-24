@@ -191,7 +191,7 @@ class UwsgiBroker(Base):
 
         cls.w_logger = logging.getLogger("{}.{}".format(cls.__module__, cls.__name__))
 
-        cls.w_logger.info("Entered to uWSGI entry point ... (wid: {}, pid: {}, ppid:{}"
+        cls.w_logger.info("Entered to uWSGI entry point ... (wid: {}, pid: {}, ppid:{})"
                           .format(cls._wid, os.getpid(), os.getppid()))
 
         cls.w_logger.info("Restful comp (wid: {}, pid: {}, ppid:{}): {}"

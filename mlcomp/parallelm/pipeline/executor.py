@@ -19,6 +19,7 @@ try:
     from parallelm.mlops import mlops
     from parallelm.mlops.mlops_mode import MLOpsMode
     from parallelm.mlops.common.string_ops import mask_passwords
+    from parallelm.mlops.mlops_mode import OutputChannel
     mlops_loaded = True
 except ImportError as e:
     print("Note: was not able to import mlops: " + str(e))
@@ -235,12 +236,14 @@ class Executor(Base):
 
                 from os import environ
                 from parallelm.components.restful.constants import RestfulConstants
+                channel = None
                 if environ.get(RestfulConstants.STATS_AGGREGATE_FLAG) is not None:
                     self._logger.info("Using the accumulator channel")
-                    mlops.init(mlops_mode=MLOpsMode.REST_ACCUMULATOR)
+                    channel = OutputChannel.REST_ACCUMULATOR
                 else:
                     self._logger.info("Using the standard channel")
-                    mlops.init()
+                mlops.init(out_channel=channel)
+                self._logger.info("Setting mlops uuid: {}".format(self._uuid))
                 mlops.set_uuid(self._uuid)
 
         else:

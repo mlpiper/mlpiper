@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import uuid
 
 from parallelm.mlpiper.component_scanner import ComponentScanner
 from parallelm.mlpiper.mlpiper_exception import MLPiperException
@@ -263,12 +264,15 @@ class MLPiper(Base):
                                 run_locally=False,
                                 mlcomp_jar=None)
 
+        run_uuid = uuid.uuid4()
+        self._logger.info("mlpiper uuid: {}".format(run_uuid))
         pipeline_runner = Executor(config) \
             .comp_root_path(self._comp_root_path) \
             .pipeline_file(open(pipeline_file)) \
             .use_color(self._use_color) \
             .mlcomp_jar(self._mlcomp_jar) \
-            .standalone(True)
+            .standalone(True) \
+            .set_uuid(run_uuid)
 
         if not self._skip_mlpiper_deps:
             py_deps = pipeline_runner.all_py_component_dependencies()

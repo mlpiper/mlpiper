@@ -116,24 +116,46 @@ class MLOps(object):
         # This will raise an exception if mlops_mode_to_use is not recognized
         self._config.mlops_mode = MLOpsMode.from_str(mlops_mode_to_use)
 
-    def _init_output_channel(self, ctx):
+    def _use_myspark_channel(self, ctx):
+
+        from parallelm.mlops.channels.mlops_pyspark_channel import MLOpsPySparkChannel
+        if self._config.mlops_mode == MLOpsMode.STAND_ALONE:
+            self._output_channel = MLOpsPySparkChannel(ctx)
+        else:
+            self._output_channel = MLOpsPySparkChannel(ctx, self._mlops_ctx.rest_helper(),
+                                                       self._mlops_ctx.current_node().pipeline_instance_id)
+
+        logger_factory.set_logger_provider_func(self._output_channel.get_logger)
+        self._logger = logger_factory.get_logger(__name__)
+
+
+
+    def _init_output_channel(self, ctx, out_channel=None):
         """
         Sets the output channel according to the operation mode or detects from env
+        The current supported configurations are:
+                STAND_ALONE : File, PySpark, PythonAccumulatorChannel
+                ATTACH: Python
+                AGENT: Python, PySpark, PythonAccumulatorChannel
         :param ctx: Spark context (or None if not running in Spark)
+        :param out_channel: Output channel to use
         :return:
         """
         self._logger.info("setting output channel - 1 {}".format(self._config.mlops_mode))
+
         if self._config.mlops_mode == MLOpsMode.STAND_ALONE:
-            if ctx is None:
+            if ctx:
+                self._logger.info("output_channel == pyspark for Stand_Alone mode")
+                self._use_myspark_channel()
+            elif out_channel is None or out_channel == OutputChannel.FILE:
                 from parallelm.mlops.channels.file_channel import FileChannel
                 self._output_channel = FileChannel()
+            elif out_channel == OutputChannel.REST_ACCUMULATOR:
+                from parallelm.mlops.channels.python_accumulator_channel import PythonAccumulatorChannel
+                self._output_channel = PythonAccumulatorChannel()
             else:
-                self._logger.info("output_channel == pyspark for Stand_Alone mode")
-
-                from parallelm.mlops.channels.mlops_pyspark_channel import MLOpsPySparkChannel
-                self._output_channel = MLOpsPySparkChannel(ctx)
-                logger_factory.set_logger_provider_func(self._output_channel.get_logger)
-                self._logger = logger_factory.get_logger(__name__)
+                raise Exception("Unsupported output_channel: {} for mlops_mode: {}"
+                                .format(out_channel, self._config.mlops_mode))
 
         elif self._config.mlops_mode == MLOpsMode.ATTACH:
             # For now, support only python when attaching to an ION
@@ -142,23 +164,22 @@ class MLOps(object):
                                                       self._mlops_ctx.current_node().pipeline_instance_id)
         elif self._config.mlops_mode == MLOpsMode.AGENT:
             # In agent mode if the context is None, we use the python channel. Otherwise, use the pyspark channel.
-            if ctx is None:
+            if ctx:
+                self._logger.info("output_channel = pyspark")
+                self._use_myspark_channel(ctx)
+            elif out_channel is None or out_channel == OutputChannel.PYTHON:
                 self._logger.info("output_channel = python")
                 from parallelm.mlops.channels.mlops_python_channel import MLOpsPythonChannel
                 self._output_channel = MLOpsPythonChannel(self._mlops_ctx.rest_helper(),
                                                           self._mlops_ctx.current_node().pipeline_instance_id)
+            elif out_channel == OutputChannel.REST_ACCUMULATOR:
+                self._logger.info("output_channel = rest accumulator")
+                from parallelm.mlops.channels.python_accumulator_channel import PythonAccumulatorChannel
+                self._output_channel = PythonAccumulatorChannel(self._mlops_ctx.rest_helper(),
+                                                                self._mlops_ctx.current_node().pipeline_instance_id)
             else:
-                self._logger.info("output_channel = pyspark")
-                from parallelm.mlops.channels.mlops_pyspark_channel import MLOpsPySparkChannel
-                self._output_channel = MLOpsPySparkChannel(ctx, self._mlops_ctx.rest_helper(),
-                                                           self._mlops_ctx.current_node().pipeline_instance_id)
-                logger_factory.set_logger_provider_func(self._output_channel.get_logger)
-                self._logger = logger_factory.get_logger(__name__)
-        elif self._config.mlops_mode == MLOpsMode.REST_ACCUMULATOR:
-            self._logger.info("output_channel = rest accumulator")
-            from parallelm.mlops.channels.python_accumulator_channel import PythonAccumulatorChannel
-            self._output_channel = PythonAccumulatorChannel(self._mlops_ctx.rest_helper(),
-                                                            self._mlops_ctx.current_node().pipeline_instance_id)
+                raise Exception("Unsupported configuration of out_channel: {} and mlops_mode: {}"
+                                .format(out_channel, self._config.mlops_mode))
         else:
             raise MLOpsException("Mlops mode [{}] is not supported".format(self._config.mlops_mode))
         self._logger.info("setting output channel - 2 {} {}".format(self._config.mlops_mode, self._output_channel))
@@ -175,7 +196,7 @@ class MLOps(object):
         self._check_init_called()
         self._check_done_not_called()
 
-    def init(self, ctx=None, connect_mlops=False, version=None, mlops_mode=None):
+    def init(self, ctx=None, connect_mlops=False, version=None, mlops_mode=None, out_channel=None):
         """
         This method must be called before calling any other method of this class.
         It performs initialization of the mlops module inside the current program (Spark driver, python program, etc.).
@@ -194,6 +215,7 @@ class MLOps(object):
         :param version: The version the code is expecting to have. If the mlops module is no longer supporting this
                 version, an exception will be raised. If the value is None (default), no version check will be done.
         :param mlops_mode: which :class:`MLOpsMode` to use. If not specified, determined by environment.
+        :param out_channel: the channel to use for output
         :raises: MLOpsException
         """
 
@@ -218,7 +240,7 @@ class MLOps(object):
         if self._mlops_ctx is None:
             self._mlops_ctx = MLOpsCtx(config=self._config, mode=self._config.mlops_mode)
 
-        self._init_output_channel(ctx)
+        self._init_output_channel(ctx, out_channel)
         self._event_broker = EventBroker(self._mlops_ctx, self._output_channel)
         self._stats_helper = StatsHelper(self._output_channel)
         self._model_helper = ModelHelper(self._mlops_ctx.rest_helper(), self._mlops_ctx.ion(), self._stats_helper)
